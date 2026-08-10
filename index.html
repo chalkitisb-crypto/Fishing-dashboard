@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1"/>
+  <meta name="theme-color" content="#020b18"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <title>Fishing Dashboard — Κάλυμνος</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="stylesheet" href="style.css?v=99.0.0"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" defer></script>
+  <script src="moon.js?v=99.0.0" defer></script>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <button class="icon-btn" id="btn-menu" aria-label="Μενού">☰</button>
+    <img class="brand-fish brand-fish-l" src="fish_left.png" alt=""/>
+    <div class="brand-text">
+      <div class="brand-title"><span class="w1">FISHING</span> <span class="w2">DASHBOARD</span></div>
+      <div class="brand-loc">📍 Κάλυμνος, Ελλάδα</div>
+    </div>
+    <img class="brand-fish brand-fish-r" src="fish_right.png" alt=""/>
+    <div class="header-actions">
+      <button class="icon-btn" id="btn-fav" aria-label="Αγαπημένο">☆</button>
+      <button class="icon-btn" id="btn-refresh" aria-label="Ανανέωση">↻</button>
+    </div>
+  </header>
+
+  <div id="menu-panel" class="menu-panel">
+    <div class="menu-sheet">
+      <div class="menu-head"><b>Μενού</b><button type="button" id="menu-close" class="icon-btn">✕</button></div>
+      <button type="button" class="menu-item" data-go="dashboard">◉ Dashboard</button>
+      <button type="button" class="menu-item" data-go="map">▣ Χάρτης</button>
+      <button type="button" class="menu-item" data-go="spots">📍 Spots</button>
+      <button type="button" class="menu-item" data-go="calendar">▦ Ημερολόγιο</button>
+      <button type="button" class="menu-item" data-go="settings">⚙ Ρυθμίσεις</button>
+    </div>
+  </div>
+
+  <main class="main" id="view-dashboard">
+    <div id="data-status" class="data-status">Σύνδεση δεδομένων…</div>
+    <!-- HERO: sun full-bleed background -->
+    <section class="card hero">
+      <div class="hero-bg"><img src="sun_scene.png" alt="" class="sun-img"/></div>
+      <div class="hero-overlay">
+        <div class="hero-date">
+          <div class="hero-dow" id="hero-dow">—</div>
+          <div class="hero-day" id="hero-day">—</div>
+          <div class="hero-mon" id="hero-mon">—</div>
+        </div>
+        <div class="hero-now">
+          <div class="hero-cond" id="hero-cond">—</div>
+          <div class="hero-temp" id="hero-temp">—<span>°C</span></div>
+          <div class="hero-desc" id="hero-desc">Φόρτωση…</div>
+        </div>
+      </div>
+      <div class="hero-metrics">
+        <div><span>Αισθητή</span><b id="m-feels">—</b></div>
+        <div><span>Υγρασία</span><b id="m-hum">—</b></div>
+        <div><span>Βροχή</span><b id="m-rain">—</b></div>
+        <div><span>UV</span><b class="uv" id="m-uv">—</b></div>
+        <div><span>Ανατολή</span><b id="m-rise">—</b></div>
+        <div><span>Δύση</span><b id="m-set">—</b></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="sec-title"><i class="dot"></i> ΣΥΝΘΗΚΕΣ ΚΑΙΡΟΥ – ΑΝΑ ΩΡΑ</div>
+      <div class="h-scroll" id="weather-hours"></div>
+    </section>
+
+    <div class="row row-2">
+      <section class="card card-scroll">
+        <div class="sec-title"><i class="dot"></i> ΑΝΕΜΟΣ (ΜΠΟΦΟΡ)</div>
+        <div class="h-scroll" id="wind-hours"></div>
+      </section>
+      <section class="card">
+        <div class="sec-title"><i class="dot"></i> ΒΑΡΟΜΕΤΡΙΚΗ ΠΙΕΣΗ</div>
+        <div class="pressure-body chart-premium">
+          <svg id="pressure-svg" class="chart-svg chart-svg-tall" viewBox="0 0 320 150" aria-hidden="true">
+            <g id="pressure-grid" class="chart-grid"></g>
+            <path id="pressure-area" fill="rgba(245,197,66,.12)" d=""/>
+            <polyline id="pressure-line" fill="none" stroke="#f5c542" stroke-width="2.8" points=""/>
+            <g id="pressure-dots"></g>
+            <g id="pressure-labels" class="chart-labels"></g>
+          </svg>
+          <div class="pressure-footer">
+            <span class="pf-ico">⏱</span>
+            <span class="pf-now">ΤΩΡΑ <b id="pressure-hpa">—</b></span>
+            <span class="pf-trend" id="pressure-trend">—</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="row row-moon">
+      <section class="card moon-card">
+        <div class="sec-title"><i class="dot"></i> ΦΑΣΗ ΣΕΛΗΝΗΣ</div>
+        <div class="moon-body">
+          <div class="moon-disc" id="moon-disc">
+            <canvas id="moon-canvas" width="256" height="256" aria-hidden="true"></canvas>
+            <img id="moon-img" class="moon-img" src="moon_full.png?v=99.0.0" alt="" hidden/>
+          </div>
+          <div class="moon-info">
+            <div class="moon-pct" id="moon-pct">—</div>
+            <div class="moon-phase" id="moon-phase">—</div>
+          </div>
+        </div>
+        <div class="moon-times">
+          <div class="moon-time"><span class="mt-ico">↑</span><div><span>Ανατολή</span><strong id="moon-rise">—</strong></div></div>
+          <div class="moon-time"><span class="mt-ico">↓</span><div><span>Δύση</span><strong id="moon-set">—</strong></div></div>
+        </div>
+      </section>
+      <section class="card card-scroll">
+        <div class="sec-title"><i class="dot"></i> ΡΕΥΜΑΤΑ</div>
+        <div class="h-scroll" id="current-hours"></div>
+      </section>
+    </div>
+
+    <div class="row row-2 row-sea">
+      <section class="card">
+        <div class="sec-title"><i class="dot"></i> ΣΥΝΘΗΚΕΣ ΘΑΛΑΣΣΑΣ</div>
+        <div class="sea-grid">
+          <div><span>Κύμα</span><b id="sea-wave">—</b></div>
+          <div><span>Περίοδος</span><b id="sea-period">—</b></div>
+          <div><span>Διεύθυνση</span><b id="sea-dir">—</b></div>
+          <div><span>Θερμ. νερού</span><b id="sea-temp">—</b></div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="sec-title"><i class="dot"></i> ΠΑΛΙΡΡΟΙΕΣ</div>
+                <div class="tide-body chart-premium">
+          <svg id="tide-svg" class="chart-svg chart-svg-tall" viewBox="0 0 320 130" aria-hidden="true">
+            <defs>
+              <linearGradient id="tideGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(53,200,255,.40)"/>
+                <stop offset="100%" stop-color="rgba(53,200,255,.02)"/>
+              </linearGradient>
+              <filter id="tideGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="2.2" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <path id="tide-area" fill="url(#tideGrad)" d=""/>
+            <polyline id="tide-line" fill="none" stroke="#35c8ff" stroke-width="3" filter="url(#tideGlow)" points=""/>
+            <g id="tide-dots"></g>
+            <g id="tide-axis"></g>
+          </svg>
+          <div class="tide-footer">
+            <div class="tide-row"><span class="t-ico">−</span> <span>Αμπώτις</span> <b id="tide-low">—</b></div>
+            <div class="tide-row"><span class="t-ico">+</span> <span>Πλημμυρίδα</span> <b id="tide-high">—</b></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card best-card">
+      <div class="sec-title"><i class="dot"></i> ΚΑΛΥΤΕΡΕΣ ΩΡΕΣ</div>
+      <div class="best-line" id="best-line"></div>
+      <div class="best-why" id="best-why" hidden></div>
+    </section>
+
+    <div class="row row-score">
+      <section class="card score-card">
+        <div class="sec-title score-title"><i class="dot"></i> FISHING SCORE</div>
+        <div class="score-wrap" id="score-wrap">
+          <div class="score-dial" id="score-dial">
+            <img class="score-gauge-bg" src="score_gauge_bg.jpg?v=99.0.0" alt=""/>
+            <img class="score-rod-live" id="score-rod-arm" src="score_rod_layer.png?v=99.0.0" alt=""/>
+          </div>
+          <div class="score-meta" id="score-meta">
+            <div class="score-stars" id="score-stars">★★★★☆</div>
+            <div class="score-num-line"><span id="score-num">—</span></div>
+            <div class="score-lab" id="score-lab">—</div>
+            <div class="score-reasons" id="score-reasons"></div>
+          </div>
+        </div>
+      </section>
+      <div class="score-right">
+        <section class="card activity-card">
+          <div class="sec-title"><i class="dot"></i> FISH ACTIVITY</div>
+          <div class="activity-body">
+            <img class="activity-panel" id="activity-panel" src="activity_body.jpg?v=99.0.0" alt=""/>
+            <div class="activity-bar-slot" id="activity-bar-wrap">
+              <svg class="activity-svg" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id="actBarGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%"   stop-color="#ff3b3b"/>
+                    <stop offset="25%"  stop-color="#fc8f0c"/>
+                    <stop offset="50%"  stop-color="#dac909"/>
+                    <stop offset="75%"  stop-color="#34ec68"/>
+                    <stop offset="100%" stop-color="#00d8f1"/>
+                  </linearGradient>
+                  <filter id="actBarGlow" x="-20%" y="-80%" width="140%" height="260%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="b"/>
+                    <feMerge>
+                      <feMergeNode in="b"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                </defs>
+                <!-- track -->
+                <rect x="0" y="1" width="200" height="12" rx="6" ry="6" fill="rgba(0,12,28,0.85)" stroke="rgba(53,200,255,0.45)" stroke-width="1"/>
+                <!-- fill (width set by JS via width attr 0..200) -->
+                <rect id="activity-bar-fill" x="0" y="1" width="0" height="12" rx="6" ry="6"
+                      fill="url(#actBarGrad)" filter="url(#actBarGlow)"/>
+              </svg>
+              <span class="activity-bar-pct" id="activity-pct">—%</span>
+            </div>
+          </div>
+        </section>
+        <section class="card zone-card">
+          <div class="sec-title"><i class="dot"></i> ΖΩΝΗ</div>
+          <div class="zone-body">
+            <img class="zone-map zone-map-fill" src="zone_map.png?v=99.0.0" alt="Χάρτης"/>
+            <div class="zone-info">
+              <div class="zone-label">Βέλτιστη ζώνη</div>
+              <div class="zone-place" id="zone-place">📍 Κάλυμνος · Νότια άκρη · 2–4μ</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <section class="card">
+      <div class="sec-title"><i class="dot"></i> FISHING ALERTS</div>
+      <ul class="alert-list" id="alert-list"></ul>
+    </section>
+
+    <section class="card">
+      <div class="sec-title"><i class="dot"></i> ΤΕΧΝΙΚΕΣ ΨΑΡΕΜΑΤΟΣ</div>
+      <div class="h-scroll tech-scroll" id="tech-list">
+        <button class="tech selected" data-tech="spinning" data-stars="5" type="button">
+          <img src="tech_card_spinning.png" alt=""/><span class="tn">SPINNING</span><span class="ts">★★★★★</span><span class="tl">Ιδανική</span>
+        </button>
+        <button class="tech" data-tech="lrf" data-stars="3" type="button">
+          <img src="tech_card_lrf.png" alt=""/><span class="tn">LRF</span><span class="ts">★★★☆☆</span><span class="tl">Καλή</span>
+        </button>
+        <button class="tech" data-tech="english" data-stars="4" type="button">
+          <img src="tech_card_english.png" alt=""/><span class="tn">ΕΓΓΛΕΖΙΚΟ</span><span class="ts">★★★★☆</span><span class="tl">Πολύ καλή</span>
+        </button>
+        <button class="tech" data-tech="shore" data-stars="2" type="button">
+          <img src="tech_card_shore_jig.png" alt=""/><span class="tn">SHORE JIG</span><span class="ts">★★☆☆☆</span><span class="tl">Μέτρια</span>
+        </button>
+      </div>
+    </section>
+    <div class="bottom-spacer"></div>
+  </main>
+
+  
+  <section class="view" id="view-map" hidden>
+    <div class="card view-card">
+      <div class="sec-title"><i class="dot"></i> ΧΑΡΤΗΣ</div>
+      <p class="view-text">Χάρτης spots · pins · συνθήκες ανά σημείο.<br/><span class="muted">Σύντομα — Στάδιο 4</span></p>
+      <div class="view-map-placeholder">🗺️ Κάλυμνος · επιλογή σημείου</div>
+    </div>
+  </section>
+  <section class="view" id="view-spots" hidden>
+    <div class="card view-card">
+      <div class="sec-title"><i class="dot"></i> SPOTS</div>
+      <p class="view-text">Αποθηκευμένα σημεία · αγαπημένα · σημειώσεις.</p>
+      <ul class="spot-list">
+        <li>📍 Νότια άκρη · 2–4μ <button type="button" class="mini">Άνοιγμα</button></li>
+        <li>📍 Λιμανάκι <button type="button" class="mini">Άνοιγμα</button></li>
+      </ul>
+      <p class="muted">Σύντομα πλήρης διαχείριση</p>
+    </div>
+  </section>
+  <section class="view" id="view-calendar" hidden>
+    <div class="card view-card">
+      <div class="sec-title"><i class="dot"></i> ΗΜΕΡΟΛΟΓΙΟ</div>
+      <p class="view-text">Score ημέρας · είδη · μήνες αναπαραγωγής.</p>
+      <div class="cal-grid" id="cal-grid"></div>
+      <p class="muted">Σύντομα πλήρη δεδομένα ειδών</p>
+    </div>
+  </section>
+  <section class="view" id="view-settings" hidden>
+    <div class="card view-card">
+      <div class="sec-title"><i class="dot"></i> ΡΥΘΜΙΣΕΙΣ</div>
+      <label class="set-row">Μονάδα ανέμου
+        <select id="set-wind-unit"><option>Μποφόρ</option><option>kn</option><option>km/h</option></select>
+      </label>
+      <label class="set-row">Θερμοκρασία
+        <select id="set-temp-unit"><option>°C</option><option>°F</option></select>
+      </label>
+      <label class="set-row">Τοποθεσία default
+        <select id="set-loc"><option value="kalymnos">Κάλυμνος</option><option value="gps">GPS συσκευής</option></select>
+      </label>
+      <button type="button" class="btn-primary" id="btn-install" hidden>Εγκατάσταση εφαρμογής</button>
+      <p class="muted" id="pwa-status">PWA · offline cache ενεργό</p>
+    </div>
+  </section>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-nav="dashboard" type="button"><span>◉</span>DASHBOARD</button>
+    <button class="nav-item" data-nav="map" type="button"><span>▣</span>ΧΑΡΤΗΣ</button>
+    <button class="nav-item" data-nav="spots" type="button"><span>📍</span>SPOTS</button>
+    <button class="nav-item" data-nav="calendar" type="button"><span>▦</span>ΗΜΕΡΟΛΟΓΙΟ</button>
+    <button class="nav-item" data-nav="settings" type="button"><span>⚙</span>ΡΥΘΜΙΣΕΙΣ</button>
+  </nav>
+</div>
+<script src="data.js?v=99.0.0"></script>
+<script src="app.js?v=99.0.0"></script>
+
+<div id="widget-modal" class="widget-modal" hidden>
+  <div class="widget-modal-backdrop" id="widget-modal-backdrop"></div>
+  <div class="widget-modal-sheet" id="widget-modal-sheet">
+    <button type="button" class="widget-modal-close" id="widget-modal-close">✕</button>
+    <div id="widget-modal-body"></div>
+  </div>
+</div>
+</body>
+</html>
