@@ -700,155 +700,37 @@ function __notifyMoon(pct, phaseTxt) {
   });
 })();
 
-/* ===== v93 MOON COMPLETE — 3D globe 30s + phase light ===== */
+/* ===== v104 MOON — single owner: moon.js (WebGL) ===== */
 (function () {
   function isWaxing(phaseKey) {
     var k = String(phaseKey || "").toLowerCase();
     if (/φθιν|waning|last|third|decreasing/.test(k)) return false;
     return true;
   }
-
-  /* Fallback CSS shade ONLY when 3D not live */
-  function setMoonShadeFallback(pct, phaseKey) {
-    var el = document.getElementById("moon-shade");
-    var canvas = document.getElementById("moon-canvas");
-    if (!el) return;
-    if (canvas && canvas.classList.contains("is-live")) {
-      el.style.setProperty("opacity", "0", "important");
-      el.style.setProperty("background", "transparent", "important");
-      return;
-    }
-    pct = Math.max(0, Math.min(100, Number(pct) || 0));
-    el.style.setProperty("opacity", "1", "important");
-    el.style.setProperty("background", "#020b18", "important");
-    el.style.setProperty("z-index", "3", "important");
-    var t = pct;
-    var tx = isWaxing(phaseKey) ? ("translateX(" + t + "%)") : ("scaleX(-1) translateX(" + t + "%)");
-    el.style.setProperty("transform", tx, "important");
-  }
-
-  function setMoonShade(illumination, phaseKey){ try{__notifyMoon(arguments[0],arguments[1]);}catch(e){} try{__notifyMoon(arguments[0], arguments[1]);}catch(e){}
+  function setMoonShade(illumination, phaseKey) {
     var pct = Math.max(0, Math.min(100, Number(illumination) || 0));
-    setMoonShadeFallback(pct, phaseKey);
-    try {
-      if (window.__moon3dSetLight) window.__moon3dSetLight(pct, isWaxing(phaseKey));
-    } catch (e) {}
+    try { if (typeof __notifyMoon === "function") __notifyMoon(pct, phaseKey || ""); } catch (e) {}
+    try { if (window.__moonSetPhase) window.__moonSetPhase(pct, phaseKey || ""); } catch (e) {}
   }
   window.setMoonShade = setMoonShade;
 
-  function init3D() {
-    try {
-      if (typeof THREE === "undefined") return;
-      var canvas = document.getElementById("moon-canvas");
-      var disc = document.getElementById("moon-disc");
-      if (!canvas || !disc) return;
-
-      var size = Math.max(120, disc.clientWidth || 120);
-      var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-      renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
-      renderer.setSize(size, size, false);
-      renderer.setClearColor(0x000000, 0);
-
-      var scene = new THREE.Scene();
-      var camera = new THREE.PerspectiveCamera(35, 1, 0.1, 20);
-      camera.position.z = 2.65;
-
-      var mat = new THREE.MeshStandardMaterial({
-        color: 0xf5c542,
-        roughness: 0.72,
-        metalness: 0.08,
-        emissive: 0x3a2808,
-        emissiveIntensity: 0.18,
-      });
-      var moon = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), mat);
-      scene.add(moon);
-
-      /* ambient: ανάγλυφο στο σκοτεινό · όχι μαύρο */
-      var amb = new THREE.AmbientLight(0x6a5020, 0.35);
-      scene.add(amb);
-      /* sun: φωτεινή μηνοειδής */
-      var sun = new THREE.DirectionalLight(0xffe8a8, 3.2);
-      sun.position.set(2.5, 0.15, 1.5);
-      scene.add(sun);
-
-      new THREE.TextureLoader().load(
-        "moon_tex.jpg?v=101.0.0",
-        function (tex) {
-          try {
-            if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
-            mat.map = tex;
-            mat.color.set(0xffffff);
-            mat.needsUpdate = true;
-          } catch (e) {}
-        }
-      );
-
-      window.__moon3dSetLight = function (pct, waxing) {
-        var p = Math.max(0, Math.min(100, Number(pct) || 0));
-        /* Ορατή χρυσή λεπίδα ακόμα και στο 5–10%:
-           δεν αφήνουμε το φως σχεδόν πίσω από τη σφαίρα */
-        var visible = Math.max(p, 12); /* οπτικό floor ~12% για αναγνώσιμη μηνοειδή */
-        var phaseAng = (1 - visible / 100) * Math.PI;
-        var side = waxing ? 1 : -1;
-        sun.position.set(side * Math.sin(phaseAng) * 3.2, 0.18, Math.cos(phaseAng) * 3.2);
-        sun.intensity = p < 10 ? 3.6 : p < 25 ? 3.2 : 2.8;
-        amb.intensity = p < 10 ? 0.28 : 0.32;
-        if (mat) {
-          mat.emissiveIntensity = p < 10 ? 0.28 : 0.15;
-        }
-      };
-
-      var pctEl = document.getElementById("moon-pct");
-      var phaseEl = document.getElementById("moon-phase");
-      if (pctEl) {
-        var n = parseFloat(String(pctEl.textContent).replace(/[^0-9.]/g, ""));
-        if (!isNaN(n)) {
-          window.__moon3dSetLight(n, isWaxing(phaseEl ? phaseEl.textContent : ""));
-        }
-      }
-
-      var painted = false;
-      (function tick() {
-        requestAnimationFrame(tick);
-        moon.rotation.y += (Math.PI * 2) / (30 * 60); /* υδρόγειος 30s */
-        renderer.render(scene, camera);
-        if (!painted) {
-          painted = true;
-          canvas.style.setProperty("display","block","important");
-          canvas.style.setProperty("opacity","1","important");
-          canvas.classList.add("is-live");
-          setMoonShadeFallback(
-            pctEl ? parseFloat(String(pctEl.textContent).replace(/[^0-9.]/g, "")) || 0 : 0,
-            phaseEl ? phaseEl.textContent : ""
-          );
-          if (pctEl) {
-            var nn = parseFloat(String(pctEl.textContent).replace(/[^0-9.]/g, ""));
-            if (!isNaN(nn) && window.__moon3dSetLight) {
-              window.__moon3dSetLight(nn, isWaxing(phaseEl ? phaseEl.textContent : ""));
-            }
-          }
-        }
-      })();
-    } catch (err) {
-      console.warn("moon3d skipped", err);
-    }
-  }
-
-  function boot() {
+  function syncFromDom() {
     var pctEl = document.getElementById("moon-pct");
     var phaseEl = document.getElementById("moon-phase");
-    function sync() {
-      if (!pctEl) return;
-      var n = parseFloat(String(pctEl.textContent).replace(/[^0-9.]/g, ""));
-      if (!isNaN(n)) setMoonShade(n, phaseEl ? phaseEl.textContent : "");
-    }
-    sync();
+    if (!pctEl) return;
+    var n = parseFloat(String(pctEl.textContent).replace(/[^0-9.]/g, ""));
+    if (!isNaN(n)) setMoonShade(n, phaseEl ? phaseEl.textContent : "");
+  }
+  function boot() {
+    syncFromDom();
     try {
-      if (pctEl) new MutationObserver(sync).observe(pctEl, { childList: true, characterData: true, subtree: true });
-      if (phaseEl) new MutationObserver(sync).observe(phaseEl, { childList: true, characterData: true, subtree: true });
+      var pctEl = document.getElementById("moon-pct");
+      var phaseEl = document.getElementById("moon-phase");
+      if (pctEl) new MutationObserver(syncFromDom).observe(pctEl, { childList: true, characterData: true, subtree: true });
+      if (phaseEl) new MutationObserver(syncFromDom).observe(phaseEl, { childList: true, characterData: true, subtree: true });
     } catch (e) {}
-    setTimeout(init3D, 350);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 })();
+
