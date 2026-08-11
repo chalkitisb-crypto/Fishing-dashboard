@@ -1,101 +1,144 @@
-/* moon.js v98 — isolated 3D · open CFG at top */
+/* moon.js v101 — full gold texture + phase from code + texture rotation 360° */
 (function(){
   "use strict";
   var CFG = {
     rotationSec: 30,
-    goldHex: 0xf5c542,
-    texUrl: "moon_tex.jpg?v=99.0.0",
+    gold: "#f5c542",
+    texUrl: "moon_tex.jpg?v=101.0.0",
     size: 256,
-    minCrescent: 16,
-    sunIntensityLow: 5.8,
-    sunIntensityHigh: 2.8,
-    ambient: 0.40,
-    fillStrength: 0.9
+    minVis: 4
   };
   function $(id){ return document.getElementById(id); }
-  function isWaxing(txt){
-    if(!txt) return true;
-    var t = String(txt).toLowerCase();
+  function isWaxing(t){
+    if(!t) return true;
+    t = String(t).toLowerCase();
     return !(t.indexOf("φθιν")>=0 || t.indexOf("waning")>=0);
   }
+
   function init(){
     var canvas = $("moon-canvas");
     if(!canvas) return;
-    if(typeof THREE === "undefined"){
-      var img = $("moon-img");
-      if(img){ img.hidden=false; img.style.display="block"; }
-      canvas.style.display="none";
-      return;
+    var size = CFG.size;
+    canvas.width = size; canvas.height = size;
+    canvas.style.display = "block";
+    canvas.style.opacity = "1";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    var ctx = canvas.getContext("2d");
+    var tex = new Image();
+    var texReady = false;
+    var rot = 0;
+    var pct = 12;
+    var waxing = false;
+
+    tex.onload = function(){ texReady = true; };
+    tex.src = CFG.texUrl;
+
+    function draw(){
+      var s = size, cx = s/2, cy = s/2, r = s*0.48;
+      ctx.clearRect(0,0,s,s);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,0,Math.PI*2);
+      ctx.closePath();
+      ctx.clip();
+
+      // dark base under texture (relief visible through soft shadow)
+      ctx.fillStyle = "#0d0a06";
+      ctx.fillRect(0,0,s,s);
+
+      // full gold textured sphere — rotates
+      ctx.save();
+      ctx.translate(cx,cy);
+      ctx.rotate(rot);
+      ctx.translate(-cx,-cy);
+      if(texReady){
+        ctx.drawImage(tex, cx-r, cy-r, r*2, r*2);
+        ctx.globalCompositeOperation = "multiply";
+        ctx.fillStyle = CFG.gold;
+        ctx.fillRect(cx-r, cy-r, r*2, r*2);
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 0.28;
+        ctx.fillStyle = CFG.gold;
+        ctx.fillRect(cx-r, cy-r, r*2, r*2);
+        ctx.globalAlpha = 1;
+      } else {
+        ctx.fillStyle = CFG.gold;
+        ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
+      }
+      ctx.restore();
+
+      // PHASE from code — soft shadow so crater structure remains faintly visible
+      var vis = Math.max(Math.min(pct,100), CFG.minVis);
+      var offset = (vis/100) * r * 1.9;
+      if(offset < r*0.12) offset = r*0.12;
+      var dir = waxing ? -1 : 1;
+      var sx = cx + dir * (r - offset);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,0,Math.PI*2);
+      ctx.clip();
+      ctx.globalCompositeOperation = "source-atop";
+      // soft fade shadow (not pure black plate)
+      var grd = ctx.createRadialGradient(sx, cy, r*0.05, sx, cy, r*1.02);
+      grd.addColorStop(0, "rgba(2,11,24,0.88)");
+      grd.addColorStop(0.55, "rgba(2,11,24,0.78)");
+      grd.addColorStop(0.85, "rgba(2,11,24,0.45)");
+      grd.addColorStop(1, "rgba(2,11,24,0)");
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(sx, cy, r*0.99, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+
+      // single gold rim
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,0,Math.PI*2);
+      ctx.clip();
+      ctx.strokeStyle = "rgba(245,197,66,0.5)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx,cy,r-1,0,Math.PI*2);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.restore();
     }
-    var w=CFG.size,h=CFG.size;
-    canvas.width=w; canvas.height=h;
-    var renderer = new THREE.WebGLRenderer({canvas:canvas, alpha:true, antialias:true});
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
-    renderer.setSize(w,h,false);
-    renderer.setClearColor(0x000000,0);
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(35,1,0.1,100);
-    camera.position.z = 3.15;
-    var amb = new THREE.AmbientLight(0xfff0d0, CFG.ambient);
-    scene.add(amb);
-    var sun = new THREE.DirectionalLight(0xffe8a0, CFG.sunIntensityHigh);
-    sun.position.set(2.5,0.3,1.5);
-    scene.add(sun);
-    var fill = new THREE.DirectionalLight(0xffd080, CFG.fillStrength);
-    fill.position.set(1.0,0.2,2.0);
-    scene.add(fill);
-    var geo = new THREE.SphereGeometry(1,64,64);
-    var mat = new THREE.MeshStandardMaterial({
-      color: CFG.goldHex, roughness:0.85, metalness:0.08,
-      emissive: CFG.goldHex, emissiveIntensity:0.12
-    });
-    var mesh = new THREE.Mesh(geo, mat);
-    scene.add(mesh);
-    new THREE.TextureLoader().load(CFG.texUrl, function(tex){
-      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-      mat.map = tex; mat.needsUpdate = true;
-    });
-    function setPhase(pct, waxing){
-      var p = Math.max(0, Math.min(100, Number(pct)||0));
-      var vis = Math.max(p, CFG.minCrescent);
-      var cosA = Math.max(-0.98, Math.min(0.98, 2*(vis/100)-1));
-      var ang = Math.acos(cosA);
-      var side = waxing ? 1 : -1;
-      var sx = side * Math.sin(ang) * 3.0;
-      var sz = Math.cos(ang) * 3.0;
-      if(sz < 0.4) sz = 0.4;
-      sun.position.set(sx, 0.25, sz);
-      sun.intensity = p<15 ? CFG.sunIntensityLow : p<40 ? 3.6 : CFG.sunIntensityHigh;
-      fill.position.set(side*0.9, 0.15, 1.8);
-      fill.intensity = p<15 ? CFG.fillStrength : CFG.fillStrength*0.45;
-      amb.intensity = CFG.ambient;
-      mat.emissiveIntensity = p<15 ? 0.30 : 0.10;
-    }
-    window.__moonSetPhase = function(pct, phaseText){
-      setPhase(pct, isWaxing(phaseText));
+
+    window.__moonSetPhase = function(p, phaseText){
+      pct = Math.max(0, Math.min(100, Number(p)||0));
+      waxing = isWaxing(phaseText);
+      draw();
     };
+
     var pctEl = document.querySelector(".moon-pct");
     var phaseEl = document.querySelector(".moon-phase");
-    var start = 7;
     if(pctEl){
       var n = parseFloat(String(pctEl.textContent).replace(",",".").replace("%",""));
-      if(!isNaN(n)) start = n;
+      if(!isNaN(n)) pct = n;
     }
-    setPhase(start, isWaxing(phaseEl ? phaseEl.textContent : ""));
-    var speed = (Math.PI*2)/CFG.rotationSec;
+    waxing = isWaxing(phaseEl ? phaseEl.textContent : "");
+    draw();
+
     var last = performance.now();
+    var speed = (Math.PI*2)/CFG.rotationSec;
     function tick(now){
       var dt = Math.min(0.05,(now-last)/1000);
       last = now;
-      mesh.rotation.y += speed*dt;
-      renderer.render(scene, camera);
+      rot += speed*dt;
+      draw();
       requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
+
     window.addEventListener("moon-data", function(e){
-      if(e.detail) setPhase(e.detail.pct, isWaxing(e.detail.phase));
+      if(e.detail) window.__moonSetPhase(e.detail.pct, e.detail.phase);
     });
   }
+
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })();

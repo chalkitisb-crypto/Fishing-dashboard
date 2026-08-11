@@ -274,7 +274,7 @@ function __notifyMoon(pct, phaseTxt) {
             function setMoonVisual(pct, phaseHtml, phaseKey) {
     var img = $("moon-img") || document.querySelector(".moon-img");
     if (img) {
-      img.src = "moon_full.png?v=99.0.0";
+      img.src = "moon_full.png?v=101.0.0";
       img.style.display = "block";
       img.style.opacity = "1";
     }
@@ -772,7 +772,7 @@ function __notifyMoon(pct, phaseTxt) {
       scene.add(sun);
 
       new THREE.TextureLoader().load(
-        "moon_tex.jpg?v=99.0.0",
+        "moon_tex.jpg?v=101.0.0",
         function (tex) {
           try {
             if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
