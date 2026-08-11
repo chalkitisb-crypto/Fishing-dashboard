@@ -1,9 +1,3 @@
-Ανέβασε στη ρίζα GitHub (overwrite):
-- moon.js
-- moon_eq.jpg  (νέα equirectangular υφή)
-- app.js
-
-Στο index.html άλλαξε μόνο:
-<script src="moon.js?v=105.0.0" defer></script>
-(αν δεν το έχεις ήδη)
+Overwrite: moon.js
+index: moon.js?v=107.0.0
 
