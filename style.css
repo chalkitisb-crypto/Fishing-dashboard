@@ -1975,3 +1975,22 @@ canvas#moon-canvas.is-live {
   z-index:2;
 }
 #moon-img{display:none!important;}
+
+/* v103 WebGL moon */
+.moon-disc{
+  position:relative;
+  width:76px;height:76px;
+  border-radius:50%;
+  overflow:hidden;
+  flex-shrink:0;
+  background:#020b18;
+  box-shadow:0 0 14px rgba(245,197,66,.3);
+}
+#moon-canvas{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  border-radius:50%;
+  opacity:1!important;
+}
+#moon-img{display:none!important;}
