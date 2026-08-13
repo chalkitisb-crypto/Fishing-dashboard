@@ -9,7 +9,7 @@ function __notifyMoon(pct, phaseTxt) {
   } catch (e) {}
 }
 
-/* Fishing Dashboard v114.0.0 — Stage 1 complete APIs + score SVG */
+/* Fishing Dashboard v116.0.0 — Stage 1 complete APIs + score SVG */
 (function () {
   "use strict";
 
@@ -246,48 +246,46 @@ function __notifyMoon(pct, phaseTxt) {
     return -90 + (score / 100) * 180;
   }
 
-  function setRodAngle(score, instant, root) {
+    function setRodAngle(score, instant, root) {
     var scope = root || document;
     var arm = scope.querySelector(".score-rod-live") || scope.querySelector("#score-rod-arm");
     if (!arm) return;
     var s = Math.max(0, Math.min(100, Number(score) || 0));
     var deg = scoreToAngle(s);
-    if (instant) arm.style.transition = "none";
-    arm.style.setProperty("--rod-deg", deg + "deg");
+    var t = "translate(-49.86%,-86.54%) rotate(" + deg + "deg)";
+    if (instant) arm.style.setProperty("transition", "none", "important");
+    else arm.style.setProperty("transition", "transform .95s cubic-bezier(.25,.8,.25,1)", "important");
+    arm.style.setProperty("transform", t, "important");
     if (instant) {
       void arm.offsetHeight;
-      arm.style.transition = "";
+      arm.style.setProperty("transition", "transform .95s cubic-bezier(.25,.8,.25,1)", "important");
     }
   }
 
   var __scoreTarget = 0;
-  var __scoreAnimating = false;
   function animateScoreRod(target, root) {
     var scope = root || document;
     var arm = scope.querySelector(".score-rod-live") || scope.querySelector("#score-rod-arm");
     if (!arm) return;
-    if (!root && __scoreAnimating) return;
-    if (!root) __scoreAnimating = true;
     var t = Math.max(0, Math.min(100, Number(target) != null ? Number(target) : __scoreTarget));
     __scoreTarget = t;
-    /* 0 (far left) → target % */
     setRodAngle(0, true, scope);
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         setRodAngle(t, false, scope);
-        if (!root) setTimeout(function () { __scoreAnimating = false; }, 950);
       });
     });
   }
 
   function bindScoreTap() {
-    var dial = document.getElementById("score-dial") || document.querySelector(".score-dial");
-    if (!dial || dial.dataset.scoreTapBound) return;
-    dial.dataset.scoreTapBound = "1";
-    dial.addEventListener("click", function (e) {
-      e.stopPropagation();
-      animateScoreRod(__scoreTarget || 0);
-    }, true);
+    document.querySelectorAll(".score-dial").forEach(function (dial) {
+      if (dial.dataset.scoreTapBound) return;
+      dial.dataset.scoreTapBound = "1";
+      dial.addEventListener("click", function (e) {
+        e.stopPropagation();
+        animateScoreRod(__scoreTarget || 0);
+      }, true);
+    });
   }
 
   function setActivityBrows(pct) {

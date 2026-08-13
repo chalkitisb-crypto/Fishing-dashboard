@@ -2190,3 +2190,48 @@ canvas#moon-canvas.is-live {
 .score-reasons,#score-reasons{display:none!important;height:0!important;margin:0!important;padding:0!important;}
 .widget-modal-body .score-dial{max-width:360px!important;}
 .widget-modal-body .score-rod-live{width:17%!important;}
+
+
+/* ===== SCORE v116 — centered rod · direct transform (Safari) · red-gold ===== */
+.score-dial{
+  position:relative!important;
+  width:100%!important;
+  max-width:280px!important;
+  margin:0 auto!important;
+  aspect-ratio:1/1!important;
+  overflow:visible!important;
+  cursor:pointer!important;
+}
+.score-gauge-bg{
+  display:block!important;width:100%!important;height:auto!important;
+  border-radius:50%!important;position:relative!important;z-index:1!important;
+  pointer-events:none!important;
+}
+.score-rod-live, img.score-rod-live, #score-rod-arm{
+  position:absolute!important;
+  left:50.47%!important;
+  top:81.41%!important;
+  width:17.5%!important;
+  height:auto!important;
+  object-fit:contain!important;
+  z-index:3!important;
+  pointer-events:none!important;
+  transform-origin:49.86% 86.54%!important;
+  /* initial upright — JS overwrites transform with !important for Safari animate */
+  transform:translate(-49.86%,-86.54%) rotate(0deg);
+  transition:transform .95s cubic-bezier(.25,.8,.25,1)!important;
+  filter:drop-shadow(0 0 6px rgba(201,149,106,.55))!important;
+}
+.score-meta{text-align:center!important;margin-top:8px!important;z-index:4!important;position:relative!important;}
+.score-stars{
+  color:#c9956a!important;font-size:16px!important;letter-spacing:3px!important;
+  text-shadow:0 0 12px rgba(201,149,106,.55)!important;
+}
+.score-num-line,#score-num{
+  color:#c9956a!important;font-size:34px!important;font-weight:800!important;
+  text-shadow:0 0 14px rgba(201,149,106,.55)!important;
+}
+.score-lab,#score-lab{color:#b8734d!important;font-size:13px!important;}
+.score-reasons,#score-reasons{display:none!important;height:0!important;margin:0!important;padding:0!important;}
+.widget-modal-body .score-dial{max-width:360px!important;}
+.widget-modal-body .score-rod-live{width:15.5%!important;}
