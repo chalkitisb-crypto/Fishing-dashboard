@@ -1,4 +1,14 @@
-ΜΟΝΟ αυτό το upload για σελήνη:
-  moon.js
-index: moon.js?v=110.0.0
-Hard refresh. 1 screenshot μετά.
+SCORE v111 — μόνο αυτά στη ρίζα GitHub:
+
+  score_rod_layer.png   (εγκεκριμένο καλάμι)
+  score_gauge_bg.jpg    (ίδιο gauge)
+  app.js
+  style.css
+  index.html
+
+Hard refresh / clear cache.
+Τσεκάρισμα:
+1. Καλάμι = χρυσό + μπλε reel + δακτυλίδι στη βίδα
+2. Στο 50 → κάθετο, μύτη στο 50
+3. Μονό tap στο score → καλάμι από 0 → %
+4. Αστέρια/νούμερο #e1bc71 · χωρίς μπλε λίστα

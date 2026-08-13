@@ -9,7 +9,7 @@ function __notifyMoon(pct, phaseTxt) {
   } catch (e) {}
 }
 
-/* Fishing Dashboard v64.0.0 — Stage 1 complete APIs + score SVG */
+/* Fishing Dashboard v111.0.0 — Stage 1 complete APIs + score SVG */
 (function () {
   "use strict";
 
@@ -246,13 +246,46 @@ function __notifyMoon(pct, phaseTxt) {
     return -90 + (score / 100) * 180;
   }
 
-  function setRodAngle(score) {
+  function setRodAngle(score, instant) {
     var arm = document.getElementById("score-rod-arm");
     if (!arm) return;
     var s = Math.max(0, Math.min(100, Number(score) || 0));
     var deg = scoreToAngle(s);
-    /* measured: ring origin 23%/90%, bolt at 50%/82.8% of dial */
-    arm.style.transform = "translate(-23%,-90%) rotate(" + deg + "deg)";
+    /* pivot = hollow gold ring · CSS --rod-deg · bolt at 82.3% */
+    if (instant) arm.style.transition = "none";
+    arm.style.setProperty("--rod-deg", deg + "deg");
+    if (instant) {
+      arm.offsetHeight;
+      arm.style.transition = "";
+    }
+  }
+
+  var __scoreTarget = 0;
+  var __scoreAnimating = false;
+  function animateScoreRod(target) {
+    var arm = document.getElementById("score-rod-arm");
+    if (!arm || __scoreAnimating) return;
+    __scoreAnimating = true;
+    __scoreTarget = Math.max(0, Math.min(100, Number(target) || 0));
+    /* start from 0 */
+    setRodAngle(0, true);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        setRodAngle(__scoreTarget, false);
+        setTimeout(function () { __scoreAnimating = false; }, 900);
+      });
+    });
+  }
+
+  function bindScoreTap() {
+    var card = document.querySelector(".score-card");
+    if (!card || card.dataset.scoreTapBound) return;
+    card.dataset.scoreTapBound = "1";
+    card.addEventListener("click", function (e) {
+      /* single tap = animate rod · double-tap handled elsewhere for modal */
+      if (e.detail > 1) return;
+      animateScoreRod(__scoreTarget || 0);
+    });
   }
 
   function setActivityBrows(pct) {
@@ -328,14 +361,12 @@ function __notifyMoon(pct, phaseTxt) {
     if (!window.FDData || !FDData.computeScore) return;
     var sc = FDData.computeScore(data);
     if ($("score-num")) $("score-num").textContent = sc.score;
+    __scoreTarget = sc.score;
     setRodAngle(sc.score);
     if ($("score-stars")) $("score-stars").textContent = scoreStars(sc.score);
     if ($("score-lab")) $("score-lab").textContent = scoreLabel(sc.score);
-    if ($("score-reasons") && sc.reasons) {
-      $("score-reasons").innerHTML = sc.reasons.map(function (r) {
-        return "<div>· " + r + "</div>";
-      }).join("");
-    }
+    if ($("score-reasons")) $("score-reasons").innerHTML = "";
+    bindScoreTap();
     if ($("activity-pct")) $("activity-pct").textContent = sc.activity + "%";
     var bar = $("activity-bar-fill");
     if (bar) {

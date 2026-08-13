@@ -1994,3 +1994,75 @@ canvas#moon-canvas.is-live {
   opacity:1!important;
 }
 #moon-img{display:none!important;}
+
+/* ===== SCORE v111 — approved rod · pivot on bolt · stars gold ===== */
+.score-dial{
+  position:relative!important;
+  width:100%!important;
+  max-width:280px!important;
+  margin:0 auto!important;
+  aspect-ratio:1/1!important;
+  overflow:visible!important;
+}
+.score-gauge-bg{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  border-radius:50%!important;
+  position:relative!important;
+  z-index:1!important;
+  pointer-events:none!important;
+}
+/* Rod: ring sits on bolt (~82.3%) · tip reaches ~50 mark when vertical */
+.score-rod-live{
+  position:absolute!important;
+  left:50%!important;
+  top:82.3%!important;
+  width:18%!important;
+  height:auto!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  z-index:3!important;
+  pointer-events:none!important;
+  transform-origin:50% 96%!important;
+  transform:translate(-50%,-96%) rotate(var(--rod-deg, 0deg))!important;
+  transition:transform .85s cubic-bezier(.2,.85,.2,1)!important;
+  filter:drop-shadow(0 0 6px rgba(225,188,113,.45))!important;
+}
+.score-meta{
+  text-align:center!important;
+  margin-top:8px!important;
+  z-index:4!important;
+  position:relative!important;
+}
+.score-stars{
+  color:#e1bc71!important;
+  font-size:16px!important;
+  letter-spacing:3px!important;
+  text-shadow:0 0 10px rgba(225,188,113,.55)!important;
+}
+.score-num-line,#score-num{
+  color:#e1bc71!important;
+  font-size:34px!important;
+  font-weight:800!important;
+  text-shadow:0 0 12px rgba(225,188,113,.4)!important;
+}
+.score-lab,#score-lab{
+  color:#ceac69!important;
+  font-size:13px!important;
+  margin-top:2px!important;
+}
+/* hide blue reasons list */
+.score-reasons,#score-reasons{
+  display:none!important;
+  height:0!important;
+  overflow:hidden!important;
+  margin:0!important;
+  padding:0!important;
+}
+.widget-modal-body .score-rod-live{
+  width:16%!important;
+}
+.widget-modal-body .score-dial{
+  max-width:360px!important;
+}
