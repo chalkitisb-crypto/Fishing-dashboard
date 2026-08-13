@@ -9,7 +9,7 @@ function __notifyMoon(pct, phaseTxt) {
   } catch (e) {}
 }
 
-/* Fishing Dashboard v126.0.0 — Stage 1 complete APIs + score SVG */
+/* Fishing Dashboard v127.0.0 — Stage 1 complete APIs + score SVG */
 (function () {
   "use strict";
 
@@ -321,9 +321,27 @@ function __notifyMoon(pct, phaseTxt) {
   /* scoreToAngle/setRodAngle defined above */
   function scoreStars(score) {
     var n = score >= 90 ? 5 : score >= 75 ? 4 : score >= 55 ? 3 : score >= 35 ? 2 : 1;
-    var s = "";
-    for (var i = 0; i < 5; i++) s += i < n ? "★" : "☆";
-    return s;
+    var path = "M12 2.2l2.95 5.98 6.6.96-4.78 4.66 1.13 6.58L12 17.05 6.1 20.38l1.13-6.58L2.45 9.14l6.6-.96L12 2.2z";
+    var html = "";
+    for (var i = 0; i < 5; i++) {
+      var filled = i < n;
+      var gid = "sf" + i + "_" + Math.floor(Math.random()*1e5);
+      if (filled) {
+        html += '<svg class="score-star-svg filled" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">' +
+          '<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0%" stop-color="#f14848"/>' +
+          '<stop offset="40%" stop-color="#b41e22"/>' +
+          '<stop offset="100%" stop-color="#7a1015"/>' +
+          '</linearGradient></defs>' +
+          '<path d="'+path+'" fill="url(#'+gid+')" stroke="#e5bf6f" stroke-width="1.6" stroke-linejoin="round"/>' +
+          '</svg>';
+      } else {
+        html += '<svg class="score-star-svg empty" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">' +
+          '<path d="'+path+'" fill="rgba(180,30,34,0.15)" stroke="#e5bf6f" stroke-width="1.6" stroke-linejoin="round"/>' +
+          '</svg>';
+      }
+    }
+    return html;
   }
   function scoreLabel(score) {
     if (score >= 90) return "Ιδανική";
@@ -363,10 +381,7 @@ function __notifyMoon(pct, phaseTxt) {
     var sc = FDData.computeScore(data);
     if ($("score-num")) $("score-num").textContent = sc.score;
     __scoreTarget = sc.score;
-    if ($("score-stars")) {
-      var _st = scoreStars(sc.score);
-      $("score-stars").innerHTML = _st.split("").map(function(c){ return "<span>"+c+"</span>"; }).join("");
-    }
+    if ($("score-stars")) $("score-stars").innerHTML = scoreStars(sc.score);
     if ($("score-lab")) $("score-lab").textContent = scoreLabel(sc.score);
     if ($("score-reasons")) $("score-reasons").innerHTML = "";
     bindScoreTap();
