@@ -2702,3 +2702,26 @@ img.score-rod-live,
   -webkit-text-stroke: 0 !important;
   margin-top: 2px !important;
 }
+
+
+/* ===== SCORE v128 — Καλή gold outline ===== */
+.score-lab, #score-lab {
+  font-family: "Helvetica Neue", Arial, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  background: linear-gradient(180deg, #f14848 0%, #b41e22 50%, #7a1015 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: #b41e22 !important;
+  /* stronger gold frame */
+  filter:
+    drop-shadow(0 0 0.7px #e5bf6f)
+    drop-shadow(0 0 0.7px #e5bf6f)
+    drop-shadow(0 0 1.2px #e5bf6f)
+    drop-shadow(0 0 1.2px #e5bf6f)
+    drop-shadow(0 1px 1px rgba(0,0,0,.3)) !important;
+  text-shadow: none !important;
+  -webkit-text-stroke: 0 !important;
+  margin-top: 2px !important;
+}
