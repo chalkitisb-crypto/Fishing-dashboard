@@ -2363,3 +2363,94 @@ img.score-rod-live,
   margin: 0 !important;
   padding: 0 !important;
 }
+
+
+/* ===== SCORE v121 — Iron Man red+gold · shorter tip · pivot ===== */
+.score-dial, #score-dial {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 280px !important;
+  margin: 0 auto !important;
+  aspect-ratio: 1 / 1 !important;
+  overflow: visible !important;
+  cursor: pointer !important;
+}
+.score-gauge-bg {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  border-radius: 50% !important;
+  position: relative !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+}
+.score-pivot, #score-pivot {
+  position: absolute !important;
+  left: 50% !important;
+  top: 82.34% !important;
+  width: 0 !important;
+  height: 0 !important;
+  z-index: 3 !important;
+  pointer-events: none !important;
+}
+.score-pivot .score-rod-live,
+#score-pivot .score-rod-live,
+.score-rod-live,
+img.score-rod-live,
+#score-rod-arm {
+  position: absolute !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  width: 68px !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  transform-origin: 50% 100% !important;
+  transform: translateX(-50%) rotate(0deg);
+  transition: transform .95s cubic-bezier(.25,.8,.25,1) !important;
+  pointer-events: none !important;
+  filter: drop-shadow(0 0 5px rgba(200,80,30,.45)) !important;
+  z-index: 3 !important;
+}
+.widget-modal-body .score-pivot {
+  left: 50% !important;
+  top: 82.34% !important;
+}
+.widget-modal-body .score-rod-live,
+.widget-modal-body img.score-rod-live,
+.widget-modal-body #score-rod-arm {
+  width: 88px !important;
+}
+.widget-modal-body .score-dial { max-width: 360px !important; }
+
+/* Iron Man: gold face + red glow (from locked sample) */
+.score-stars, #score-stars {
+  color: #e3af56 !important;
+  font-size: 16px !important;
+  letter-spacing: 3px !important;
+  text-shadow:
+    0 0 12px rgba(180,40,20,.75),
+    0 0 4px rgba(227,175,86,.5),
+    0 1px 0 #8b2c1b !important;
+}
+.score-num-line, #score-num, .score-num-line #score-num {
+  color: #e3af56 !important;
+  font-size: 34px !important;
+  font-weight: 800 !important;
+  text-shadow:
+    0 0 14px rgba(180,40,20,.7),
+    0 0 4px rgba(227,175,86,.45),
+    0 1px 0 #8b2c1b !important;
+}
+.score-lab, #score-lab {
+  color: #c69145 !important;
+  font-size: 13px !important;
+  text-shadow: 0 0 8px rgba(139,44,27,.5) !important;
+}
+.score-reasons, #score-reasons {
+  display: none !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}

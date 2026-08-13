@@ -9,7 +9,7 @@ function __notifyMoon(pct, phaseTxt) {
   } catch (e) {}
 }
 
-/* Fishing Dashboard v120.0.0 — Stage 1 complete APIs + score SVG */
+/* Fishing Dashboard v121.0.0 — Stage 1 complete APIs + score SVG */
 (function () {
   "use strict";
 
@@ -246,7 +246,7 @@ function __notifyMoon(pct, phaseTxt) {
     return -90 + (score / 100) * 180;
   }
 
-        function setRodAngle(score, instant, root) {
+          function setRodAngle(score, instant, root) {
     var scope = root || document;
     var arm = scope.querySelector(".score-rod-live") || scope.querySelector("#score-rod-arm");
     if (!arm) return;
