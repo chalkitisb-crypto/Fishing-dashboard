@@ -2454,3 +2454,38 @@ img.score-rod-live,
   margin: 0 !important;
   padding: 0 !important;
 }
+
+
+/* ===== SCORE v123 — red fill + gold stroke (Iron Man exact) ===== */
+.score-stars, #score-stars {
+  color: #8b2c1b !important;
+  -webkit-text-fill-color: #8b2c1b !important;
+  -webkit-text-stroke: 1.35px #e3af56 !important;
+  paint-order: stroke fill !important;
+  font-size: 16px !important;
+  letter-spacing: 3px !important;
+  text-shadow: 0 0 10px rgba(227,175,86,.55) !important;
+  background: none !important;
+  filter: none !important;
+}
+.score-num-line #score-num, #score-num {
+  color: #8b2c1b !important;
+  -webkit-text-fill-color: #8b2c1b !important;
+  -webkit-text-stroke: 2px #e3af56 !important;
+  paint-order: stroke fill !important;
+  font-size: 34px !important;
+  font-weight: 800 !important;
+  text-shadow: 0 0 12px rgba(227,175,86,.5) !important;
+  background: none !important;
+  filter: none !important;
+}
+.score-lab, #score-lab {
+  color: #8b2c1b !important;
+  -webkit-text-fill-color: #8b2c1b !important;
+  -webkit-text-stroke: 0.9px #e3af56 !important;
+  paint-order: stroke fill !important;
+  font-size: 13px !important;
+  text-shadow: 0 0 6px rgba(227,175,86,.4) !important;
+  background: none !important;
+  filter: none !important;
+}
