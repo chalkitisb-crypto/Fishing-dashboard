@@ -9,7 +9,7 @@ function __notifyMoon(pct, phaseTxt) {
   } catch (e) {}
 }
 
-/* Fishing Dashboard v116.0.0 — Stage 1 complete APIs + score SVG */
+/* Fishing Dashboard v117.0.0 — Stage 1 complete APIs + score SVG */
 (function () {
   "use strict";
 
@@ -246,7 +246,7 @@ function __notifyMoon(pct, phaseTxt) {
     return -90 + (score / 100) * 180;
   }
 
-    function setRodAngle(score, instant, root) {
+      function setRodAngle(score, instant, root) {
     var scope = root || document;
     var arm = scope.querySelector(".score-rod-live") || scope.querySelector("#score-rod-arm");
     if (!arm) return;
@@ -277,13 +277,14 @@ function __notifyMoon(pct, phaseTxt) {
     });
   }
 
-  function bindScoreTap() {
-    document.querySelectorAll(".score-dial").forEach(function (dial) {
+  function bindScoreTap(root) {
+    var scope = root || document;
+    scope.querySelectorAll(".score-dial").forEach(function (dial) {
       if (dial.dataset.scoreTapBound) return;
       dial.dataset.scoreTapBound = "1";
       dial.addEventListener("click", function (e) {
         e.stopPropagation();
-        animateScoreRod(__scoreTarget || 0);
+        animateScoreRod(__scoreTarget || 0, root || undefined);
       }, true);
     });
   }
@@ -715,7 +716,12 @@ function __notifyMoon(pct, phaseTxt) {
     try { drawPressure(); drawTide(); } catch (e) {}
     try {
       if (clone.querySelector && clone.querySelector(".score-rod-live, #score-rod-arm")) {
-        setTimeout(function () { animateScoreRod(__scoreTarget, body); }, 40);
+        /* ensure rod starts at 0 in clone, then charge after paint */
+        setRodAngle(0, true, body);
+        setTimeout(function () {
+          bindScoreTap(body);
+          animateScoreRod(__scoreTarget, body);
+        }, 120);
       }
     } catch (e) {}
   }
