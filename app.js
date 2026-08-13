@@ -9,7 +9,7 @@ function __notifyMoon(pct, phaseTxt) {
   } catch (e) {}
 }
 
-/* Fishing Dashboard v111.0.0 — Stage 1 complete APIs + score SVG */
+/* Fishing Dashboard v113.0.0 — Stage 1 complete APIs + score SVG */
 (function () {
   "use strict";
 
@@ -278,14 +278,13 @@ function __notifyMoon(pct, phaseTxt) {
   }
 
   function bindScoreTap() {
-    var card = document.querySelector(".score-card");
-    if (!card || card.dataset.scoreTapBound) return;
-    card.dataset.scoreTapBound = "1";
-    card.addEventListener("click", function (e) {
-      /* single tap = animate rod · double-tap handled elsewhere for modal */
-      if (e.detail > 1) return;
+    var dial = document.getElementById("score-dial") || document.querySelector(".score-dial");
+    if (!dial || dial.dataset.scoreTapBound) return;
+    dial.dataset.scoreTapBound = "1";
+    dial.addEventListener("click", function (e) {
+      e.stopPropagation();
       animateScoreRod(__scoreTarget || 0);
-    });
+    }, true);
   }
 
   function setActivityBrows(pct) {
@@ -362,11 +361,11 @@ function __notifyMoon(pct, phaseTxt) {
     var sc = FDData.computeScore(data);
     if ($("score-num")) $("score-num").textContent = sc.score;
     __scoreTarget = sc.score;
-    setRodAngle(sc.score);
     if ($("score-stars")) $("score-stars").textContent = scoreStars(sc.score);
     if ($("score-lab")) $("score-lab").textContent = scoreLabel(sc.score);
     if ($("score-reasons")) $("score-reasons").innerHTML = "";
     bindScoreTap();
+    animateScoreRod(sc.score);
     if ($("activity-pct")) $("activity-pct").textContent = sc.activity + "%";
     var bar = $("activity-bar-fill");
     if (bar) {

@@ -1,14 +1,17 @@
-SCORE v111 — μόνο αυτά στη ρίζα GitHub:
+SCORE v113 — pure bronze + pivot
 
-  score_rod_layer.png   (εγκεκριμένο καλάμι)
-  score_gauge_bg.jpg    (ίδιο gauge)
+Ανέβασε στη ρίζα:
   app.js
   style.css
   index.html
+  score_rod_layer.png  (αν δεν υπάρχει ήδη)
 
-Hard refresh / clear cache.
-Τσεκάρισμα:
-1. Καλάμι = χρυσό + μπλε reel + δακτυλίδι στη βίδα
-2. Στο 50 → κάθετο, μύτη στο 50
-3. Μονό tap στο score → καλάμι από 0 → %
-4. Αστέρια/νούμερο #e1bc71 · χωρίς μπλε λίστα
+?v=113.0.0 · hard refresh
+
+Χρώματα:
+  αστέρια / νούμερο  #cd7f32
+  label              #b87333
+  glow               rgba(212,165,116)
+
+Pivot: top 80.8% · origin 97% · δακτυλίδι στη βίδα
+Animate: στο load + tap στο κοντέρ
