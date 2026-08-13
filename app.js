@@ -9,7 +9,7 @@ function __notifyMoon(pct, phaseTxt) {
   } catch (e) {}
 }
 
-/* Fishing Dashboard v113.0.0 — Stage 1 complete APIs + score SVG */
+/* Fishing Dashboard v114.0.0 — Stage 1 complete APIs + score SVG */
 (function () {
   "use strict";
 
@@ -246,33 +246,36 @@ function __notifyMoon(pct, phaseTxt) {
     return -90 + (score / 100) * 180;
   }
 
-  function setRodAngle(score, instant) {
-    var arm = document.getElementById("score-rod-arm");
+  function setRodAngle(score, instant, root) {
+    var scope = root || document;
+    var arm = scope.querySelector(".score-rod-live") || scope.querySelector("#score-rod-arm");
     if (!arm) return;
     var s = Math.max(0, Math.min(100, Number(score) || 0));
     var deg = scoreToAngle(s);
-    /* pivot = hollow gold ring · CSS --rod-deg · bolt at 82.3% */
     if (instant) arm.style.transition = "none";
     arm.style.setProperty("--rod-deg", deg + "deg");
     if (instant) {
-      arm.offsetHeight;
+      void arm.offsetHeight;
       arm.style.transition = "";
     }
   }
 
   var __scoreTarget = 0;
   var __scoreAnimating = false;
-  function animateScoreRod(target) {
-    var arm = document.getElementById("score-rod-arm");
-    if (!arm || __scoreAnimating) return;
-    __scoreAnimating = true;
-    __scoreTarget = Math.max(0, Math.min(100, Number(target) || 0));
-    /* start from 0 */
-    setRodAngle(0, true);
+  function animateScoreRod(target, root) {
+    var scope = root || document;
+    var arm = scope.querySelector(".score-rod-live") || scope.querySelector("#score-rod-arm");
+    if (!arm) return;
+    if (!root && __scoreAnimating) return;
+    if (!root) __scoreAnimating = true;
+    var t = Math.max(0, Math.min(100, Number(target) != null ? Number(target) : __scoreTarget));
+    __scoreTarget = t;
+    /* 0 (far left) → target % */
+    setRodAngle(0, true, scope);
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        setRodAngle(__scoreTarget, false);
-        setTimeout(function () { __scoreAnimating = false; }, 900);
+        setRodAngle(t, false, scope);
+        if (!root) setTimeout(function () { __scoreAnimating = false; }, 950);
       });
     });
   }
@@ -712,6 +715,11 @@ function __notifyMoon(pct, phaseTxt) {
     modal.hidden = false;
     document.body.style.overflow = "hidden";
     try { drawPressure(); drawTide(); } catch (e) {}
+    try {
+      if (clone.querySelector && clone.querySelector(".score-rod-live, #score-rod-arm")) {
+        setTimeout(function () { animateScoreRod(__scoreTarget, body); }, 40);
+      }
+    } catch (e) {}
   }
   function closeWidgetModal() {
     var modal = $("widget-modal");
