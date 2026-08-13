@@ -2489,3 +2489,39 @@ img.score-rod-live,
   background: none !important;
   filter: none !important;
 }
+
+
+/* ===== SCORE v124 — stronger red · less blur · larger label ===== */
+.score-stars, #score-stars {
+  color: #c43c20 !important;
+  -webkit-text-fill-color: #c43c20 !important;
+  -webkit-text-stroke: 1px #e3af56 !important;
+  paint-order: stroke fill !important;
+  font-size: 16px !important;
+  letter-spacing: 3px !important;
+  text-shadow: 0 0 4px rgba(227,175,86,.35) !important;
+  background: none !important;
+  filter: none !important;
+}
+.score-num-line #score-num, #score-num {
+  color: #c43c20 !important;
+  -webkit-text-fill-color: #c43c20 !important;
+  -webkit-text-stroke: 1.6px #e3af56 !important;
+  paint-order: stroke fill !important;
+  font-size: 34px !important;
+  font-weight: 800 !important;
+  text-shadow: 0 0 5px rgba(227,175,86,.3) !important;
+  background: none !important;
+  filter: none !important;
+}
+.score-lab, #score-lab {
+  color: #c43c20 !important;
+  -webkit-text-fill-color: #c43c20 !important;
+  -webkit-text-stroke: 0.7px #e3af56 !important;
+  paint-order: stroke fill !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  text-shadow: 0 0 3px rgba(227,175,86,.25) !important;
+  background: none !important;
+  filter: none !important;
+}
