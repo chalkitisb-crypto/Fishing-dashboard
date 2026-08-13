@@ -2525,3 +2525,51 @@ img.score-rod-live,
   background: none !important;
   filter: none !important;
 }
+
+
+/* ===== SCORE v125 — crimson #c41e2a + gold stroke · full-width stars · larger lab ===== */
+.score-meta {
+  text-align: center !important;
+  width: 100% !important;
+  padding: 0 4px !important;
+}
+.score-stars, #score-stars {
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+  color: #c41e2a !important;
+  -webkit-text-fill-color: #c41e2a !important;
+  -webkit-text-stroke: 1.1px #e3af56 !important;
+  paint-order: stroke fill !important;
+  font-size: 24px !important;
+  letter-spacing: 0.42em !important;
+  text-shadow: 0 0 4px rgba(227,175,86,.3) !important;
+  background: none !important;
+  filter: none !important;
+  margin: 8px 0 4px !important;
+  padding: 0 4px 0 0 !important;
+}
+.score-num-line, .score-num-line #score-num, #score-num {
+  color: #c41e2a !important;
+  -webkit-text-fill-color: #c41e2a !important;
+  -webkit-text-stroke: 1.8px #e3af56 !important;
+  paint-order: stroke fill !important;
+  font-size: 36px !important;
+  font-weight: 800 !important;
+  text-shadow: 0 0 5px rgba(227,175,86,.28) !important;
+  background: none !important;
+  filter: none !important;
+}
+.score-lab, #score-lab {
+  color: #c41e2a !important;
+  -webkit-text-fill-color: #c41e2a !important;
+  -webkit-text-stroke: 0.85px #e3af56 !important;
+  paint-order: stroke fill !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  text-shadow: 0 0 3px rgba(227,175,86,.25) !important;
+  background: none !important;
+  filter: none !important;
+  margin-top: 2px !important;
+}
