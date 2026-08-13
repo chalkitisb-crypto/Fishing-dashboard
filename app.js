@@ -9,7 +9,7 @@ function __notifyMoon(pct, phaseTxt) {
   } catch (e) {}
 }
 
-/* Fishing Dashboard v121.0.0 — Stage 1 complete APIs + score SVG */
+/* Fishing Dashboard v126.0.0 — Stage 1 complete APIs + score SVG */
 (function () {
   "use strict";
 
@@ -363,7 +363,10 @@ function __notifyMoon(pct, phaseTxt) {
     var sc = FDData.computeScore(data);
     if ($("score-num")) $("score-num").textContent = sc.score;
     __scoreTarget = sc.score;
-    if ($("score-stars")) $("score-stars").textContent = scoreStars(sc.score);
+    if ($("score-stars")) {
+      var _st = scoreStars(sc.score);
+      $("score-stars").innerHTML = _st.split("").map(function(c){ return "<span>"+c+"</span>"; }).join("");
+    }
     if ($("score-lab")) $("score-lab").textContent = scoreLabel(sc.score);
     if ($("score-reasons")) $("score-reasons").innerHTML = "";
     bindScoreTap();
