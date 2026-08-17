@@ -2764,3 +2764,58 @@ img.score-rod-live,
 /* work inside enlarged/modal card */
 .card.is-open .best-line,.card.modal-open .best-line,.card.expanded .best-line{pointer-events:auto}
 .card.is-open .best-chip,.card.modal-open .best-chip,.card.expanded .best-chip{pointer-events:auto;cursor:pointer}
+
+
+/* === Hero live sky v130 === */
+.hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:inherit}
+.hero-base-img{width:100%;height:100%;object-fit:cover;object-position:center bottom;display:block}
+.hero-sky-tint{
+  position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:linear-gradient(180deg,rgba(255,120,40,.35),rgba(255,80,20,.12) 45%,transparent 70%);
+  opacity:0;transition:opacity .8s ease;
+}
+.hero-sun{
+  position:absolute;z-index:2;width:52px;height:52px;border-radius:50%;
+  left:50%;top:30%;transform:translate(-50%,-50%);
+  background:radial-gradient(circle at 35% 35%,#fff6c8 0%,#ffe566 25%,#f5c542 55%,#e89a20 100%);
+  box-shadow:0 0 24px 8px rgba(255,200,60,.75),0 0 48px 16px rgba(255,160,40,.4);
+  pointer-events:none;opacity:0;transition:opacity .6s ease, left 1s linear, top 1s linear;
+}
+.hero-sun--warm{
+  background:radial-gradient(circle at 35% 35%,#ffe8a0 0%,#ffb347 40%,#ff7a18 75%,#e85d10 100%);
+  box-shadow:0 0 28px 10px rgba(255,120,40,.8),0 0 56px 18px rgba(255,80,20,.45);
+}
+.hero-night{
+  position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:linear-gradient(180deg,rgba(2,8,24,.85),rgba(2,10,28,.55) 50%,rgba(2,12,30,.35));
+  opacity:0;transition:opacity 1s ease;
+}
+.hero-stars{
+  position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;transition:opacity 1.2s ease;
+}
+.hero-stars i{
+  position:absolute;display:block;border-radius:50%;background:#fff;
+  box-shadow:0 0 4px 1px rgba(255,255,255,.9);
+}
+.hero-overlay{z-index:5}
+.hero-metrics{z-index:5}
+/* typography locked */
+.hero-dow,.hero-mon,.hero-cond,.hero-desc{color:#f5c542!important}
+.hero-metrics span{color:#f5c542!important}
+.hero-day,.hero-temp{color:#fff!important;font-weight:800}
+.hero-temp{font-size:36px!important}
+.hero-day{font-size:44px!important}
+
+/* Gold hour chip → RED */
+.best-chip[data-why="gold"]{
+  background:rgba(220,40,40,.16)!important;
+  border:1px solid rgba(255,70,70,.8)!important;
+  color:#ff6b6b!important;
+  box-shadow:0 0 14px rgba(255,50,50,.35)!important;
+}
+.best-why--gold{
+  background:rgba(200,30,30,.14)!important;
+  border:1px solid rgba(255,80,80,.55)!important;
+  color:#ffc9c9!important;
+}
+.best-why--gold b{color:#ff6b6b!important}

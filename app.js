@@ -185,8 +185,95 @@ function __notifyMoon(pct, phaseTxt) {
 
 
 
+  
+  function parseHHMM(s) {
+    var p = String(s || "06:30").split(":");
+    return parseInt(p[0], 10) * 60 + parseInt(p[1] || "0", 10);
+  }
+  function ensureHeroStars() {
+    var box = $("hero-stars");
+    if (!box || box.dataset.ready === "1") return box;
+    var html = "";
+    for (var i = 0; i < 48; i++) {
+      var x = (i * 37) % 100;
+      var y = (i * 53) % 55;
+      var s = 1 + (i % 3);
+      var o = 0.45 + ((i % 5) * 0.1);
+      html += '<i style="left:' + x + '%;top:' + y + '%;width:' + s + 'px;height:' + s + 'px;opacity:' + o + '"></i>';
+    }
+    box.innerHTML = html;
+    box.dataset.ready = "1";
+    return box;
+  }
+  function updateHeroSky(sun, c) {
+    sun = sun || {};
+    c = c || {};
+    var rise = parseHHMM(sun.rise || "06:30");
+    var set = parseHHMM(sun.set || "20:00");
+    var now = new Date();
+    var mins = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+    var sunEl = $("hero-sun");
+    var nightEl = $("hero-night");
+    var tintEl = $("hero-sky-tint");
+    var starsEl = ensureHeroStars();
+    var isDay = mins >= rise && mins <= set;
+    var progress = 0;
+    if (isDay) {
+      progress = (mins - rise) / Math.max(1, set - rise);
+      progress = Math.max(0, Math.min(1, progress));
+    }
+    // position: x 8%→92%, y arc (high at midday)
+    if (sunEl) {
+      if (isDay) {
+        var x = 8 + progress * 84;
+        var y = 58 - Math.sin(progress * Math.PI) * 48; // % from top
+        sunEl.style.left = x + "%";
+        sunEl.style.top = y + "%";
+        sunEl.style.opacity = "1";
+        sunEl.style.transform = "translate(-50%,-50%) scale(" + (0.85 + Math.sin(progress * Math.PI) * 0.25) + ")";
+        // warmer near horizon
+        var nearHorizon = progress < 0.15 || progress > 0.85;
+        sunEl.classList.toggle("hero-sun--warm", nearHorizon);
+      } else {
+        sunEl.style.opacity = "0";
+      }
+    }
+    // night opacity
+    var nightOp = 0;
+    if (!isDay) {
+      nightOp = 0.72;
+    } else if (progress < 0.08) {
+      nightOp = 0.55 * (1 - progress / 0.08);
+    } else if (progress > 0.92) {
+      nightOp = 0.55 * ((progress - 0.92) / 0.08);
+    }
+    if (nightEl) nightEl.style.opacity = String(nightOp);
+    // sky tint: warm at dawn/dusk
+    if (tintEl) {
+      var warm = 0;
+      if (isDay && (progress < 0.18 || progress > 0.82)) {
+        warm = progress < 0.18 ? (1 - progress / 0.18) : ((progress - 0.82) / 0.18);
+      }
+      tintEl.style.opacity = String(warm * 0.45);
+    }
+    // stars: night + clear (weatherCode 0/1 or no rain)
+    var code = c.weatherCode != null ? Number(c.weatherCode) : 0;
+    var clear = code <= 1 && !(c.rain > 0.2);
+    var showStars = !isDay && clear && nightOp > 0.25;
+    if (starsEl) {
+      starsEl.style.opacity = showStars ? "1" : "0";
+    }
+  }
+  // refresh sun position every 30s
+  setInterval(function () {
+    try {
+      if (window.__fdLastData) updateHeroSky(window.__fdLastData.sun, window.__fdLastData.current);
+    } catch (e) {}
+  }, 30000);
+
   function applyHero(data) {
     if (!data) return;
+    window.__fdLastData = data;
     var d = data.date || {};
     var c = data.current || {};
     var sun = data.sun || {};
@@ -199,9 +286,21 @@ function __notifyMoon(pct, phaseTxt) {
     if ($("m-feels")) $("m-feels").textContent = (c.feels != null ? c.feels + "°C" : "—");
     if ($("m-hum")) $("m-hum").textContent = (c.humidity != null ? c.humidity + "%" : "—");
     if ($("m-rain")) $("m-rain").textContent = (c.rain != null ? c.rain + " mm" : "—");
-    if ($("m-uv") && window.FDData) $("m-uv").textContent = window.FDData.uvLabel(c.uv || data.uvMax || 0);
+    if ($("m-uv") && window.FDData) {
+      var uvVal = c.uv != null ? c.uv : (data.uvMax || 0);
+      $("m-uv").textContent = window.FDData.uvLabel(uvVal);
+      var uvEl = $("m-uv");
+      if (uvEl) {
+        var u = Number(uvVal) || 0;
+        var uvColor = u < 3 ? "#3ddc84" : u < 6 ? "#f5c542" : u < 8 ? "#ff9f1a" : u < 11 ? "#ff4d4d" : "#c77dff";
+        uvEl.style.color = uvColor;
+        uvEl.style.textShadow = "0 0 8px " + uvColor;
+      }
+    }
     if ($("m-rise")) $("m-rise").textContent = sun.rise || "—";
     if ($("m-set")) $("m-set").textContent = sun.set || "—";
+    // Live sun arc + night + stars
+    updateHeroSky(sun, c);
 
     var sea = data.sea || {};
     if ($("sea-wave")) $("sea-wave").textContent = sea.wave != null ? sea.wave.toFixed(1) + " m" : "—";

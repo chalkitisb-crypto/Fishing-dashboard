@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <title>Fishing Dashboard — Κάλυμνος</title>
   <link rel="manifest" href="manifest.json"/>
-  <link rel="stylesheet" href="style.css?v=129.0.0"/>
+  <link rel="stylesheet" href="style.css?v=130.0.0"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" defer></script>
   <script src="moon.js?v=103.0.0" defer></script>
 </head>
@@ -43,7 +43,13 @@
     <div id="data-status" class="data-status">Σύνδεση δεδομένων…</div>
     <!-- HERO: sun full-bleed background -->
     <section class="card hero">
-      <div class="hero-bg"><img src="sun_scene.png" alt="" class="sun-img"/></div>
+      <div class="hero-bg">
+        <img src="hero_base.jpg" alt="" class="sun-img hero-base-img"/>
+        <div class="hero-sky-tint" id="hero-sky-tint"></div>
+        <div class="hero-stars" id="hero-stars" aria-hidden="true"></div>
+        <div class="hero-sun" id="hero-sun" aria-hidden="true"></div>
+        <div class="hero-night" id="hero-night"></div>
+      </div>
       <div class="hero-overlay">
         <div class="hero-date">
           <div class="hero-dow" id="hero-dow">—</div>
@@ -303,8 +309,8 @@
     <button class="nav-item" data-nav="settings" type="button"><span>⚙</span>ΡΥΘΜΙΣΕΙΣ</button>
   </nav>
 </div>
-<script src="data.js?v=129.0.0"></script>
-<script src="app.js?v=129.0.0"></script>
+<script src="data.js?v=130.0.0"></script>
+<script src="app.js?v=130.0.0"></script>
 
 <div id="widget-modal" class="widget-modal" hidden>
   <div class="widget-modal-backdrop" id="widget-modal-backdrop"></div>
