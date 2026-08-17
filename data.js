@@ -255,6 +255,8 @@
         feels: Math.round(c.apparent_temperature),
         humidity: c.relative_humidity_2m,
         rain: c.precipitation,
+        precipProb: (h.precipitation_probability && h.precipitation_probability[startIdx] != null)
+          ? Math.round(h.precipitation_probability[startIdx]) : null,
         weatherCode: c.weather_code,
         cond: meta.cond,
         desc: meta.lab,

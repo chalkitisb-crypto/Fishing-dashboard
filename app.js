@@ -226,16 +226,48 @@ function __notifyMoon(pct, phaseTxt) {
     if (sunEl) {
       if (isDay) {
         var x = 8 + progress * 84;
-        var y = 58 - Math.sin(progress * Math.PI) * 48; // % from top
+        var y = 58 - Math.sin(progress * Math.PI) * 48;
         sunEl.style.left = x + "%";
         sunEl.style.top = y + "%";
         sunEl.style.opacity = "1";
-        sunEl.style.transform = "translate(-50%,-50%) scale(" + (0.85 + Math.sin(progress * Math.PI) * 0.25) + ")";
-        // warmer near horizon
-        var nearHorizon = progress < 0.15 || progress > 0.85;
+        sunEl.style.transform = "translate(-50%,-50%) scale(" + (0.9 + Math.sin(progress * Math.PI) * 0.2) + ")";
+        var nearHorizon = progress < 0.18 || progress > 0.82;
         sunEl.classList.toggle("hero-sun--warm", nearHorizon);
+        var sunImg = $("hero-sun-img");
+        if (sunImg) {
+          var want = nearHorizon ? "hero_sun_warm.png" : "hero_sun.png";
+          if (sunImg.getAttribute("data-src") !== want) {
+            sunImg.src = want;
+            sunImg.setAttribute("data-src", want);
+          }
+        }
       } else {
         sunEl.style.opacity = "0";
+      }
+    }
+    // Night moon: ONE realistic gold texture · phase shade by live %
+    var moonEl = $("hero-moon");
+    var moonImg = $("hero-moon-img");
+    var moonShade = $("hero-moon-shade");
+    if (moonEl) {
+      if (!isDay && nightOp > 0.2) {
+        var pct = 50;
+        try {
+          if (window.__fdLastData && window.__fdLastData.moon && window.__fdLastData.moon.pct != null)
+            pct = Number(window.__fdLastData.moon.pct);
+        } catch (e) {}
+        // shade: 0% = full dark overlay from right, 100% = no shade
+        // use linear-gradient mask approx of illuminated fraction
+        if (moonShade) {
+          var illum = Math.max(0, Math.min(100, pct)) / 100;
+          // dark part covers (1-illum) from the left (simple waxing approximation)
+          var darkPct = Math.round((1 - illum) * 100);
+          moonShade.style.background =
+            "linear-gradient(90deg, rgba(2,6,18,0.92) 0%, rgba(2,6,18,0.92) " + darkPct + "%, transparent " + Math.min(100, darkPct + 18) + "%)";
+        }
+        moonEl.style.opacity = "1";
+      } else {
+        moonEl.style.opacity = "0";
       }
     }
     // night opacity
@@ -263,6 +295,18 @@ function __notifyMoon(pct, phaseTxt) {
     if (starsEl) {
       starsEl.style.opacity = showStars ? "1" : "0";
     }
+    // rain overlay from precip probability / rain mm
+    var rainEl = $("hero-rain");
+    if (rainEl) {
+      var prob = c.precipProb != null ? Number(c.precipProb) : 0;
+      var mm = c.rain != null ? Number(c.rain) : 0;
+      var rainOp = 0;
+      if (mm > 0.2) rainOp = Math.min(0.55, 0.2 + mm * 0.15);
+      else if (prob >= 60) rainOp = 0.15 + (prob - 60) / 100;
+      else if (prob >= 40) rainOp = 0.08;
+      rainEl.style.opacity = String(rainOp);
+      rainEl.classList.toggle("hero-rain--on", rainOp > 0.05);
+    }
   }
   // refresh sun position every 30s
   setInterval(function () {
@@ -285,7 +329,11 @@ function __notifyMoon(pct, phaseTxt) {
     if ($("hero-desc")) $("hero-desc").textContent = c.desc || "—";
     if ($("m-feels")) $("m-feels").textContent = (c.feels != null ? c.feels + "°C" : "—");
     if ($("m-hum")) $("m-hum").textContent = (c.humidity != null ? c.humidity + "%" : "—");
-    if ($("m-rain")) $("m-rain").textContent = (c.rain != null ? c.rain + " mm" : "—");
+    if ($("m-rain")) {
+      var rainTxt = c.rain != null ? (Number(c.rain).toFixed(1) + " mm") : "—";
+      if (c.precipProb != null) rainTxt += " · " + c.precipProb + "%";
+      $("m-rain").textContent = rainTxt;
+    }
     if ($("m-uv") && window.FDData) {
       var uvVal = c.uv != null ? c.uv : (data.uvMax || 0);
       $("m-uv").textContent = window.FDData.uvLabel(uvVal);

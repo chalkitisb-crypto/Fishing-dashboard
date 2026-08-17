@@ -2819,3 +2819,75 @@ img.score-rod-live,
   color:#ffc9c9!important;
 }
 .best-why--gold b{color:#ff6b6b!important}
+
+
+/* === v131 realistic sun + precip === */
+.hero-sun{
+  width:64px!important;height:64px!important;
+  background:none!important;
+  box-shadow:0 0 30px 12px rgba(255,190,60,.55),0 0 60px 24px rgba(255,150,40,.28)!important;
+  border-radius:50%;
+  overflow:visible;
+}
+.hero-sun img{
+  width:100%;height:100%;display:block;border-radius:50%;
+  filter:drop-shadow(0 0 10px rgba(255,200,80,.9));
+  object-fit:contain;
+}
+.hero-sun--warm{
+  box-shadow:0 0 34px 14px rgba(255,120,40,.7),0 0 70px 28px rgba(255,80,20,.35)!important;
+}
+.hero-sun--warm img{filter:drop-shadow(0 0 12px rgba(255,120,40,.95)) sepia(.25) saturate(1.3)}
+.hero-rain{
+  position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;
+  transition:opacity .8s ease;
+  background:
+    linear-gradient(180deg,rgba(120,150,180,.12),rgba(80,110,150,.2));
+}
+.hero-rain--on{
+  background-image:
+    repeating-linear-gradient(
+      -20deg,
+      transparent 0,
+      transparent 8px,
+      rgba(180,210,255,.12) 8px,
+      rgba(180,210,255,.12) 9px
+    ),
+    linear-gradient(180deg,rgba(100,130,170,.15),rgba(60,90,130,.22));
+  animation: heroRain 0.7s linear infinite;
+}
+@keyframes heroRain {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 12px 18px, 0 0; }
+}
+
+
+/* === v132 moon + dual sun === */
+.hero-sun{width:72px!important;height:72px!important}
+.hero-sun img{width:100%;height:100%;object-fit:contain;display:block}
+.hero-moon{
+  position:absolute;z-index:2;width:42px;height:42px;
+  left:72%;top:18%;transform:translate(-50%,-50%);
+  pointer-events:none;opacity:0;transition:opacity 1s ease;
+}
+.hero-moon img{
+  width:100%;height:100%;object-fit:contain;display:block;
+  filter:drop-shadow(0 0 8px rgba(245,197,66,.45));
+  border-radius:50%;
+}
+
+/* v133: single realistic gold moon · phase from code */
+.hero-moon{
+  position:absolute;z-index:2;width:44px;height:44px;
+  left:72%;top:18%;transform:translate(-50%,-50%);
+  pointer-events:none;opacity:0;transition:opacity 1s ease;
+  border-radius:50%;overflow:hidden;
+}
+.hero-moon img{
+  width:100%;height:100%;object-fit:cover;display:block;border-radius:50%;
+  filter:drop-shadow(0 0 10px rgba(245,197,66,.55));
+}
+.hero-moon-shade{
+  position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  mix-blend-mode:multiply;
+}
