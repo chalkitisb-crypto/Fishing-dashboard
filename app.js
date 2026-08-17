@@ -404,32 +404,70 @@ function __notifyMoon(pct, phaseTxt) {
       }).join("");
     }
 
-    // Best hours + why
+    // Best hours — live reasons, gold hour, per technique (no «Γιατί» label)
     var bl = $("best-line");
     var bw = $("best-why");
     if (bl && FDData.computeBestHours) {
       var bh = FDData.computeBestHours(data);
-      bl.innerHTML =
+      var chips =
         '<button type="button" class="best-chip" data-why="morning">ΠΡΩΙ ' + bh.morning + "</button>" +
         '<span class="sep"> · </span>' +
         '<button type="button" class="best-chip" data-why="evening">ΑΠΟΓΕΥΜΑ ' + bh.evening + "</button>" +
         '<span class="sep"> · </span>' +
+        '<button type="button" class="best-chip" data-why="gold">GOLD ' + (bh.gold || "") + "</button>" +
+        '<span class="sep"> · </span>' +
         '<button type="button" class="best-chip" data-why="night">ΝΥΧΤΑ ' + bh.night + "</button>";
+      if (bh.techniques && bh.techniques.length) {
+        chips += '<div class="best-tech-row">';
+        bh.techniques.forEach(function (t) {
+          chips +=
+            '<button type="button" class="best-chip best-tech" data-why="tech-' + t.id + '">' +
+            t.name + " " + t.window +
+            "</button>";
+        });
+        chips += "</div>";
+      }
+      bl.innerHTML = chips;
       bl.querySelectorAll(".best-chip").forEach(function (btn) {
-        btn.addEventListener("click", function () {
+        btn.addEventListener("click", function (ev) {
+          ev.stopPropagation();
           var key = btn.getAttribute("data-why");
-          var map = { morning: bh.whyMorning, evening: bh.whyEvening, night: bh.whyNight };
-          var title = { morning: "Πρωί", evening: "Απόγευμα", night: "Νύχτα" };
+          var map = {
+            morning: bh.whyMorning,
+            evening: bh.whyEvening,
+            night: bh.whyNight,
+            gold: bh.whyGold
+          };
+          var title = {
+            morning: "Πρωί " + bh.morning,
+            evening: "Απόγευμα " + bh.evening,
+            night: "Νύχτα " + bh.night,
+            gold: "Gold hour " + (bh.gold || "")
+          };
+          var reasons = map[key];
+          var ttl = title[key];
+          if (key && key.indexOf("tech-") === 0 && bh.techniques) {
+            var tid = key.slice(5);
+            var tech = null;
+            bh.techniques.forEach(function (t) { if (t.id === tid) tech = t; });
+            if (tech) {
+              reasons = tech.reasons || [];
+              ttl = tech.name + " · " + tech.window;
+            }
+          }
           if (!bw) return;
           if (bw.dataset.open === key) {
             bw.hidden = true;
             bw.dataset.open = "";
+            bw.className = "best-why";
             return;
           }
           bw.dataset.open = key;
           bw.hidden = false;
-          bw.innerHTML = "<b>Γιατί " + title[key] + "</b><ul>" +
-            (map[key] || []).map(function (x) { return "<li>" + x + "</li>"; }).join("") +
+          bw.className = "best-why best-why--" + (key.indexOf("tech-") === 0 ? "tech" : key);
+          bw.innerHTML =
+            "<b>" + ttl + "</b><ul>" +
+            (reasons || []).map(function (x) { return "<li>" + x + "</li>"; }).join("") +
             "</ul>";
         });
       });

@@ -503,17 +503,106 @@
       var h = Math.floor(t / 60), m = t % 60;
       return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
     }
+    function liveFactors(slot) {
+      var c = (data && data.current) || {};
+      var sea = (data && data.sea) || {};
+      var moon = (data && data.moon) || {};
+      var lines = [];
+      var p = c.pressure;
+      if (p != null) {
+        var tr = data.pressureTrend || "";
+        lines.push("Πίεση " + Math.round(p) + " hPa" + (tr && tr !== "—" ? " · " + tr.replace(/^[^Α-Ωα-ω↑↓→]+/, "").trim() : ""));
+      }
+      if (c.windKmh != null) {
+        var bf = kmhToBf(c.windKmh);
+        var dir = (c.windDir != null && typeof degToCompass === "function") ? degToCompass(c.windDir) : "";
+        lines.push("Άνεμος " + Math.round(c.windKmh) + " km/h" + (bf != null ? " · " + bf + " bf" : "") + (dir ? " · " + dir : ""));
+      }
+      // tide phase from extrema / series
+      var phase = "";
+      var ext = data.tideExtrema || [];
+      var nowH = new Date().getHours() * 60 + new Date().getMinutes();
+      function toMin(hhmm) {
+        var pp = String(hhmm).split(":");
+        return parseInt(pp[0], 10) * 60 + parseInt(pp[1] || "0", 10);
+      }
+      if (ext.length) {
+        var next = null, prev = null;
+        for (var i = 0; i < ext.length; i++) {
+          var tm = toMin(ext[i].t);
+          if (tm <= nowH) prev = ext[i];
+          if (tm > nowH && !next) next = ext[i];
+        }
+        if (prev && next) {
+          phase = (prev.type === "High" || prev.type === "high") ? "Πτώση παλίρροιας" : "Άνοδος παλίρροιας";
+          phase += " · επόμενο " + (next.type === "High" || next.type === "high" ? "υψηλό" : "χαμηλό") + " " + next.t;
+        } else if (next) {
+          phase = "Προς " + (next.type === "High" || next.type === "high" ? "υψηλό" : "χαμηλό") + " " + next.t;
+        }
+      }
+      if (!phase && data.tidePts && data.tidePts.length >= 3) {
+        var a = data.tidePts[0], b = data.tidePts[Math.floor(data.tidePts.length / 2)], dlt = b - a;
+        if (dlt > 0.01) phase = "Άνοδος παλίρροιας";
+        else if (dlt < -0.01) phase = "Πτώση παλίρροιας";
+        else phase = "Σταθερή παλίρροια";
+      }
+      if (phase) lines.push(phase);
+      if (sea.wave != null) lines.push("Κύμα " + (Math.round(sea.wave * 10) / 10) + " m");
+      if (moon.pct != null) lines.push("Σελήνη " + Math.round(moon.pct) + "%");
+      if (slot === "morning") lines.push("Ανατολή " + rise);
+      if (slot === "evening" || slot === "gold") lines.push("Δύση " + set);
+      if (slot === "gold") lines.push("Gold hour · ±60′ γύρω από δύση");
+      if (slot === "night") lines.push("Νυχτερινό παράθυρο");
+      // unique keep order
+      var seen = {}, out = [];
+      lines.forEach(function (x) {
+        if (x && !seen[x]) { seen[x] = 1; out.push(x); }
+      });
+      return out.slice(0, 5);
+    }
+
     var morning = addMin(rise, -30) + "–" + addMin(rise, 90);
     var evening = addMin(set, -90) + "–" + addMin(set, 30);
-    var night = "23:00–00:30";
-    var sc = data && data.current ? computeScore(data) : { reasons: [] };
+    var gold = addMin(set, -60) + "–" + addMin(set, 30);
+    var night = "22:30–01:00";
+
+    var techs = [
+      {
+        id: "spinning",
+        name: "SPINNING",
+        window: morning.split("–")[0] + " · " + evening,
+        reasons: liveFactors("evening").slice(0, 2).concat(["Καλύτερο με φως · σκασμοί σε κίνηση"])
+      },
+      {
+        id: "english",
+        name: "ΕΓΓΛΕΖΙΚΟ",
+        window: evening + " · νύχτα",
+        reasons: liveFactors("evening").slice(0, 2).concat(["Πτώση/σταθερή παλίρροια ευνοεί"])
+      },
+      {
+        id: "lrf",
+        name: "LRF",
+        window: morning,
+        reasons: liveFactors("morning").slice(0, 2).concat(["Ήπιος άνεμος · ρηχά"])
+      },
+      {
+        id: "shore",
+        name: "SHORE JIG",
+        window: evening,
+        reasons: liveFactors("evening").slice(0, 2).concat(["Σούρουπο · δομές ακτής"])
+      }
+    ];
+
     return {
       morning: morning,
       evening: evening,
       night: night,
-      whyMorning: ["Κοντά στην ανατολή " + rise, "Χαμηλό φως", (sc.reasons[0] || "Ήπια δραστηριότητα")],
-      whyEvening: ["Προς δύση " + set, "Χρυσή ώρα", (sc.reasons[1] || sc.reasons[0] || "Αυξημένη δραστηριότητα")],
-      whyNight: ["Σκοτάδι", "Σελήνη " + ((data.moon && data.moon.pct) || "—") + "%", "Λιγότερη πίεση ανθρώπινης κίνησης"]
+      gold: gold,
+      whyMorning: liveFactors("morning"),
+      whyEvening: liveFactors("evening"),
+      whyNight: liveFactors("night"),
+      whyGold: liveFactors("gold"),
+      techniques: techs
     };
   }
 

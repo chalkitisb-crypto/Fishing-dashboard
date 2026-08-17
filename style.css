@@ -2725,3 +2725,42 @@ img.score-rod-live,
   -webkit-text-stroke: 0 !important;
   margin-top: 2px !important;
 }
+
+
+/* === Best hours v129 === */
+.best-line{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center}
+.best-line .sep{display:none}
+.best-tech-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;width:100%;margin-top:6px}
+.best-chip[data-why="morning"]{
+  background:rgba(245,197,66,.1)!important;border:1px solid rgba(245,197,66,.5)!important;color:#f5d76e!important
+}
+.best-chip[data-why="evening"]{
+  background:rgba(53,200,255,.1)!important;border:1px solid rgba(53,200,255,.55)!important;color:#7ad7ff!important
+}
+.best-chip[data-why="night"]{
+  background:rgba(140,120,255,.12)!important;border:1px solid rgba(180,160,255,.55)!important;color:#c4b5fd!important
+}
+.best-chip[data-why="gold"]{
+  background:rgba(255,180,40,.14)!important;border:1px solid rgba(255,200,60,.7)!important;color:#ffd56a!important;
+  box-shadow:0 0 12px rgba(255,180,40,.25)
+}
+.best-chip.best-tech{
+  background:rgba(0,200,160,.08)!important;border:1px solid rgba(0,220,180,.4)!important;color:#7dffd0!important;
+  font-size:10px!important;padding:4px 8px!important
+}
+.best-why{margin-top:8px;padding:10px 12px;border-radius:12px;font-size:12px}
+.best-why b{display:block;margin-bottom:6px;font-weight:700}
+.best-why ul{margin:0;padding-left:18px}
+.best-why--morning{background:rgba(245,197,66,.1)!important;border:1px solid rgba(245,197,66,.4)!important;color:#f0e0b0!important}
+.best-why--morning b{color:#f5c542!important}
+.best-why--evening{background:rgba(53,200,255,.1)!important;border:1px solid rgba(53,200,255,.4)!important;color:#cfefff!important}
+.best-why--evening b{color:#7ad7ff!important}
+.best-why--night{background:rgba(140,120,255,.12)!important;border:1px solid rgba(180,160,255,.4)!important;color:#e0d8ff!important}
+.best-why--night b{color:#c4b5fd!important}
+.best-why--gold{background:rgba(255,180,40,.12)!important;border:1px solid rgba(255,200,60,.5)!important;color:#ffe6a8!important}
+.best-why--gold b{color:#ffd56a!important}
+.best-why--tech{background:rgba(0,200,160,.1)!important;border:1px solid rgba(0,220,180,.4)!important;color:#c8fff0!important}
+.best-why--tech b{color:#7dffd0!important}
+/* work inside enlarged/modal card */
+.card.is-open .best-line,.card.modal-open .best-line,.card.expanded .best-line{pointer-events:auto}
+.card.is-open .best-chip,.card.modal-open .best-chip,.card.expanded .best-chip{pointer-events:auto;cursor:pointer}
