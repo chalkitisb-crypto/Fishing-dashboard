@@ -559,38 +559,127 @@
   }
 
   function computeTechniques(data, sc) {
+    /* Stars from same objective factors — technique-specific weights (diary) */
     sc = sc || computeScore(data);
-    var bf = kmhToBf((data.current && data.current.windKmh) || 0);
-    var wh = (data.sea && data.sea.wave != null) ? data.sea.wave : 0.6;
-    var h = new Date().getHours();
-    var isDawnDusk = (h >= 5 && h <= 8) || (h >= 17 && h <= 20);
+    var c = data.current || {};
+    var sea = data.sea || {};
+    var bf = kmhToBf(c.windKmh || 0);
+    var wh = sea.wave != null ? sea.wave : 0.5;
+    var ckn = sea.currentKn;
+    var p = c.pressure != null ? c.pressure : 1013;
+    var h = new Date().getHours() + new Date().getMinutes() / 60;
+    var sun = data.sun || {};
+    function parseHM(s) {
+      var pp = String(s || "6:30").split(":");
+      return parseInt(pp[0], 10) + parseInt(pp[1] || "0", 10) / 60;
+    }
+    var rise = parseHM(sun.rise || "06:30");
+    var set = parseHM(sun.set || "20:00");
+    var isDawn = h >= rise - 0.5 && h <= rise + 2;
+    var isDusk = h >= set - 1.5 && h <= set + 0.8;
+    var isEve = h >= 17 && h <= 21;
+    var isMorn = h >= 5 && h <= 10;
 
-    function clampStars(n) { return Math.max(1, Math.min(5, Math.round(n))); }
-
-    // Base from overall score, adjusted per technique
-    var base = sc.stars;
-    var list = [
-      {
-        id: "spinning",
-        stars: clampStars(base + (bf <= 3 ? 1 : 0) + (wh < 1.2 ? 0 : -1) + (isDawnDusk ? 0.5 : 0))
-      },
-      {
-        id: "lrf",
-        stars: clampStars(base + (bf <= 2 ? 1 : -1) + (wh < 0.6 ? 1 : -1))
-      },
-      {
-        id: "english",
-        stars: clampStars(base + (bf <= 3 ? 0.5 : -1) + (wh < 0.8 ? 1 : 0))
-      },
-      {
-        id: "shore",
-        stars: clampStars(base - 1 + (bf >= 3 && bf <= 5 ? 1 : 0) + (wh >= 0.8 ? 0.5 : -0.5))
+    function curScore() {
+      if (ckn == null) return (wh < 0.15 ? 2 : wh < 0.5 ? 6 : 5);
+      if (ckn < 0.06) return 2;
+      if (ckn < 0.2) return 6;
+      if (ckn <= 0.65) return 10;
+      if (ckn <= 1.1) return 5;
+      return 2;
+    }
+    function windScoreFor(tech) {
+      if (tech === "lrf") {
+        if (bf <= 1) return 8;
+        if (bf === 2) return 10;
+        if (bf === 3) return 5;
+        return 2;
       }
+      if (tech === "english") {
+        if (bf <= 1) return 4;
+        if (bf <= 3) return 10;
+        if (bf === 4) return 6;
+        return 2;
+      }
+      if (bf <= 1) return 3;
+      if (bf === 2 || bf === 3) return 10;
+      if (bf === 4) return 8;
+      if (bf === 5) return 4;
+      return 1;
+    }
+    function waveScoreFor(tech) {
+      if (tech === "lrf") {
+        if (wh < 0.25) return 10;
+        if (wh < 0.5) return 6;
+        return 2;
+      }
+      if (tech === "english") {
+        if (wh < 0.12) return 3;
+        if (wh < 0.6) return 10;
+        if (wh < 1.0) return 5;
+        return 2;
+      }
+      if (wh < 0.12) return 4;
+      if (wh < 0.8) return 10;
+      if (wh < 1.3) return 5;
+      return 1;
+    }
+    function tideScore() {
+      var f = sc.factors || {};
+      var tp = f.tidePts != null ? f.tidePts : 8;
+      return Math.max(0, Math.min(10, Math.round(tp * 10 / 18)));
+    }
+    function pressScore() {
+      if (p <= 1016) return 9;
+      if (p <= 1020) return 6;
+      if (p <= 1025) return 3;
+      return 2;
+    }
+    function hourScoreFor(tech) {
+      if (tech === "english") return isDusk || isEve ? 10 : isMorn ? 5 : 4;
+      if (tech === "lrf") return isMorn || isDawn ? 10 : isDusk ? 6 : 4;
+      if (tech === "spinning") return isDawn || isDusk || isEve ? 10 : isMorn ? 7 : 4;
+      if (tech === "shore") return isDusk || isEve ? 10 : isDawn ? 7 : 4;
+      return 5;
+    }
+
+    var cs = curScore();
+    var ts = tideScore();
+    var ps = pressScore();
+
+    function build(id, name, wCur, wWind, wWave, wTide, wPress, wHour) {
+      var pts =
+        cs * wCur +
+        windScoreFor(id) * wWind +
+        waveScoreFor(id) * wWave +
+        ts * wTide +
+        ps * wPress +
+        hourScoreFor(id) * wHour;
+      var maxP = 10 * (wCur + wWind + wWave + wTide + wPress + wHour);
+      var pct = maxP > 0 ? Math.round(100 * pts / maxP) : 0;
+      pct = Math.max(0, Math.min(100, pct));
+      var stars;
+      if (pct >= 85) stars = 5;
+      else if (pct >= 70) stars = 4;
+      else if (pct >= 55) stars = 3;
+      else if (pct >= 40) stars = 2;
+      else stars = 1;
+      return {
+        id: id,
+        name: name,
+        stars: stars,
+        label: STAR_LABEL[stars] || "Καλή",
+        pct: pct
+      };
+    }
+
+    var list = [
+      build("spinning", "SPINNING", 2.2, 1.8, 1.5, 2.0, 1.0, 1.5),
+      build("english", "ΕΓΓΛΕΖΙΚΟ", 2.0, 1.6, 1.8, 2.2, 1.2, 1.8),
+      build("lrf", "LRF", 1.5, 2.2, 2.0, 1.2, 1.0, 1.8),
+      build("shore", "SHORE JIG", 2.0, 2.0, 1.6, 2.0, 1.0, 1.6)
     ];
-    list.forEach(function (t) {
-      t.label = STAR_LABEL[t.stars] || "Καλή";
-    });
-    list.sort(function (a, b) { return b.stars - a.stars; });
+    list.sort(function (a, b) { return b.stars - a.stars || b.pct - a.pct; });
     return list;
   }
 

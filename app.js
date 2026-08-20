@@ -55,7 +55,7 @@ function __notifyMoon(pct, phaseTxt) {
     if (!root) return;
     root.innerHTML = windHours.map(function (h) {
       return '<article class="wh-cell wind-cell"><div class="wind-arrow ' + h.cls +
-        '" style="transform:rotate(' + (((h.deg || 0) + 180) % 360) + 'deg)">➤</div>' +
+        '" style="transform:rotate(' + (Number(h.deg) || 0) + 'deg)">▲</div>' +
         '<time>' + h.t + '</time><span class="lab">' + h.dir +
         '</span><strong>' + h.bf + '</strong></article>';
     }).join("");
@@ -66,7 +66,7 @@ function __notifyMoon(pct, phaseTxt) {
     if (!root) return;
     root.innerHTML = currentHours.map(function (h) {
       return '<article class="wh-cell"><div class="wind-arrow ' + h.cls +
-        '" style="transform:rotate(' + (((h.deg || 0) + 180) % 360) + 'deg)">➤</div>' +
+        '" style="transform:rotate(' + (Number(h.deg) || 0) + 'deg)">▲</div>' +
         '<time>' + h.t + '</time><span class="lab">' + h.dir +
         '</span><strong>' + h.kn + ' kn</strong></article>';
     }).join("");
@@ -549,18 +549,40 @@ function __notifyMoon(pct, phaseTxt) {
       var bfZ = windK < 2 ? 0 : windK < 6 ? 1 : windK < 12 ? 2 : windK < 20 ? 3 : windK < 29 ? 4 : windK < 39 ? 5 : 6;
       var dirZ = (data.current && data.current.windDir != null) ? Number(data.current.windDir) : null;
       var cknZ = data.sea && data.sea.currentKn;
-      var zTip;
-      if (bfZ >= 5) zTip = "υπήνεμη πλευρά · πίσω από βράχο";
-      else if (cknZ != null && cknZ < 0.08) zTip = "σημείο με ροή / αλλαγή παλίρροιας";
-      else if (cknZ != null && cknZ > 1.0) zTip = "υπήνεμο · λιγότερη φάτσα ρεύματος";
-      else if (bfZ >= 2 && bfZ <= 4) zTip = "ανοιχτή ακτή 2–6μ · δομές";
-      else zTip = "ακτή 2–4μ · δοκίμασε αλλαγή βάθους";
+      var whZ = data.sea && data.sea.wave;
+      var scZ = sc || {};
+      var dirs = ["Β", "ΒΑ", "Α", "ΝΑ", "Ν", "ΝΔ", "Δ", "ΒΔ"];
+      var parts = [];
+      // wind
       if (dirZ != null && !isNaN(dirZ)) {
-        var lee = (dirZ + 180) % 360;
-        var dirs = ["Β", "ΒΑ", "Α", "ΝΑ", "Ν", "ΝΔ", "Δ", "ΒΔ"];
-        var leeLab = dirs[Math.floor(((lee + 22.5) % 360) / 45)];
-        zTip = "υπήνεμο " + leeLab + " · " + zTip;
+        var fromLab = dirs[Math.floor(((dirZ + 22.5) % 360) / 45)];
+        var leeLab = dirs[Math.floor((((dirZ + 180) + 22.5) % 360) / 45)];
+        if (bfZ >= 5) parts.push("άνεμος " + bfZ + "bf από " + fromLab + " → ψάξε υπήνεμο " + leeLab);
+        else if (bfZ >= 2) parts.push("άνεμος " + bfZ + "bf " + fromLab + " · ακτή " + leeLab + " υπήνεμη");
+        else parts.push("άπνοια · δοκίμασε σημεία με ρεύμα");
+      } else if (bfZ >= 2) {
+        parts.push("άνεμος " + bfZ + " bf");
       }
+      // current
+      if (cknZ != null) {
+        if (cknZ < 0.08) parts.push("ρεύμα νεκρό · άλλαξε σε σημείο με ροή");
+        else if (cknZ <= 0.7) parts.push("ρεύμα " + Number(cknZ).toFixed(2) + " kn καλό");
+        else parts.push("ρεύμα δυνατό " + Number(cknZ).toFixed(2) + " kn · πίσω από δομή");
+      }
+      // tide from score reasons/factors
+      if (scZ.factors && scZ.factors.tide) {
+        var tshort = String(scZ.factors.tide).split("·")[0].trim();
+        if (tshort) parts.push(tshort);
+      }
+      // depth / structure tip
+      if (bfZ >= 5 || (cknZ != null && cknZ > 1.0)) parts.push("βάθος 1–3μ προστατευμένα");
+      else if ((scZ.score || 0) >= 70) parts.push("βάθος 2–6μ · δομές / ξέρες");
+      else parts.push("βάθος 2–4μ · δοκίμασε αλλαγή");
+      // technique hint from hour
+      var hh = new Date().getHours();
+      if (hh >= 17 && hh <= 21) parts.push("τώρα: εγγλέζικο / shore");
+      else if (hh >= 5 && hh <= 9) parts.push("τώρα: LRF / spinning");
+      var zTip = parts.slice(0, 4).join(" · ");
       $("zone-place").textContent = "📍 " + zName + " · " + zTip;
     }
     var sr = $("score-reasons");
