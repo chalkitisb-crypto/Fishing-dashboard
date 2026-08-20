@@ -1,3 +1,4 @@
+/* v150.0.0 ROOTFIX — rod pivot restore · GOLD HOUR PNG bg · zone horizontal 2D */
 /* v149.0.0 — arrows wind TO / current TOWARD · rod calibrated · GOLD HOUR ruby · zone */
 /* v148.0.0 GOLD HOUR ruby + zone horizontal + pin */
 
@@ -660,7 +661,7 @@ function __notifyMoon(pct, phaseTxt) {
         '<span class="sep"> · </span>' +
         '<button type="button" class="best-chip" data-why="evening">ΑΠΟΓΕΥΜΑ ' + bh.evening + "</button>" +
         '<span class="sep"> · </span>' +
-        '<button type="button" class="best-chip gold-hour" data-why="gold" style="background:linear-gradient(180deg,#FFF1A0,#FFD700 20%,#D4A017 70%,#B8860B)!important;border:2px solid #F5C542!important;color:#B71C1C!important;-webkit-text-fill-color:#B71C1C!important;font-weight:900!important;text-shadow:-1.5px -1.5px 0 #D4AF37,1.5px -1.5px 0 #D4AF37,-1.5px 1.5px 0 #D4AF37,1.5px 1.5px 0 #D4AF37;box-shadow:0 0 18px rgba(255,200,40,.7),inset 0 2px 0 rgba(255,255,255,.45);border-radius:999px;padding:7px 16px">GOLD HOUR ' + (bh.gold || "") + "</button>" +
+        '<button type="button" class="best-chip gold-hour" data-why="gold"><span class="gh-txt">GOLD HOUR</span> <span class="gh-time">' + (bh.gold || "") + "</span></button>" +
         '<span class="sep"> · </span>' +
         '<button type="button" class="best-chip" data-why="night">ΝΥΧΤΑ ' + bh.night + "</button>";
       if (bh.techniques && bh.techniques.length) {

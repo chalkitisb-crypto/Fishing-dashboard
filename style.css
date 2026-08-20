@@ -3227,3 +3227,141 @@ button.best-chip.gold-hour[data-why="gold"] {
   box-shadow: 0 0 18px rgba(255,200,40,.7), inset 0 2px 0 rgba(255,255,255,.45) !important;
   border-radius: 999px !important;
 }
+
+
+/* ========== v150 ROOTFIX — authoritative (must be last) ========== */
+
+/* --- ROD: pivot-based (DO NOT position rod relative to dial) --- */
+.score-wrap { overflow: visible !important; }
+.score-dial, #score-dial {
+  position: relative !important;
+  overflow: visible !important;
+  aspect-ratio: 1 / 1 !important;
+  max-width: 280px !important;
+  margin: 0 auto !important;
+}
+.score-pivot, #score-pivot {
+  position: absolute !important;
+  left: 50% !important;
+  top: 82.34% !important;
+  width: 0 !important;
+  height: 0 !important;
+  z-index: 5 !important;
+  pointer-events: none !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+.score-pivot .score-rod-live,
+#score-pivot .score-rod-live,
+#score-rod-arm {
+  position: absolute !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  right: auto !important;
+  width: 72px !important;
+  max-width: 72px !important;
+  max-height: none !important;
+  height: auto !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  object-fit: contain !important;
+  transform-origin: 50% 100% !important;
+  pointer-events: none !important;
+  z-index: 5 !important;
+  filter: drop-shadow(0 0 5px rgba(245,197,66,.35)) !important;
+}
+/* kill any left:50% bottom:16% width:56% from v149 */
+.score-dial > .score-rod-live { display: none !important; } /* only pivot child */
+
+/* --- GOLD HOUR: locked D2 metallic PNG background + RUBY text --- */
+#best-line .best-chip.gold-hour,
+button.best-chip.gold-hour,
+.best-chip.gold-hour[data-why="gold"] {
+  background-image: url("gold_hour_bg.png?v=150.0.0") !important;
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-color: #D4A017 !important;
+  border: none !important;
+  color: #B71C1C !important;
+  -webkit-text-fill-color: #B71C1C !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.04em !important;
+  text-shadow:
+    -1px -1px 0 #D4AF37,
+     1px -1px 0 #D4AF37,
+    -1px  1px 0 #D4AF37,
+     1px  1px 0 #D4AF37,
+     0 0 6px rgba(183,28,28,.45) !important;
+  box-shadow: 0 0 16px rgba(255, 200, 40, 0.55) !important;
+  border-radius: 999px !important;
+  padding: 8px 18px !important;
+  min-height: 36px !important;
+}
+.best-chip.gold-hour .gh-txt,
+.best-chip.gold-hour .gh-time {
+  color: #B71C1C !important;
+  -webkit-text-fill-color: #B71C1C !important;
+  font-weight: 900 !important;
+}
+
+/* --- ZONE: full-width horizontal like best-hours --- */
+.zone-card, .zone-card-h {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
+  min-height: 0 !important;
+}
+.zone-card .zone-body,
+.zone-card-h .zone-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 14px !important;
+  min-height: 130px !important;
+  padding: 4px 0 !important;
+}
+.zone-map-wrap {
+  position: relative !important;
+  flex: 1.3 1 0 !important;
+  min-width: 0 !important;
+  max-width: 62% !important;
+  aspect-ratio: 2 / 1 !important;
+  min-height: 120px !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(53,200,255,.4) !important;
+  background: #020b18 !important;
+  box-shadow: inset 0 0 20px rgba(53,200,255,.08) !important;
+}
+.zone-map, .zone-map-fill, img.zone-map {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  display: block !important;
+  background: #020b18 !important;
+}
+.zone-info {
+  flex: 1 1 0 !important;
+  min-width: 110px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+.zone-pin {
+  position: absolute !important;
+  width: 20px !important;
+  height: 20px !important;
+  margin-left: -10px !important;
+  margin-top: -20px !important;
+  z-index: 4 !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  filter: drop-shadow(0 0 6px rgba(255,60,60,.95));
+  pointer-events: none !important;
+}
+.zone-pin::after { content: "📍"; }
