@@ -55,7 +55,7 @@ function __notifyMoon(pct, phaseTxt) {
     if (!root) return;
     root.innerHTML = windHours.map(function (h) {
       return '<article class="wh-cell wind-cell"><div class="wind-arrow ' + h.cls +
-        '" style="transform:rotate(' + h.deg + 'deg)">➤</div>' +
+        '" style="transform:rotate(' + (((h.deg || 0) + 180) % 360) + 'deg)">➤</div>' +
         '<time>' + h.t + '</time><span class="lab">' + h.dir +
         '</span><strong>' + h.bf + '</strong></article>';
     }).join("");
@@ -66,7 +66,7 @@ function __notifyMoon(pct, phaseTxt) {
     if (!root) return;
     root.innerHTML = currentHours.map(function (h) {
       return '<article class="wh-cell"><div class="wind-arrow ' + h.cls +
-        '" style="transform:rotate(' + h.deg + 'deg)">➤</div>' +
+        '" style="transform:rotate(' + (((h.deg || 0) + 180) % 360) + 'deg)">➤</div>' +
         '<time>' + h.t + '</time><span class="lab">' + h.dir +
         '</span><strong>' + h.kn + ' kn</strong></article>';
     }).join("");
@@ -399,6 +399,8 @@ function __notifyMoon(pct, phaseTxt) {
     if (!arm) return;
     var s = Math.max(0, Math.min(100, Number(score) || 0));
     var deg = scoreToAngle(s);
+    // pivot = bottom center (βίδα) · 0° = πάνω · -90=αριστερά 0 · +90=δεξιά 100
+    arm.style.setProperty("transform-origin", "50% 100%", "important");
     var t = "translateX(-50%) rotate(" + deg + "deg)";
     if (instant) arm.style.setProperty("transition", "none", "important");
     else arm.style.setProperty("transition", "transform .95s cubic-bezier(.25,.8,.25,1)", "important");
@@ -541,8 +543,25 @@ function __notifyMoon(pct, phaseTxt) {
       bar.setAttribute("width", String((w / 100) * 200));
     }
     setActivityBrows(sc.activity);
-    if ($("zone-place") && data.location) {
-      $("zone-place").textContent = "📍 " + (data.location.name || "Κάλυμνος") + " · Νότια άκρη · 2–4μ";
+    if ($("zone-place")) {
+      var zName = (data.location && data.location.name) ? data.location.name : "Κάλυμνος";
+      var windK = (data.current && data.current.windKmh) || 0;
+      var bfZ = windK < 2 ? 0 : windK < 6 ? 1 : windK < 12 ? 2 : windK < 20 ? 3 : windK < 29 ? 4 : windK < 39 ? 5 : 6;
+      var dirZ = (data.current && data.current.windDir != null) ? Number(data.current.windDir) : null;
+      var cknZ = data.sea && data.sea.currentKn;
+      var zTip;
+      if (bfZ >= 5) zTip = "υπήνεμη πλευρά · πίσω από βράχο";
+      else if (cknZ != null && cknZ < 0.08) zTip = "σημείο με ροή / αλλαγή παλίρροιας";
+      else if (cknZ != null && cknZ > 1.0) zTip = "υπήνεμο · λιγότερη φάτσα ρεύματος";
+      else if (bfZ >= 2 && bfZ <= 4) zTip = "ανοιχτή ακτή 2–6μ · δομές";
+      else zTip = "ακτή 2–4μ · δοκίμασε αλλαγή βάθους";
+      if (dirZ != null && !isNaN(dirZ)) {
+        var lee = (dirZ + 180) % 360;
+        var dirs = ["Β", "ΒΑ", "Α", "ΝΑ", "Ν", "ΝΔ", "Δ", "ΒΔ"];
+        var leeLab = dirs[Math.floor(((lee + 22.5) % 360) / 45)];
+        zTip = "υπήνεμο " + leeLab + " · " + zTip;
+      }
+      $("zone-place").textContent = "📍 " + zName + " · " + zTip;
     }
     var sr = $("score-reasons");
     if (sr) {

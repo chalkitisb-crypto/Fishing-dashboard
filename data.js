@@ -356,9 +356,10 @@
   var STAR_LABEL = { 5: "Ιδανική", 4: "Πολύ καλή", 3: "Καλή", 2: "Μέτρια", 1: "Κακή" };
 
   function computeScore(data) {
-    /* Empirical weights from Kalymnos fishing log + live sessions
-       current 24, tide+cover 18, pressure 16, wind 12, wave 10, hour 8, moon 7, weather 5
-       Peaks: moderate current, wind 2-4 bf, pressure ~1010-1016 — NOT dead calm */
+    /* v137 objective (not artificially strict)
+       Weights from Kalymnos log: current 24, tide 18, pressure 16, wind 12,
+       wave 10, hour 8, moon 7, weather 5
+       Peaks at moderate current & wind 2-4 bf — natural curve, no keyOk caps */
     if (!data || !data.current) {
       return { score: 0, activity: 0, label: "Χωρίς δεδομένα", stars: 1, reasons: [], factors: {} };
     }
@@ -374,30 +375,33 @@
       return parseInt(pp[0], 10) * 60 + parseInt(pp[1] || "0", 10);
     }
 
-    // --- CURRENTS max 24 (peak: a bit above oil → moderate) ---
+    // CURRENTS max 24 — continuous curve, peak 0.28–0.60 kn
     var ckn = sea.currentKn;
     factors.currentKn = ckn;
     var curPts = 0;
     if (ckn == null) {
-      // no data: use wave as weak proxy for surface stillness
       var w0 = sea.wave != null ? sea.wave : 0.4;
-      if (w0 < 0.15) { curPts = 4; factors.currentLabel = "Εκτίμηση: σχεδόν λάδι"; }
-      else if (w0 < 0.5) { curPts = 12; factors.currentLabel = "Εκτίμηση: ήπια κίνηση"; }
+      if (w0 < 0.12) { curPts = 4; factors.currentLabel = "Εκτίμηση: λάδι"; }
+      else if (w0 < 0.45) { curPts = 11; factors.currentLabel = "Εκτίμηση: ήπια κίνηση"; }
       else { curPts = 8; factors.currentLabel = "Εκτίμηση: μέτρια"; }
-    } else if (ckn < 0.08) {
+    } else if (ckn < 0.06) {
       curPts = 3; factors.currentLabel = "Νεκρά/λάδι"; reasons.push("Ρεύμα σχεδόν μηδέν");
-    } else if (ckn < 0.2) {
-      curPts = 14; factors.currentLabel = "Ασθενές καλό"; reasons.push("Ασθενές ρεύμα " + ckn.toFixed(2) + " kn");
-    } else if (ckn <= 0.7) {
+    } else if (ckn < 0.18) {
+      curPts = 12; factors.currentLabel = "Ασθενές"; reasons.push("Ασθενές ρεύμα " + ckn.toFixed(2) + " kn");
+    } else if (ckn < 0.28) {
+      curPts = 18; factors.currentLabel = "Ασθενές-μέτριο"; reasons.push("Ρεύμα " + ckn.toFixed(2) + " kn");
+    } else if (ckn <= 0.60) {
       curPts = 24; factors.currentLabel = "Μέτριο ιδανικό"; reasons.push("Μέτριο ρεύμα " + ckn.toFixed(2) + " kn");
-    } else if (ckn <= 1.2) {
-      curPts = 12; factors.currentLabel = "Δυνατό"; reasons.push("Δυνατό ρεύμα " + ckn.toFixed(2) + " kn");
+    } else if (ckn <= 1.0) {
+      curPts = 14; factors.currentLabel = "Δυνατό"; reasons.push("Δυνατό ρεύμα " + ckn.toFixed(2) + " kn");
+    } else if (ckn <= 1.5) {
+      curPts = 7; factors.currentLabel = "Πολύ δυνατό"; reasons.push("Πολύ δυνατό ρεύμα");
     } else {
-      curPts = 2; factors.currentLabel = "Ακραίο/φάτσα"; reasons.push("Πολύ δυνατό ρεύμα");
+      curPts = 2; factors.currentLabel = "Ακραίο/φάτσα"; reasons.push("Ακραίο ρεύμα");
     }
     pts += curPts;
 
-    // --- TIDE + cover max 18 ---
+    // TIDE + cover max 18
     var tidePts = 0;
     var phase = "";
     var ext = data.tideExtrema || [];
@@ -423,7 +427,6 @@
       phase = rising ? "Άνοδος παλίρροιας" : "Πτώση παλίρροιας";
       var distNext = Math.abs(toMin(next.t) - nowH);
       var nearExt = Math.min(Math.abs(nowH - toMin(prev.t)), distNext) <= 50;
-      // movement mid-cycle best; near zenith/nadir also ok
       if (frac >= 0.2 && frac <= 0.85) tidePts = 12;
       else if (nearExt) tidePts = 10;
       else tidePts = 6;
@@ -435,7 +438,6 @@
     } else {
       tidePts = 5; phase = "Παλίρροια n/a";
     }
-    // cover bonus from diary: mid cover often better than max flat high
     if (coverProxy >= 25 && coverProxy <= 75) tidePts += 6;
     else if (coverProxy > 75) tidePts += 3;
     else tidePts += 2;
@@ -445,7 +447,7 @@
     factors.tidePts = tidePts;
     if (phase) reasons.push(phase);
 
-    // --- PRESSURE max 16 (data: <=1015 best) ---
+    // PRESSURE max 16 — data favored ~1010-1016
     var p = c.pressure != null ? c.pressure : 1013;
     factors.pressure = Math.round(p);
     var pPts = 0;
@@ -460,11 +462,11 @@
     else if (tr.indexOf("Πτώση") >= 0) pPts = Math.max(0, pPts - 1);
     pts += Math.min(16, pPts);
 
-    // --- WIND max 12 (peak 2-4 bf) ---
+    // WIND max 12 — peak 2-4 bf (objective curve)
     var bf = kmhToBf(c.windKmh || 0);
     factors.wind = bf;
     var wPts = 0;
-    if (bf <= 1) { wPts = 3; factors.windLabel = "Άπνοια"; reasons.push("Άπνοια — συχνά κολλάει"); }
+    if (bf <= 1) { wPts = 4; factors.windLabel = "Άπνοια"; reasons.push("Άπνοια"); }
     else if (bf === 2) { wPts = 10; factors.windLabel = "Ήπιος καλός"; reasons.push("Άνεμος 2 bf"); }
     else if (bf === 3) { wPts = 12; factors.windLabel = "Μέτριος ιδανικός"; reasons.push("Άνεμος 3 bf"); }
     else if (bf === 4) { wPts = 9; factors.windLabel = "Μέτριος-δυνατός"; reasons.push("Άνεμος 4 bf"); }
@@ -472,7 +474,7 @@
     else { wPts = 1; factors.windLabel = "Πολύ δυνατός"; reasons.push("Ισχυρός άνεμος"); }
     pts += wPts;
 
-    // --- WAVE max 10 (oil not best) ---
+    // WAVE max 10
     var wh = sea.wave != null ? sea.wave : 0.5;
     factors.wave = wh;
     var wavePts = 0;
@@ -483,7 +485,7 @@
     else { wavePts = 1; factors.waveLabel = "Δύσκολη"; reasons.push("Μεγάλο κύμα"); }
     pts += wavePts;
 
-    // --- HOUR max 8 ---
+    // HOUR max 8
     var h = new Date().getHours() + new Date().getMinutes() / 60;
     var sun = data.sun || {};
     function parseHM(s) {
@@ -501,7 +503,7 @@
     pts += timePts;
     factors.timePts = timePts;
 
-    // --- MOON max 7 (data: high % often weak — no big full-moon bonus) ---
+    // MOON max 7
     var m = moon.pct != null ? Number(moon.pct) : 50;
     factors.moon = m;
     var moonPts = 0;
@@ -510,34 +512,32 @@
     else { moonPts = 5; factors.moonLabel = "Μέτρια"; }
     pts += moonPts;
 
-    // --- WEATHER max 5 / penalties ---
+    // WEATHER
     var code = c.weatherCode || 0;
-    var wxPts = 5;
-    if (code >= 95) { wxPts = 0; reasons.push("Καταιγίδα"); pts = Math.max(0, pts - 12); }
-    else if (code >= 61) { wxPts = 1; reasons.push("Βροχή"); pts = Math.max(0, pts - 6); }
-    else if (code >= 51) { wxPts = 3; }
-    pts += wxPts;
+    if (code >= 95) { pts = Math.max(0, pts - 15); reasons.push("Καταιγίδα"); }
+    else if (code >= 61) { pts = Math.max(0, pts - 8); reasons.push("Βροχή"); }
+    else if (code >= 51) { pts = Math.max(0, pts - 3); }
+    else { pts += 5; }
 
     var score = Math.max(0, Math.min(100, Math.round(pts)));
 
-    // --- ACTIVITY independent: currents 30, tide 22, wave 12, wind 12, press 10, hour 8, moon 6 ---
+    // ACTIVITY independent — same objective curves, different emphasis
     var act = 0;
-    // currents scaled to 30
-    act += Math.round(curPts * (30 / 24));
-    act += Math.round(tidePts * (22 / 18));
+    act += Math.round(curPts * (28 / 24));
+    act += Math.round(tidePts * (20 / 18));
     if (wh >= 0.15 && wh < 0.7) act += 12;
     else if (wh < 0.15) act += 4;
     else if (wh < 1.2) act += 6;
     else act += 1;
     if (bf >= 2 && bf <= 4) act += 12;
-    else if (bf === 1 || bf === 5) act += 5;
-    else act += 2;
+    else if (bf <= 1) act += 4;
+    else if (bf === 5) act += 4;
+    else act += 1;
     if (p <= 1016) act += 10;
     else if (p <= 1020) act += 6;
-    else act += 3;
-    act += Math.round(timePts);
-    if (m >= 25 && m <= 65) act += 6;
-    else act += 3;
+    else act += 2;
+    act += Math.round(timePts * 0.75);
+    act += Math.round(moonPts * 0.6);
     if (code >= 61) act = Math.max(0, act - 10);
     var activity = Math.max(0, Math.min(100, Math.round(act)));
 
@@ -601,144 +601,138 @@
     var bf = kmhToBf(c.windKmh || 0);
     var alerts = [];
     var bh = computeBestHours(data);
+    var ckn = sea.currentKn;
 
-    if (sc.score >= 75) {
-      alerts.push({ cls: "a-green", type: "score", ico: "score", title: "ΚΑΛΟ ΠΑΡΑΘΥΡΟ", text: "Score " + sc.score + " · " + (sc.reasons[0] || "Ευνοϊκές συνθήκες") });
+    if (sc.score >= 80) {
+      alerts.push({ cls: "a-green", type: "score", ico: "score", title: "ΚΑΛΕΣ ΣΥΝΘΗΚΕΣ", text: "Score " + sc.score + " · " + (sc.reasons[0] || "ευνοϊκοί παράγοντες") });
+    } else if (sc.score >= 55) {
+      alerts.push({ cls: "a-cyan", type: "score", ico: "score", title: "ΜΕΤΡΙΕΣ-ΚΑΛΕΣ", text: "Score " + sc.score + " · δες GOLD / παλίρροια" });
+    } else {
+      alerts.push({ cls: "a-orange", type: "warn", ico: "warn", title: "ΔΥΣΚΟΛΕΣ ΣΥΝΘΗΚΕΣ", text: "Score " + sc.score + " · " + (sc.reasons[0] || "χαμηλοί παράγοντες") });
     }
+
+    if (ckn != null) {
+      if (ckn < 0.08) alerts.push({ cls: "a-orange", type: "fish", ico: "fish", title: "ΡΕΥΜΑ ΝΕΚΡΟ", text: ckn.toFixed(2) + " kn — ψάξε σημείο με ροή" });
+      else if (ckn >= 0.25 && ckn <= 0.7) alerts.push({ cls: "a-green", type: "fish", ico: "fish", title: "ΚΑΛΟ ΡΕΥΜΑ", text: ckn.toFixed(2) + " kn — καλή ζώνη τσιμπημάτων" });
+      else if (ckn > 1.1) alerts.push({ cls: "a-orange", type: "warn", ico: "warn", title: "ΔΥΝΑΤΟ ΡΕΥΜΑ", text: ckn.toFixed(2) + " kn — υπήνεμο / πίσω από δομή" });
+    }
+
     if (bf >= 5) {
-      alerts.push({ cls: "a-orange", type: "warn", ico: "warn", title: "ΑΝΕΜΟΣ", text: bf + " Μποφόρ — πρόσεξε ασφάλεια / σημείο" });
-    } else if (bf <= 2) {
-      alerts.push({ cls: "a-green", type: "wind", ico: "wind", title: "ΗΠΙΟΣ ΑΝΕΜΟΣ", text: bf + " Μποφόρ — ιδανικό για shore" });
+      alerts.push({ cls: "a-orange", type: "warn", ico: "warn", title: "ΑΝΕΜΟΣ", text: bf + " bf — υπήνεμη πλευρά · ασφάλεια" });
+    } else if (bf >= 2 && bf <= 4) {
+      alerts.push({ cls: "a-green", type: "wind", ico: "wind", title: "ΚΑΛΟΣ ΑΝΕΜΟΣ", text: bf + " bf — μέτριος άνεμος ευνοεί" });
+    } else if (bf <= 1) {
+      alerts.push({ cls: "a-orange", type: "wind", ico: "wind", title: "ΑΠΝΟΙΑ", text: "0–1 bf — συχνά χαμηλή δραστηριότητα" });
     }
-    var tr = data.pressureTrend || "";
-    if (tr.indexOf("Άνοδος") >= 0) {
-      alerts.push({ cls: "a-cyan", type: "score", ico: "score", title: "ΠΙΕΣΗ", text: "Ανεβαίνει — συχνά θετικό για δραστηριότητα" });
-    } else if (tr.indexOf("Πτώση") >= 0) {
-      alerts.push({ cls: "a-gold", type: "score", ico: "score", title: "ΠΙΕΣΗ", text: "Πέφτει — μπορεί να αλλάξει η δραστηριότητα" });
-    }
-    if (sea.wave != null && sea.wave >= 1.3) {
-      alerts.push({ cls: "a-orange", type: "fish", ico: "fish", title: "ΚΥΜΑ", text: sea.wave.toFixed(1) + " m — δύσκολες συνθήκες ακτής" });
-    }
-    if ((c.uv || 0) >= 7) {
-      alerts.push({ cls: "a-gold", type: "warn", ico: "warn", title: "UV ΥΨΗΛΟ", text: "Προστασία από τον ήλιο" });
-    }
-    if (data.moon && data.moon.pct >= 40 && data.moon.pct <= 70) {
-      alerts.push({ cls: "a-purple", type: "hours", ico: "hours", title: "ΣΕΛΗΝΗ", text: data.moon.pct + "% — ευνοϊκή περίοδος" });
-    }
-    var techs = computeTechniques(data, sc);
-    if (techs[0] && techs[0].stars >= 4) {
-      var names = { spinning: "SPINNING", lrf: "LRF", english: "ΕΓΓΛΕΖΙΚΟ", shore: "SHORE JIG" };
-      alerts.push({ cls: "a-green", type: "technique", ico: "technique", title: "ΤΕΧΝΙΚΗ", text: (names[techs[0].id] || techs[0].id) + " · " + techs[0].label });
-    }
-    alerts.push({ cls: "a-cyan", type: "hours", ico: "hours", title: "ΚΑΛΥΤΕΡΕΣ ΩΡΕΣ", text: "Απόγευμα " + bh.evening });
 
-    if (alerts.length > 6) alerts = alerts.slice(0, 6);
-    if (!alerts.length) {
-      alerts.push({ cls: "a-gold", ico: "ℹ️", title: "ΕΝΗΜΕΡΩΣΗ", text: "Συνθήκες μέτριες — δες Score για λεπτομέρειες" });
+    var tr = data.pressureTrend || "";
+    if (tr.indexOf("Πτώση") >= 0) {
+      alerts.push({ cls: "a-orange", type: "score", ico: "score", title: "ΠΙΕΣΗ ΠΤΩΣΗ", text: "Πίεση πέφτει — πιθανή αλλαγή καιρού" });
+    } else if (tr.indexOf("Άνοδος") >= 0 && c.pressure && c.pressure <= 1018) {
+      alerts.push({ cls: "a-green", type: "score", ico: "score", title: "ΠΙΕΣΗ ΑΝΟΔΟΣ", text: Math.round(c.pressure) + " hPa σε άνοδο" });
     }
-    return alerts;
+
+    if (bh && bh.gold) {
+      alerts.push({ cls: "a-gold", type: "hours", ico: "hours", title: "GOLD HOUR", text: bh.gold + " — δύση · εγγλέζικο / shore" });
+    }
+
+    return alerts.slice(0, 6);
   }
 
   function computeBestHours(data) {
     var sun = (data && data.sun) || {};
     var rise = sun.rise || "06:30";
     var set = sun.set || "20:00";
-    function addMin(hhmm, mins) {
-      var p = String(hhmm).split(":");
-      var t = parseInt(p[0], 10) * 60 + parseInt(p[1] || "0", 10) + mins;
-      if (t < 0) t += 24 * 60;
-      t = t % (24 * 60);
+    var c = (data && data.current) || {};
+    var sea = (data && data.sea) || {};
+    var bf = kmhToBf(c.windKmh || 0);
+    var wh = sea.wave != null ? sea.wave : 0.5;
+
+    function toMin(hhmm) {
+      var p = String(hhmm || "0:0").split(":");
+      return parseInt(p[0], 10) * 60 + parseInt(p[1] || "0", 10);
+    }
+    function fromMin(t) {
+      t = ((Math.round(t) % (24 * 60)) + 24 * 60) % (24 * 60);
       var h = Math.floor(t / 60), m = t % 60;
       return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
     }
-    function liveFactors(slot) {
-      var c = (data && data.current) || {};
-      var sea = (data && data.sea) || {};
-      var moon = (data && data.moon) || {};
-      var lines = [];
-      var p = c.pressure;
-      if (p != null) {
-        var tr = data.pressureTrend || "";
-        lines.push("Πίεση " + Math.round(p) + " hPa" + (tr && tr !== "—" ? " · " + tr.replace(/^[^Α-Ωα-ω↑↓→]+/, "").trim() : ""));
-      }
-      if (c.windKmh != null) {
-        var bf = kmhToBf(c.windKmh);
-        var dir = (c.windDir != null && typeof degToCompass === "function") ? degToCompass(c.windDir) : "";
-        lines.push("Άνεμος " + Math.round(c.windKmh) + " km/h" + (bf != null ? " · " + bf + " bf" : "") + (dir ? " · " + dir : ""));
-      }
-      // tide phase from extrema / series
-      var phase = "";
-      var ext = data.tideExtrema || [];
-      var nowH = new Date().getHours() * 60 + new Date().getMinutes();
-      function toMin(hhmm) {
-        var pp = String(hhmm).split(":");
-        return parseInt(pp[0], 10) * 60 + parseInt(pp[1] || "0", 10);
-      }
-      if (ext.length) {
-        var next = null, prev = null;
-        for (var i = 0; i < ext.length; i++) {
-          var tm = toMin(ext[i].t);
-          if (tm <= nowH) prev = ext[i];
-          if (tm > nowH && !next) next = ext[i];
-        }
-        if (prev && next) {
-          phase = (prev.type === "High" || prev.type === "high") ? "Πτώση παλίρροιας" : "Άνοδος παλίρροιας";
-          phase += " · επόμενο " + (next.type === "High" || next.type === "high" ? "υψηλό" : "χαμηλό") + " " + next.t;
-        } else if (next) {
-          phase = "Προς " + (next.type === "High" || next.type === "high" ? "υψηλό" : "χαμηλό") + " " + next.t;
+    function addMin(hhmm, mins) { return fromMin(toMin(hhmm) + mins); }
+
+    var ext = (data && data.tideExtrema) || [];
+    var tideCenters = [];
+    for (var i = 0; i < ext.length; i++) tideCenters.push(toMin(ext[i].t));
+    function nearestInBand(centers, a, b) {
+      var best = null, bestDist = 1e9;
+      for (var i = 0; i < centers.length; i++) {
+        var t = centers[i];
+        if (t >= a && t <= b) {
+          var d = Math.abs(t - (a + b) / 2);
+          if (d < bestDist) { bestDist = d; best = t; }
         }
       }
-      if (!phase && data.tidePts && data.tidePts.length >= 3) {
-        var a = data.tidePts[0], b = data.tidePts[Math.floor(data.tidePts.length / 2)], dlt = b - a;
-        if (dlt > 0.01) phase = "Άνοδος παλίρροιας";
-        else if (dlt < -0.01) phase = "Πτώση παλίρροιας";
-        else phase = "Σταθερή παλίρροια";
-      }
-      if (phase) lines.push(phase);
-      if (sea.wave != null) lines.push("Κύμα " + (Math.round(sea.wave * 10) / 10) + " m");
-      if (moon.pct != null) lines.push("Σελήνη " + Math.round(moon.pct) + "%");
-      if (slot === "morning") lines.push("Ανατολή " + rise);
-      if (slot === "evening" || slot === "gold") lines.push("Δύση " + set);
-      if (slot === "gold") lines.push("Gold hour · ±60′ γύρω από δύση");
-      if (slot === "night") lines.push("Νυχτερινό παράθυρο");
-      // unique keep order
-      var seen = {}, out = [];
-      lines.forEach(function (x) {
-        if (x && !seen[x]) { seen[x] = 1; out.push(x); }
-      });
-      return out.slice(0, 5);
+      return best;
     }
 
-    var morning = addMin(rise, -30) + "–" + addMin(rise, 90);
-    var evening = addMin(set, -90) + "–" + addMin(set, 30);
-    var gold = addMin(set, -60) + "–" + addMin(set, 30);
-    var night = "22:30–01:00";
+    var riseM = toMin(rise), setM = toMin(set);
+    var mornTide = nearestInBand(tideCenters, riseM - 60, riseM + 150);
+    var eveTide = nearestInBand(tideCenters, setM - 150, setM + 90);
+
+    var morningA = riseM - 30, morningB = riseM + 90;
+    if (mornTide != null) { morningA = mornTide - 70; morningB = mornTide + 40; }
+    if (bf >= 5 || wh >= 1.5) {
+      var mid = (morningA + morningB) / 2;
+      morningA = mid - 35; morningB = mid + 35;
+    }
+    var morning = fromMin(morningA) + "–" + fromMin(morningB);
+
+    var eveningA = setM - 90, eveningB = setM + 30;
+    if (eveTide != null) { eveningA = eveTide - 55; eveningB = eveTide + 50; }
+    if (bf >= 5 || wh >= 1.5) {
+      var midE = (eveningA + eveningB) / 2;
+      eveningA = midE - 35; eveningB = midE + 35;
+    }
+    var evening = fromMin(eveningA) + "–" + fromMin(eveningB);
+
+    var goldA = setM - 60, goldB = setM + 30;
+    if (eveTide != null && Math.abs(eveTide - setM) < 120) {
+      goldA = Math.min(goldA, eveTide - 40);
+      goldB = Math.max(goldB, eveTide + 25);
+    }
+    if (bf >= 4) { goldA += 15; goldB -= 10; }
+    var gold = fromMin(goldA) + "–" + fromMin(goldB);
+
+    var nightTide = nearestInBand(tideCenters, 21 * 60, 24 * 60 - 1);
+    if (nightTide == null) nightTide = nearestInBand(tideCenters, 0, 150);
+    var nightA = 22 * 60 + 30, nightB = 25 * 60;
+    if (nightTide != null) { nightA = nightTide - 50; nightB = nightTide + 80; }
+    var night = fromMin(nightA) + "–" + fromMin(nightB);
+
+    function liveFactors(slot) {
+      var lines = [];
+      if (c.pressure != null) {
+        var tr = data.pressureTrend || "";
+        lines.push("Πίεση " + Math.round(c.pressure) + " hPa" + (tr && tr !== "—" ? " · " + tr : ""));
+      }
+      if (c.windKmh != null) {
+        var dir = (c.windDir != null) ? degToCompass(c.windDir) : "";
+        lines.push("Άνεμος " + Math.round(c.windKmh) + " km/h · " + bf + " bf" + (dir ? " · " + dir : ""));
+      }
+      if (sea.currentKn != null) lines.push("Ρεύμα " + Number(sea.currentKn).toFixed(2) + " kn");
+      if (sea.wave != null) lines.push("Κύμα " + (Math.round(sea.wave * 10) / 10) + " m");
+      if (data.moon && data.moon.pct != null) lines.push("Σελήνη " + Math.round(data.moon.pct) + "%");
+      if (slot === "gold") lines.push("Gold hour · δύση ± παλίρροια");
+      if (slot === "night") lines.push("Νυχτερινό (παλίρροια)");
+      var seen = {}, outL = [];
+      lines.forEach(function (x) { if (x && !seen[x]) { seen[x] = 1; outL.push(x); } });
+      return outL.slice(0, 6);
+    }
 
     var techs = [
-      {
-        id: "spinning",
-        name: "SPINNING",
-        window: morning.split("–")[0] + " · " + evening,
-        reasons: liveFactors("evening").slice(0, 2).concat(["Καλύτερο με φως · σκασμοί σε κίνηση"])
-      },
-      {
-        id: "english",
-        name: "ΕΓΓΛΕΖΙΚΟ",
-        window: evening + " · νύχτα",
-        reasons: liveFactors("evening").slice(0, 2).concat(["Πτώση/σταθερή παλίρροια ευνοεί"])
-      },
-      {
-        id: "lrf",
-        name: "LRF",
-        window: morning,
-        reasons: liveFactors("morning").slice(0, 2).concat(["Ήπιος άνεμος · ρηχά"])
-      },
-      {
-        id: "shore",
-        name: "SHORE JIG",
-        window: evening,
-        reasons: liveFactors("evening").slice(0, 2).concat(["Σούρουπο · δομές ακτής"])
-      }
+      { id: "spinning", name: "SPINNING", window: fromMin(morningA) + " · " + evening, reasons: liveFactors("evening").slice(0, 3) },
+      { id: "english", name: "ΕΓΓΛΕΖΙΚΟ", window: evening, reasons: liveFactors("evening").slice(0, 3) },
+      { id: "lrf", name: "LRF", window: morning, reasons: liveFactors("morning").slice(0, 3) },
+      { id: "shore", name: "SHORE JIG", window: evening, reasons: liveFactors("evening").slice(0, 3) }
     ];
 
     return {
