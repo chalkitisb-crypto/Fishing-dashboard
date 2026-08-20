@@ -55,7 +55,7 @@ function __notifyMoon(pct, phaseTxt) {
     if (!root) return;
     root.innerHTML = windHours.map(function (h) {
       return '<article class="wh-cell wind-cell"><div class="wind-arrow ' + h.cls +
-        '" style="transform:rotate(' + (((Number(h.deg) || 0) + 180) % 360) + 'deg)">▲</div>' +
+        '" style="transform:rotate(' + ((Number(h.deg) || 0) % 360) + 'deg)">▲</div>' +
         '<time>' + h.t + '</time><span class="lab">' + h.dir +
         '</span><strong>' + h.bf + '</strong></article>';
     }).join("");
@@ -65,6 +65,7 @@ function __notifyMoon(pct, phaseTxt) {
     var root = $("current-hours");
     if (!root) return;
     root.innerHTML = currentHours.map(function (h) {
+      /* ocean current dir: arrow points TO flow (API FROM) → no +180 if wind uses +180 */
       return '<article class="wh-cell"><div class="wind-arrow ' + h.cls +
         '" style="transform:rotate(' + (((Number(h.deg) || 0) + 180) % 360) + 'deg)">▲</div>' +
         '<time>' + h.t + '</time><span class="lab">' + h.dir +
@@ -389,8 +390,13 @@ function __notifyMoon(pct, phaseTxt) {
 
   function scoreToAngle(score) {
     score = Math.max(0, Math.min(100, Number(score) || 0));
-    // 0 → -90° (red left), 50 → 0° (up), 100 → +90° (cyan right)
-    return -90 + (score / 100) * 180;
+    /* Gauge semicircle: 0 left · 50 up · 100 right
+       Artwork arc is ~176° effective (not full 180) + rod tip bias in PNG
+       → use 176° span and -0.5° center bias so 74 lands on 74 tick not past 75 */
+    /* v147: arc 172° + tip bias so 74 sits on tick, not past 75 */
+    var span = 172;
+    var start = -span / 2; // -86
+    return start + (score / 100) * span;
   }
 
           function setRodAngle(score, instant, root) {
@@ -401,7 +407,7 @@ function __notifyMoon(pct, phaseTxt) {
     var deg = scoreToAngle(s);
     // pivot = bottom center (βίδα) · 0° = πάνω · -90=αριστερά 0 · +90=δεξιά 100
     arm.style.setProperty("transform-origin", "50% 100%", "important");
-    var t = "translateX(-50%) rotate(" + deg + "deg)";
+    var t = "translateX(-50%) rotate(" + deg + "deg) scale(0.70)";
     if (instant) arm.style.setProperty("transition", "none", "important");
     else arm.style.setProperty("transition", "transform .95s cubic-bezier(.25,.8,.25,1)", "important");
     arm.style.setProperty("transform", t, "important");
@@ -549,41 +555,44 @@ function __notifyMoon(pct, phaseTxt) {
       var bfZ = windK < 2 ? 0 : windK < 6 ? 1 : windK < 12 ? 2 : windK < 20 ? 3 : windK < 29 ? 4 : windK < 39 ? 5 : 6;
       var dirZ = (data.current && data.current.windDir != null) ? Number(data.current.windDir) : null;
       var cknZ = data.sea && data.sea.currentKn;
-      var whZ = data.sea && data.sea.wave;
+      var cdegZ = data.sea && data.sea.currentDeg;
       var scZ = sc || {};
       var dirs = ["Β", "ΒΑ", "Α", "ΝΑ", "Ν", "ΝΔ", "Δ", "ΒΔ"];
-      var parts = [];
-      // wind
-      if (dirZ != null && !isNaN(dirZ)) {
-        var fromLab = dirs[Math.floor(((dirZ + 22.5) % 360) / 45)];
-        var leeLab = dirs[Math.floor((((dirZ + 180) + 22.5) % 360) / 45)];
-        if (bfZ >= 5) parts.push("άνεμος " + bfZ + "bf από " + fromLab + " → ψάξε υπήνεμο " + leeLab);
-        else if (bfZ >= 2) parts.push("άνεμος " + bfZ + "bf " + fromLab + " · ακτή " + leeLab + " υπήνεμη");
-        else parts.push("άπνοια · δοκίμασε σημεία με ρεύμα");
-      } else if (bfZ >= 2) {
-        parts.push("άνεμος " + bfZ + " bf");
+      function compass(d) {
+        if (d == null || isNaN(d)) return null;
+        return dirs[Math.floor((((Number(d) % 360) + 360 + 22.5) % 360) / 45)];
       }
-      // current
-      if (cknZ != null) {
-        if (cknZ < 0.08) parts.push("ρεύμα νεκρό · άλλαξε σε σημείο με ροή");
-        else if (cknZ <= 0.7) parts.push("ρεύμα " + Number(cknZ).toFixed(2) + " kn καλό");
-        else parts.push("ρεύμα δυνατό " + Number(cknZ).toFixed(2) + " kn · πίσω από δομή");
+      // Lee shore = opposite of wind FROM
+      var leeLab = dirZ != null ? compass(dirZ + 180) : null;
+      var windFrom = dirZ != null ? compass(dirZ) : null;
+      var flowTo = cdegZ != null ? compass(Number(cdegZ) + 180) : (cdegZ != null ? compass(cdegZ) : null);
+
+      var where = "";
+      if (bfZ >= 4 && leeLab) {
+        where = "Πήγαινε " + leeLab + " (υπήνεμο) · απόφυγε φάτσα " + (windFrom || "");
+      } else if (cknZ != null && cknZ < 0.1) {
+        where = "Πρόταση: ακτές με ροή · ΒΔ ή ΝΑ κολπίσκοι";
+      } else if (cknZ != null && cknZ > 0.9 && flowTo) {
+        where = "Δυνατό ρεύμα · στάσου πίσω από ακρωτήρι προς " + flowTo;
+      } else if (leeLab && bfZ >= 2) {
+        where = "Καλύτερη πλευρά: " + leeLab + " · υπήνεμες ακτές";
+      } else if ((scZ.score || 0) >= 70) {
+        where = "Πρόταση: Δυτικά (Μυρτιές–Αργινώντα) ή Νότια · καλές συνθήκες";
+      } else {
+        where = "Πρόταση: προστατευμένοι κολπίσκοι ΝΔ ή ΒΔ · δες ρεύμα";
       }
-      // tide from score reasons/factors
+
+      var parts = [where];
+      if (windFrom) parts.push("άνεμος από " + windFrom + " " + bfZ + "bf");
+      if (cknZ != null) parts.push("ρεύμα " + Number(cknZ).toFixed(2) + " kn");
       if (scZ.factors && scZ.factors.tide) {
         var tshort = String(scZ.factors.tide).split("·")[0].trim();
         if (tshort) parts.push(tshort);
       }
-      // depth / structure tip
-      if (bfZ >= 5 || (cknZ != null && cknZ > 1.0)) parts.push("βάθος 1–3μ προστατευμένα");
-      else if ((scZ.score || 0) >= 70) parts.push("βάθος 2–6μ · δομές / ξέρες");
-      else parts.push("βάθος 2–4μ · δοκίμασε αλλαγή");
-      // technique hint from hour
-      var hh = new Date().getHours();
-      if (hh >= 17 && hh <= 21) parts.push("τώρα: εγγλέζικο / shore");
-      else if (hh >= 5 && hh <= 9) parts.push("τώρα: LRF / spinning");
-      var zTip = parts.slice(0, 4).join(" · ");
-      $("zone-place").textContent = "📍 " + zName + " · " + zTip;
+      if ((scZ.score || 0) >= 70) parts.push("βάθος 2–6μ δομές");
+      else parts.push("βάθος 2–4μ");
+
+      $("zone-place").textContent = "📍 " + zName + " · " + parts.slice(0, 4).join(" · ");
     }
     var sr = $("score-reasons");
     if (sr) {
@@ -602,7 +611,7 @@ function __notifyMoon(pct, phaseTxt) {
         '<span class="sep"> · </span>' +
         '<button type="button" class="best-chip" data-why="evening">ΑΠΟΓΕΥΜΑ ' + bh.evening + "</button>" +
         '<span class="sep"> · </span>' +
-        '<button type="button" class="best-chip" data-why="gold">GOLD ' + (bh.gold || "") + "</button>" +
+        '<button type="button" class="best-chip gold-hour" data-why="gold">GOLD HOUR ' + (bh.gold || "") + "</button>" +
         '<span class="sep"> · </span>' +
         '<button type="button" class="best-chip" data-why="night">ΝΥΧΤΑ ' + bh.night + "</button>";
       if (bh.techniques && bh.techniques.length) {
@@ -691,12 +700,24 @@ function __notifyMoon(pct, phaseTxt) {
             '" alt=""/><div class="alert-text"><strong>' + (a.title || "") +
             '</strong><span>' + (a.text || a.detail || "") + '</span></div><span class="alert-chev">›</span></li>';
         }).join("");
-        root.querySelectorAll("li").forEach(function (li) {
-          function activate() {
+        root.querySelectorAll("li").forEach(function (li, idx) {
+          function activate(ev) {
+            if (ev) { ev.preventDefault(); ev.stopPropagation(); }
             li.classList.add("pressed");
-            setTimeout(function () { li.classList.remove("pressed"); }, 150);
+            setTimeout(function () { li.classList.remove("pressed"); }, 180);
+            var a = alerts[idx] || {};
+            var title = a.title || "ALERT";
+            var body = a.text || a.detail || "";
+            var tip = "";
+            if (a.type === "wind") tip = "Συμβουλή: ψάξε υπήνεμη πλευρά · πρόσεξε φάτσα.";
+            else if (a.type === "fish") tip = "Συμβουλή: ρεύμα + δομές · φυσική παρουσίαση δολώματος.";
+            else if (a.type === "hours") tip = "Συμβουλή: προετοιμάσου 15′ νωρίτερα στο σημείο.";
+            else if (a.type === "warn") tip = "Συμβουλή: ασφάλεια πρώτα · άλλαξε σημείο αν χρειάζεται.";
+            else tip = "Συμβουλή: δες score, παλίρροια και GOLD HOUR hour.";
+            showAppSheet(title, body + "\n\n" + tip);
           }
           li.addEventListener("click", activate);
+          li.style.cursor = "pointer";
         });
       }
     }
@@ -939,13 +960,99 @@ function __notifyMoon(pct, phaseTxt) {
     loadLive();
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function(){ init(); 
+
+  document.querySelectorAll(".tech").forEach(function (btn) {
+    if (btn.dataset.techInfoBound) return;
+    btn.dataset.techInfoBound = "1";
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      document.querySelectorAll(".tech").forEach(function (b) { b.classList.remove("selected"); });
+      btn.classList.add("selected");
+      var id = btn.getAttribute("data-tech") || "";
+      techInfo(id);
+    });
+  });
+
+  });
+  if (document.readyState !== "loading") { init(); 
+  document.querySelectorAll(".tech").forEach(function (btn) {
+    if (btn.dataset.techInfoBound) return;
+    btn.dataset.techInfoBound = "1";
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      document.querySelectorAll(".tech").forEach(function (b) { b.classList.remove("selected"); });
+      btn.classList.add("selected");
+      var id = btn.getAttribute("data-tech") || "";
+      techInfo(id);
+    });
+  });
+ }
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./service-worker.js?v=34").catch(function () {});
   }
   // v43: open card in large modal (2-3x feel)
+  
+  
+  function techInfo(id) {
+    var map = {
+      spinning: {
+        title: "SPINNING",
+        body: "Τεχνητά (soft bait / hard bait) σε κίνηση.\\nΙδανικό: μέτριο ρεύμα, αυγή/δύση, άνεμος 2–4 bf.\\nΔολώματα: soft jerk, minnow, surface.\\nΣυμβουλή: ψάξε δομές και αλλαγές βάθους."
+      },
+      lrf: {
+        title: "LRF",
+        body: "Light Rock Fishing — λεπτά πετονιά / μικρά τεχνητά.\\nΙδανικό: ήρεμη θάλασσα, ελαφρύς άνεμος, πρωί.\\nΔολώματα: micro jigs, tiny soft baits.\\nΣυμβουλή: άνεμος στην πλάτη, φυσική παρουσίαση."
+      },
+      english: {
+        title: "ΕΓΓΛΕΖΙΚΟ",
+        body: "Φελλός / φυσικό δόλωμα (ζυμάρι, γαρίδα).\\nΙδανικό: ήπιο–μέτριο κύμα, παλίρροια σε κίνηση, δύση.\\nΔολώματα: ζυμάρι, γαρίδα, ψαροτροφή.\\nΣυμβουλή: ψάξε ρεύμα στην άκρη της φάτσας."
+      },
+      shore: {
+        title: "SHORE JIGGING",
+        body: "Μεταλλικά / jigs από την ακτή.\\nΙδανικό: μέτριος άνεμος, ρεύμα, δύση/βράδυ.\\nΔολώματα: shore jigs 10–40g.\\nΣυμβουλή: ρίξε κατά μήκος ρεύματος, όχι κόντρα σε ακραίο."
+      },
+      shore_jig: {
+        title: "SHORE JIGGING",
+        body: "Μεταλλικά / jigs από την ακτή.\\nΙδανικό: μέτριος άνεμος, ρεύμα, δύση/βράδυ.\\nΔολώματα: shore jigs 10–40g."
+      }
+    };
+    var t = map[id] || { title: id, body: "Πληροφορίες τεχνικής." };
+    showAppSheet(t.title, t.body);
+  }
+
+  
+  function openCalendarSheet() {
+    var data = window.__fdLastData;
+    if (!data || !window.FDData || !FDData.computeTomorrowCompare) {
+      if (typeof showAppSheet === "function") showAppSheet("ΗΜΕΡΟΛΟΓΙΟ", "Φόρτωση δεδομένων… δοκίμασε σε λίγο.");
+      return;
+    }
+    var cmp = FDData.computeTomorrowCompare(data);
+    var t = cmp.today || {};
+    var m = cmp.tomorrow || {};
+    var body = "ΣΗΜΕΡΑ\nScore " + (t.score != null ? t.score : "—") + " · Activity " + (t.activity != null ? t.activity : "—") +
+      "%\n\nΑΥΡΙΟ (εκτίμηση)\nScore " + (m.score != null ? m.score : "—") + " · Activity " + (m.activity != null ? m.activity : "—") +
+      "%\n\n→ " + (m.label || "παρόμοια") +
+      "\n\nΟι καλύτερες ώρες μετατοπίζονται ~40–50′ με την παλίρροια.";
+    showAppSheet("ΗΜΕΡΟΛΟΓΙΟ · Σήμερα vs Αύριο", body);
+  }
+
+  function showAppSheet(title, text) {
+    var existing = document.getElementById("app-sheet");
+    if (existing) existing.remove();
+    var el = document.createElement("div");
+    el.id = "app-sheet";
+    el.innerHTML = '<div class="app-sheet-bg"></div><div class="app-sheet-panel"><div class="app-sheet-h">' +
+      (title || "") + '</div><div class="app-sheet-b">' + String(text || "").replace(/\\n/g, "<br/>") +
+      '</div><button type="button" class="app-sheet-x">Κλείσιμο</button></div>';
+    document.body.appendChild(el);
+    function close() { el.remove(); }
+    el.querySelector(".app-sheet-bg").addEventListener("click", close);
+    el.querySelector(".app-sheet-x").addEventListener("click", close);
+  }
+
   function openWidgetModal(card) {
     var modal = $("widget-modal");
     var body = $("widget-modal-body");
@@ -974,14 +1081,31 @@ function __notifyMoon(pct, phaseTxt) {
     if (modal) modal.hidden = true;
     document.body.style.overflow = "";
   }
+  /* single click: close modal only · double click card: expand */
   document.addEventListener("click", function (e) {
     if (e.target.closest("#widget-modal-close, #widget-modal-backdrop")) {
       closeWidgetModal();
-      return;
     }
+  });
+  
+  document.querySelectorAll(".nav-item, .menu-item, button").forEach(function (btn) {
+    var t = ((btn.textContent || "") + " " + (btn.getAttribute("aria-label") || "")).toLowerCase();
+    if (/ημερολ|calendar|calend/.test(t) || btn.dataset.nav === "calendar") {
+      if (btn.dataset.calBound) return;
+      btn.dataset.calBound = "1";
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openCalendarSheet();
+      });
+    }
+  });
+
+  document.addEventListener("dblclick", function (e) {
+    if (e.target.closest("#widget-modal")) return;
+    if (e.target.closest("button, a, input, .alert-item, .tech, .best-chip")) return;
     var card = e.target.closest && e.target.closest(".main .card");
     if (!card) return;
-    if (e.target.closest("button, a, input, .alert-item")) return;
     openWidgetModal(card);
   });
 })();

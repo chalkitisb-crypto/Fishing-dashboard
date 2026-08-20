@@ -2940,3 +2940,155 @@ img.score-rod-live,
   box-shadow: 0 0 14px rgba(53,200,255,.35), inset 0 0 20px rgba(53,200,255,.08) !important;
   border-radius: 10px !important;
 }
+
+/* v143 rod shorter inside gauge */
+.score-rod-live, #score-rod-arm {
+  transform-origin: 50% 100% !important;
+}
+.score-wrap img.score-rod-live, .score-dial img.score-rod-live {
+  width: 70% !important;
+  height: auto !important;
+  max-height: 70% !important;
+  left: 15% !important;
+  bottom: 14% !important;
+  top: auto !important;
+  object-fit: contain !important;
+}
+
+/* v143 zone rectangular + sheet + gold */
+.zone-card {
+  min-height: 0 !important;
+}
+.zone-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  min-height: 120px !important;
+}
+.zone-map, .zone-map-fill {
+  width: 48% !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 110px !important;
+  object-fit: contain !important;
+  border-radius: 8px !important;
+}
+.zone-info {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+.zone-place {
+  font-size: 11px !important;
+  line-height: 1.4 !important;
+}
+.app-sheet-bg {
+  position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 9998;
+}
+.app-sheet-panel {
+  position: fixed; left: 50%; bottom: 0; transform: translateX(-50%);
+  width: min(100%, 420px); max-height: 70vh; overflow: auto;
+  background: #071525; border: 1px solid rgba(53,200,255,.35);
+  border-radius: 16px 16px 0 0; padding: 16px 18px 22px; z-index: 9999;
+  box-shadow: 0 -8px 40px rgba(0,0,0,.5);
+}
+.app-sheet-h {
+  font-size: 16px; font-weight: 800; color: #f5c542; margin-bottom: 10px;
+}
+.app-sheet-b {
+  font-size: 13px; color: #c8e7ff; line-height: 1.45; white-space: pre-wrap;
+}
+.app-sheet-x {
+  margin-top: 14px; width: 100%; padding: 10px; border-radius: 10px;
+  border: 1px solid rgba(53,200,255,.35); background: rgba(53,200,255,.12);
+  color: #e8f4ff; font-weight: 700; cursor: pointer;
+}
+/* GOLD hour: deep sunset red-orange (not yellow) */
+.best-chip.gold, .best-chip[data-why="gold"], #best-hours .gold,
+button.best-chip.gold-hour, .bh-gold {
+  background: linear-gradient(135deg, #ff3b1f, #ff7a18) !important;
+  border-color: #ff5a20 !important;
+  color: #fff !important;
+  box-shadow: 0 0 12px rgba(255,80,30,.45) !important;
+}
+
+/* v144 GOLD HOUR default = A sunset red */
+.best-chip.gold-hour, button.gold-hour {
+  background: linear-gradient(135deg, #E6351A, #FF6A2A) !important;
+  border: 1px solid #FF5A20 !important;
+  color: #fff !important;
+  box-shadow: 0 0 14px rgba(230, 53, 26, 0.5) !important;
+  font-weight: 800 !important;
+}
+
+/* v145 rod calibration — tip stays on arc, shorter */
+.score-rod-live, #score-rod-arm {
+  transform-origin: 50% 100% !important;
+}
+.score-wrap img.score-rod-live, .score-dial img.score-rod-live {
+  width: 68% !important;
+  max-height: 68% !important;
+  left: 16% !important;
+  bottom: 15% !important;
+  top: auto !important;
+  object-fit: contain !important;
+}
+
+/* v146 GOLD HOUR = D2 metallic gold · γράμματα μαύρα (default) */
+.best-chip.gold-hour,
+button.gold-hour,
+#best-hours .gold-hour {
+  background: linear-gradient(135deg, #D4A017 0%, #FFD700 45%, #F5C542 70%, #C9A227 100%) !important;
+  border: 1px solid #E8C547 !important;
+  color: #0a0a0a !important;
+  font-weight: 900 !important;
+  text-shadow: none !important;
+  box-shadow: 0 0 14px rgba(255, 200, 40, 0.55), inset 0 1px 0 rgba(255,255,255,.35) !important;
+}
+.best-chip.gold-hour.letters-navy { color: #0a1628 !important; }
+.best-chip.gold-hour.letters-cyan { color: #0a3a4a !important; }
+.best-chip.gold-hour.letters-bronze { color: #4a3010 !important; }
+.best-chip.gold-hour.letters-white { color: #fff !important; text-shadow: 0 1px 2px rgba(0,0,0,.35) !important; }
+
+
+/* ===== v147 GOLD HOUR locked: D2 metallic gold + RUBY letters ===== */
+.best-chip.gold-hour,
+button.gold-hour,
+#best-hours .gold-hour,
+.best-chip[data-why="gold"] {
+  background: linear-gradient(180deg, #FFE566 0%, #FFD700 22%, #E8B923 55%, #C9A227 82%, #A8861A 100%) !important;
+  border: 2px solid #F5C542 !important;
+  color: #C41E3A !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.04em !important;
+  text-shadow:
+    -1px -1px 0 #D4AF37,
+     1px -1px 0 #D4AF37,
+    -1px  1px 0 #D4AF37,
+     1px  1px 0 #D4AF37,
+     0 0 6px rgba(196, 30, 58, 0.55) !important;
+  box-shadow:
+    0 0 18px rgba(255, 200, 40, 0.65),
+    0 0 6px rgba(255, 215, 0, 0.4),
+    inset 0 1px 0 rgba(255,255,255,0.45),
+    inset 0 -2px 4px rgba(120, 80, 0, 0.35) !important;
+  border-radius: 999px !important;
+  padding: 6px 14px !important;
+}
+.best-chip.gold-hour:active,
+button.gold-hour:active {
+  filter: brightness(1.08);
+}
+
+/* v147 rod shorter inside gauge */
+.score-rod-live, #score-rod-arm {
+  transform-origin: 50% 100% !important;
+  width: 62% !important;
+  max-height: 62% !important;
+}
+.score-wrap img.score-rod-live, .score-dial img.score-rod-live {
+  width: 62% !important;
+  max-height: 62% !important;
+}

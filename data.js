@@ -1,3 +1,4 @@
+/* v147.0.0 */
 /* Fishing Dashboard — Stage 1 data layer
    Primary: Open-Meteo | Secondary (later): Poseidon HCMR
 */
@@ -705,7 +706,34 @@
     return list;
   }
 
-  function computeAlerts(data, sc) {
+  
+  function computeTomorrowCompare(data) {
+    var today = computeScore(data);
+    var act = computeActivity(data);
+    var tScore = today.score;
+    try {
+      var trend = 0;
+      if (data.pressurePts && data.pressurePts.length >= 2) {
+        trend = data.pressurePts[data.pressurePts.length - 1] - data.pressurePts[0];
+      }
+      if (trend < -1) tScore += 4;
+      else if (trend > 2) tScore -= 3;
+      tScore = Math.max(0, Math.min(100, Math.round(tScore)));
+    } catch (e) {}
+    var diff = tScore - today.score;
+    var label = diff >= 5 ? "Αύριο καλύτερα" : diff <= -5 ? "Σήμερα καλύτερα" : "Παρόμοια";
+    return {
+      today: { score: today.score, activity: act.pct },
+      tomorrow: {
+        score: tScore,
+        activity: Math.max(0, Math.min(100, act.pct + Math.round(diff * 0.6))),
+        label: label,
+        diff: diff
+      }
+    };
+  }
+
+function computeAlerts(data, sc) {
     sc = sc || computeScore(data);
     var c = data.current || {};
     var sea = data.sea || {};
@@ -893,6 +921,7 @@
     fetchPoseidon: function () { return Promise.resolve(null); },
     computeScore: computeScore,
     computeTechniques: computeTechniques,
+    computeTomorrowCompare: computeTomorrowCompare,
     computeAlerts: computeAlerts,
     computeBestHours: computeBestHours,
     STAR_LABEL: STAR_LABEL
