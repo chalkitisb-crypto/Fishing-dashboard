@@ -2931,3 +2931,12 @@ img.score-rod-live,
   line-height:1.35!important;
   color:#9fdfff!important;
 }
+
+/* v142 Kalymnos map glow */
+.zone-map, .zone-map-fill {
+  object-fit: contain !important;
+  background: #020b18 !important;
+  border: 1px solid rgba(53,200,255,.45) !important;
+  box-shadow: 0 0 14px rgba(53,200,255,.35), inset 0 0 20px rgba(53,200,255,.08) !important;
+  border-radius: 10px !important;
+}

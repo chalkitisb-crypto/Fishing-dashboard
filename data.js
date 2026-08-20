@@ -559,7 +559,7 @@
   }
 
   function computeTechniques(data, sc) {
-    /* Stars from same objective factors — technique-specific weights (diary) */
+    /* Stricter stars — not all ideal; technique-specific peaks */
     sc = sc || computeScore(data);
     var c = data.current || {};
     var sea = data.sea || {};
@@ -579,68 +579,89 @@
     var isDusk = h >= set - 1.5 && h <= set + 0.8;
     var isEve = h >= 17 && h <= 21;
     var isMorn = h >= 5 && h <= 10;
+    var isMid = h > 10 && h < 16;
 
     function curScore() {
-      if (ckn == null) return (wh < 0.15 ? 2 : wh < 0.5 ? 6 : 5);
-      if (ckn < 0.06) return 2;
-      if (ckn < 0.2) return 6;
-      if (ckn <= 0.65) return 10;
-      if (ckn <= 1.1) return 5;
-      return 2;
+      if (ckn == null) return (wh < 0.15 ? 1 : wh < 0.45 ? 5 : 4);
+      if (ckn < 0.06) return 1;
+      if (ckn < 0.18) return 5;
+      if (ckn <= 0.55) return 10;
+      if (ckn <= 1.0) return 4;
+      return 1;
     }
     function windScoreFor(tech) {
       if (tech === "lrf") {
-        if (bf <= 1) return 8;
+        if (bf <= 1) return 7;
         if (bf === 2) return 10;
-        if (bf === 3) return 5;
-        return 2;
+        if (bf === 3) return 4;
+        return 1;
       }
       if (tech === "english") {
-        if (bf <= 1) return 4;
+        if (bf <= 1) return 3;
         if (bf <= 3) return 10;
-        if (bf === 4) return 6;
-        return 2;
+        if (bf === 4) return 5;
+        return 1;
       }
-      if (bf <= 1) return 3;
+      if (bf <= 1) return 2;
       if (bf === 2 || bf === 3) return 10;
-      if (bf === 4) return 8;
-      if (bf === 5) return 4;
-      return 1;
+      if (bf === 4) return 7;
+      if (bf === 5) return 3;
+      return 0;
     }
     function waveScoreFor(tech) {
       if (tech === "lrf") {
-        if (wh < 0.25) return 10;
-        if (wh < 0.5) return 6;
-        return 2;
+        if (wh < 0.2) return 10;
+        if (wh < 0.4) return 5;
+        return 1;
       }
       if (tech === "english") {
-        if (wh < 0.12) return 3;
-        if (wh < 0.6) return 10;
-        if (wh < 1.0) return 5;
-        return 2;
+        if (wh < 0.1) return 2;
+        if (wh < 0.55) return 10;
+        if (wh < 0.9) return 4;
+        return 1;
       }
-      if (wh < 0.12) return 4;
-      if (wh < 0.8) return 10;
-      if (wh < 1.3) return 5;
-      return 1;
+      if (wh < 0.1) return 3;
+      if (wh < 0.75) return 10;
+      if (wh < 1.2) return 4;
+      return 0;
     }
     function tideScore() {
       var f = sc.factors || {};
-      var tp = f.tidePts != null ? f.tidePts : 8;
+      var tp = f.tidePts != null ? f.tidePts : 6;
       return Math.max(0, Math.min(10, Math.round(tp * 10 / 18)));
     }
     function pressScore() {
-      if (p <= 1016) return 9;
-      if (p <= 1020) return 6;
-      if (p <= 1025) return 3;
-      return 2;
+      if (p <= 1014) return 9;
+      if (p <= 1018) return 6;
+      if (p <= 1022) return 3;
+      return 1;
     }
     function hourScoreFor(tech) {
-      if (tech === "english") return isDusk || isEve ? 10 : isMorn ? 5 : 4;
-      if (tech === "lrf") return isMorn || isDawn ? 10 : isDusk ? 6 : 4;
-      if (tech === "spinning") return isDawn || isDusk || isEve ? 10 : isMorn ? 7 : 4;
-      if (tech === "shore") return isDusk || isEve ? 10 : isDawn ? 7 : 4;
-      return 5;
+      if (tech === "english") {
+        if (isDusk || isEve) return 10;
+        if (isMorn) return 4;
+        if (isMid) return 2;
+        return 3;
+      }
+      if (tech === "lrf") {
+        if (isMorn || isDawn) return 10;
+        if (isDusk) return 5;
+        if (isMid) return 2;
+        return 3;
+      }
+      if (tech === "spinning") {
+        if (isDawn || isDusk) return 10;
+        if (isEve || isMorn) return 6;
+        if (isMid) return 2;
+        return 3;
+      }
+      if (tech === "shore") {
+        if (isDusk || isEve) return 10;
+        if (isDawn) return 6;
+        if (isMid) return 2;
+        return 3;
+      }
+      return 4;
     }
 
     var cs = curScore();
@@ -658,11 +679,12 @@
       var maxP = 10 * (wCur + wWind + wWave + wTide + wPress + wHour);
       var pct = maxP > 0 ? Math.round(100 * pts / maxP) : 0;
       pct = Math.max(0, Math.min(100, pct));
+      // STRICT thresholds — 5 only near peak
       var stars;
-      if (pct >= 85) stars = 5;
-      else if (pct >= 70) stars = 4;
+      if (pct >= 88) stars = 5;
+      else if (pct >= 72) stars = 4;
       else if (pct >= 55) stars = 3;
-      else if (pct >= 40) stars = 2;
+      else if (pct >= 38) stars = 2;
       else stars = 1;
       return {
         id: id,
@@ -674,10 +696,10 @@
     }
 
     var list = [
-      build("spinning", "SPINNING", 2.2, 1.8, 1.5, 2.0, 1.0, 1.5),
-      build("english", "ΕΓΓΛΕΖΙΚΟ", 2.0, 1.6, 1.8, 2.2, 1.2, 1.8),
-      build("lrf", "LRF", 1.5, 2.2, 2.0, 1.2, 1.0, 1.8),
-      build("shore", "SHORE JIG", 2.0, 2.0, 1.6, 2.0, 1.0, 1.6)
+      build("spinning", "SPINNING", 2.2, 1.8, 1.5, 2.0, 1.0, 2.2),
+      build("english", "ΕΓΓΛΕΖΙΚΟ", 2.0, 1.6, 1.8, 2.2, 1.2, 2.4),
+      build("lrf", "LRF", 1.4, 2.4, 2.2, 1.2, 1.0, 2.4),
+      build("shore", "SHORE JIG", 2.0, 2.0, 1.6, 2.0, 1.0, 2.2)
     ];
     list.sort(function (a, b) { return b.stars - a.stars || b.pct - a.pct; });
     return list;
@@ -746,17 +768,20 @@
       var h = Math.floor(t / 60), m = t % 60;
       return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
     }
-    function addMin(hhmm, mins) { return fromMin(toMin(hhmm) + mins); }
 
     var ext = (data && data.tideExtrema) || [];
     var tideCenters = [];
     for (var i = 0; i < ext.length; i++) tideCenters.push(toMin(ext[i].t));
+
     function nearestInBand(centers, a, b) {
       var best = null, bestDist = 1e9;
       for (var i = 0; i < centers.length; i++) {
         var t = centers[i];
-        if (t >= a && t <= b) {
-          var d = Math.abs(t - (a + b) / 2);
+        // allow wrap
+        var tt = t;
+        if (b > 24*60 && t < 6*60) tt = t + 24*60;
+        if (tt >= a && tt <= b) {
+          var d = Math.abs(tt - (a + b) / 2);
           if (d < bestDist) { bestDist = d; best = t; }
         }
       }
@@ -764,37 +789,54 @@
     }
 
     var riseM = toMin(rise), setM = toMin(set);
-    var mornTide = nearestInBand(tideCenters, riseM - 60, riseM + 150);
-    var eveTide = nearestInBand(tideCenters, setM - 150, setM + 90);
 
-    var morningA = riseM - 30, morningB = riseM + 90;
-    if (mornTide != null) { morningA = mornTide - 70; morningB = mornTide + 40; }
-    if (bf >= 5 || wh >= 1.5) {
+    // Prefer tide extrema as window centers when available (±80 min) — daily shift ~40-50 min
+    var mornTide = nearestInBand(tideCenters, riseM - 90, riseM + 180);
+    var eveTide = nearestInBand(tideCenters, setM - 180, setM + 120);
+    var nightTide = nearestInBand(tideCenters, 20 * 60, 26 * 60);
+    if (nightTide == null) nightTide = nearestInBand(tideCenters, 0, 180);
+
+    var morningA, morningB;
+    if (mornTide != null) {
+      morningA = mornTide - 75;
+      morningB = mornTide + 45;
+    } else {
+      morningA = riseM - 30;
+      morningB = riseM + 90;
+    }
+    var eveningA, eveningB;
+    if (eveTide != null) {
+      eveningA = eveTide - 60;
+      eveningB = eveTide + 55;
+    } else {
+      eveningA = setM - 90;
+      eveningB = setM + 30;
+    }
+    var goldA = setM - 55, goldB = setM + 25;
+    if (eveTide != null) {
+      goldA = Math.min(goldA, eveTide - 35);
+      goldB = Math.max(goldB, eveTide + 20);
+    }
+    var nightA, nightB;
+    if (nightTide != null) {
+      nightA = nightTide - 55;
+      nightB = nightTide + 85;
+    } else {
+      // fallback still varies slightly with sunset
+      nightA = setM + 150;
+      nightB = setM + 300;
+    }
+
+    if (bf >= 5 || wh >= 1.4) {
       var mid = (morningA + morningB) / 2;
-      morningA = mid - 35; morningB = mid + 35;
+      morningA = mid - 30; morningB = mid + 30;
+      mid = (eveningA + eveningB) / 2;
+      eveningA = mid - 30; eveningB = mid + 30;
     }
+
     var morning = fromMin(morningA) + "–" + fromMin(morningB);
-
-    var eveningA = setM - 90, eveningB = setM + 30;
-    if (eveTide != null) { eveningA = eveTide - 55; eveningB = eveTide + 50; }
-    if (bf >= 5 || wh >= 1.5) {
-      var midE = (eveningA + eveningB) / 2;
-      eveningA = midE - 35; eveningB = midE + 35;
-    }
     var evening = fromMin(eveningA) + "–" + fromMin(eveningB);
-
-    var goldA = setM - 60, goldB = setM + 30;
-    if (eveTide != null && Math.abs(eveTide - setM) < 120) {
-      goldA = Math.min(goldA, eveTide - 40);
-      goldB = Math.max(goldB, eveTide + 25);
-    }
-    if (bf >= 4) { goldA += 15; goldB -= 10; }
     var gold = fromMin(goldA) + "–" + fromMin(goldB);
-
-    var nightTide = nearestInBand(tideCenters, 21 * 60, 24 * 60 - 1);
-    if (nightTide == null) nightTide = nearestInBand(tideCenters, 0, 150);
-    var nightA = 22 * 60 + 30, nightB = 25 * 60;
-    if (nightTide != null) { nightA = nightTide - 50; nightB = nightTide + 80; }
     var night = fromMin(nightA) + "–" + fromMin(nightB);
 
     function liveFactors(slot) {
@@ -810,8 +852,10 @@
       if (sea.currentKn != null) lines.push("Ρεύμα " + Number(sea.currentKn).toFixed(2) + " kn");
       if (sea.wave != null) lines.push("Κύμα " + (Math.round(sea.wave * 10) / 10) + " m");
       if (data.moon && data.moon.pct != null) lines.push("Σελήνη " + Math.round(data.moon.pct) + "%");
-      if (slot === "gold") lines.push("Gold hour · δύση ± παλίρροια");
-      if (slot === "night") lines.push("Νυχτερινό (παλίρροια)");
+      if (slot === "gold") lines.push("Gold · δύση + παλίρροια");
+      if (mornTide != null && slot === "morning") lines.push("Κέντρο παλίρροιας " + fromMin(mornTide));
+      if (eveTide != null && (slot === "evening" || slot === "gold")) lines.push("Κέντρο παλίρροιας " + fromMin(eveTide));
+      if (nightTide != null && slot === "night") lines.push("Κέντρο παλίρροιας " + fromMin(nightTide));
       var seen = {}, outL = [];
       lines.forEach(function (x) { if (x && !seen[x]) { seen[x] = 1; outL.push(x); } });
       return outL.slice(0, 6);

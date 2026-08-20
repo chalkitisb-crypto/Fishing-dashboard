@@ -55,7 +55,7 @@ function __notifyMoon(pct, phaseTxt) {
     if (!root) return;
     root.innerHTML = windHours.map(function (h) {
       return '<article class="wh-cell wind-cell"><div class="wind-arrow ' + h.cls +
-        '" style="transform:rotate(' + (Number(h.deg) || 0) + 'deg)">▲</div>' +
+        '" style="transform:rotate(' + (((Number(h.deg) || 0) + 180) % 360) + 'deg)">▲</div>' +
         '<time>' + h.t + '</time><span class="lab">' + h.dir +
         '</span><strong>' + h.bf + '</strong></article>';
     }).join("");
@@ -66,7 +66,7 @@ function __notifyMoon(pct, phaseTxt) {
     if (!root) return;
     root.innerHTML = currentHours.map(function (h) {
       return '<article class="wh-cell"><div class="wind-arrow ' + h.cls +
-        '" style="transform:rotate(' + (Number(h.deg) || 0) + 'deg)">▲</div>' +
+        '" style="transform:rotate(' + (((Number(h.deg) || 0) + 180) % 360) + 'deg)">▲</div>' +
         '<time>' + h.t + '</time><span class="lab">' + h.dir +
         '</span><strong>' + h.kn + ' kn</strong></article>';
     }).join("");
