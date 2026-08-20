@@ -3092,3 +3092,138 @@ button.gold-hour:active {
   width: 62% !important;
   max-height: 62% !important;
 }
+
+
+/* ===== v148 GOLD HOUR LOCKED — D2 metallic gold + RUBY red letters ===== */
+#best-line .best-chip.gold-hour,
+#best-hours .best-chip.gold-hour,
+button.best-chip.gold-hour,
+.best-chip.gold-hour[data-why="gold"],
+.best-chip[data-why="gold"] {
+  background: linear-gradient(180deg,
+    #FFF1A0 0%,
+    #FFD700 18%,
+    #F0C14A 42%,
+    #D4A017 68%,
+    #B8860B 100%) !important;
+  background-color: #D4A017 !important;
+  border: 2px solid #F5C542 !important;
+  color: #B71C1C !important;
+  -webkit-text-fill-color: #B71C1C !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.05em !important;
+  text-shadow:
+    -1.5px -1.5px 0 #D4AF37,
+     1.5px -1.5px 0 #D4AF37,
+    -1.5px  1.5px 0 #D4AF37,
+     1.5px  1.5px 0 #D4AF37,
+     0 0 8px rgba(183, 28, 28, 0.5) !important;
+  box-shadow:
+    0 0 20px rgba(255, 200, 40, 0.7),
+    0 0 8px rgba(255, 215, 0, 0.5),
+    inset 0 2px 0 rgba(255,255,255,0.5),
+    inset 0 -3px 6px rgba(100, 70, 0, 0.4) !important;
+  border-radius: 999px !important;
+  padding: 7px 16px !important;
+  filter: none !important;
+}
+
+/* Zone HORIZONTAL rectangular */
+.zone-card {
+  min-height: 140px !important;
+  height: auto !important;
+}
+.zone-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  min-height: 120px !important;
+}
+.zone-map-wrap {
+  position: relative !important;
+  flex: 1.15 1 0 !important;
+  min-width: 0 !important;
+  max-width: 58% !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(53,200,255,.35) !important;
+  background: #020b18 !important;
+  aspect-ratio: 2 / 1 !important;
+  min-height: 110px !important;
+}
+.zone-map, .zone-map-fill, img.zone-map {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+  border: none !important;
+  border-radius: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+}
+.zone-pin {
+  position: absolute !important;
+  width: 18px !important;
+  height: 18px !important;
+  margin-left: -9px !important;
+  margin-top: -18px !important;
+  z-index: 3 !important;
+  pointer-events: none !important;
+  filter: drop-shadow(0 0 6px rgba(255,60,60,.9));
+  transition: left .4s ease, top .4s ease;
+}
+.zone-pin::after {
+  content: "📍";
+  font-size: 18px;
+  line-height: 1;
+}
+.zone-info {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding: 4px 2px !important;
+}
+.zone-label { font-size: 14px !important; font-weight: 800 !important; color: #9ee6a8 !important; }
+.zone-place { font-size: 12px !important; color: #7ad7ff !important; line-height: 1.35 !important; margin-top: 6px !important; }
+
+
+/* ===== v149 ROD — single source of truth ===== */
+.score-dial .score-rod-live,
+.score-wrap .score-rod-live,
+img.score-rod-live,
+#score-rod-arm {
+  position: absolute !important;
+  left: 50% !important;
+  bottom: 16% !important;
+  top: auto !important;
+  width: 56% !important;
+  max-width: 56% !important;
+  max-height: 56% !important;
+  height: auto !important;
+  object-fit: contain !important;
+  transform-origin: 50% 100% !important;
+  pointer-events: none !important;
+  z-index: 3 !important;
+  filter: drop-shadow(0 0 4px rgba(245,197,66,.25));
+}
+
+/* v149 GOLD HOUR force (backup if inline stripped) */
+#best-line button.best-chip.gold-hour,
+button.best-chip.gold-hour[data-why="gold"] {
+  background: linear-gradient(180deg, #FFF1A0 0%, #FFD700 18%, #E8B923 50%, #D4A017 75%, #B8860B 100%) !important;
+  border: 2px solid #F5C542 !important;
+  color: #B71C1C !important;
+  -webkit-text-fill-color: #B71C1C !important;
+  font-weight: 900 !important;
+  text-shadow:
+    -1.5px -1.5px 0 #D4AF37,
+     1.5px -1.5px 0 #D4AF37,
+    -1.5px  1.5px 0 #D4AF37,
+     1.5px  1.5px 0 #D4AF37 !important;
+  box-shadow: 0 0 18px rgba(255,200,40,.7), inset 0 2px 0 rgba(255,255,255,.45) !important;
+  border-radius: 999px !important;
+}

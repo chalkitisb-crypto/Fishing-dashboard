@@ -1,3 +1,5 @@
+/* v149.0.0 — arrows wind TO / current TOWARD · rod calibrated · GOLD HOUR ruby · zone */
+/* v148.0.0 GOLD HOUR ruby + zone horizontal + pin */
 
 /* v97 bridge → moon.js */
 function __notifyMoon(pct, phaseTxt) {
@@ -55,7 +57,7 @@ function __notifyMoon(pct, phaseTxt) {
     if (!root) return;
     root.innerHTML = windHours.map(function (h) {
       return '<article class="wh-cell wind-cell"><div class="wind-arrow ' + h.cls +
-        '" style="transform:rotate(' + ((Number(h.deg) || 0) % 360) + 'deg)">▲</div>' +
+        '" style="transform:rotate(' + (((Number(h.deg) || 0) + 180) % 360) + 'deg)">▲</div>' +
         '<time>' + h.t + '</time><span class="lab">' + h.dir +
         '</span><strong>' + h.bf + '</strong></article>';
     }).join("");
@@ -67,7 +69,7 @@ function __notifyMoon(pct, phaseTxt) {
     root.innerHTML = currentHours.map(function (h) {
       /* ocean current dir: arrow points TO flow (API FROM) → no +180 if wind uses +180 */
       return '<article class="wh-cell"><div class="wind-arrow ' + h.cls +
-        '" style="transform:rotate(' + (((Number(h.deg) || 0) + 180) % 360) + 'deg)">▲</div>' +
+        '" style="transform:rotate(' + ((Number(h.deg) || 0) % 360) + 'deg)">▲</div>' +
         '<time>' + h.t + '</time><span class="lab">' + h.dir +
         '</span><strong>' + h.kn + ' kn</strong></article>';
     }).join("");
@@ -390,13 +392,14 @@ function __notifyMoon(pct, phaseTxt) {
 
   function scoreToAngle(score) {
     score = Math.max(0, Math.min(100, Number(score) || 0));
-    /* Gauge semicircle: 0 left · 50 up · 100 right
-       Artwork arc is ~176° effective (not full 180) + rod tip bias in PNG
-       → use 176° span and -0.5° center bias so 74 lands on 74 tick not past 75 */
-    /* v147: arc 172° + tip bias so 74 sits on tick, not past 75 */
-    var span = 172;
-    var start = -span / 2; // -86
-    return start + (score / 100) * span;
+    /* v149 calibration:
+       CSS 0° = up (50). -90° ≈ 0, +90° ≈ 100.
+       Gauge artwork arc ~155° useful. Rod tip PNG leans ~7° toward 100.
+       At 73 must sit before 75 tick. */
+    var span = 155;
+    var tipBias = -7; // degrees (tip leans right in asset)
+    var start = -span / 2;
+    return start + (score / 100) * span + tipBias;
   }
 
           function setRodAngle(score, instant, root) {
@@ -407,7 +410,7 @@ function __notifyMoon(pct, phaseTxt) {
     var deg = scoreToAngle(s);
     // pivot = bottom center (βίδα) · 0° = πάνω · -90=αριστερά 0 · +90=δεξιά 100
     arm.style.setProperty("transform-origin", "50% 100%", "important");
-    var t = "translateX(-50%) rotate(" + deg + "deg) scale(0.70)";
+    var t = "translateX(-50%) rotate(" + deg + "deg)";
     if (instant) arm.style.setProperty("transition", "none", "important");
     else arm.style.setProperty("transition", "transform .95s cubic-bezier(.25,.8,.25,1)", "important");
     arm.style.setProperty("transform", t, "important");
@@ -565,7 +568,7 @@ function __notifyMoon(pct, phaseTxt) {
       // Lee shore = opposite of wind FROM
       var leeLab = dirZ != null ? compass(dirZ + 180) : null;
       var windFrom = dirZ != null ? compass(dirZ) : null;
-      var flowTo = cdegZ != null ? compass(Number(cdegZ) + 180) : (cdegZ != null ? compass(cdegZ) : null);
+      var flowTo = cdegZ != null ? compass(Number(cdegZ)) : null; /* current deg = flow TOWARD */
 
       var where = "";
       if (bfZ >= 4 && leeLab) {
@@ -593,6 +596,52 @@ function __notifyMoon(pct, phaseTxt) {
       else parts.push("βάθος 2–4μ");
 
       $("zone-place").textContent = "📍 " + zName + " · " + parts.slice(0, 4).join(" · ");
+
+    // v148: pin on recommended fishing side (not "my location")
+    (function placeZonePin() {
+      var wrap = document.querySelector(".zone-map-wrap") || document.querySelector(".zone-body");
+      if (!wrap) return;
+      var pin = document.getElementById("zone-pin");
+      if (!pin) {
+        // ensure wrap
+        var mapImg = document.querySelector(".zone-map, .zone-map-fill");
+        if (mapImg && !mapImg.parentElement.classList.contains("zone-map-wrap")) {
+          var w = document.createElement("div");
+          w.className = "zone-map-wrap";
+          mapImg.parentNode.insertBefore(w, mapImg);
+          w.appendChild(mapImg);
+          wrap = w;
+        } else if (mapImg) {
+          wrap = mapImg.parentElement;
+        }
+        pin = document.createElement("div");
+        pin.id = "zone-pin";
+        pin.className = "zone-pin";
+        pin.setAttribute("aria-hidden", "true");
+        if (wrap) wrap.appendChild(pin);
+      }
+      // positions on horizontal map (percent): main island center + sides
+      // map is Kalymnos-ish: west left, east right, north top, south bottom
+      var pos = { N: [52, 18], NE: [68, 22], E: [72, 48], SE: [65, 72], S: [48, 78], SW: [32, 70], W: [28, 48], NW: [35, 22], NA: [68, 55], Β: [52, 18], ΒΑ: [68, 22], Α: [72, 48], ΝΑ: [65, 72], Ν: [48, 78], ΝΔ: [32, 70], Δ: [28, 48], ΒΔ: [35, 22] };
+      var side = "ΝΑ";
+      var txt = ($("zone-place") && $("zone-place").textContent) || "";
+      var m = txt.match(/(?:πλευρά|Πήγαινε|Πρόταση)[:\s]*([ΒΝΑΔ]{1,2}|N[EW]?|S[EW]?|W|E)/i);
+      if (m) side = m[1];
+      else if (/ΝΑ|SE/i.test(txt)) side = "ΝΑ";
+      else if (/ΝΔ|SW/i.test(txt)) side = "ΝΔ";
+      else if (/ΒΔ|NW/i.test(txt)) side = "ΒΔ";
+      else if (/ΒΑ|NE/i.test(txt)) side = "ΒΑ";
+      else if (/νότ|South|\bΝ\b/i.test(txt)) side = "Ν";
+      else if (/βόρ|North|\bΒ\b/i.test(txt)) side = "Β";
+      else if (/δυτ|\bΔ\b|West/i.test(txt)) side = "Δ";
+      else if (/ανατ|\bΑ\b|East/i.test(txt)) side = "Α";
+      var xy = pos[side] || pos["ΝΑ"];
+      if (pin) {
+        pin.style.left = xy[0] + "%";
+        pin.style.top = xy[1] + "%";
+      }
+    })();
+
     }
     var sr = $("score-reasons");
     if (sr) {
@@ -611,7 +660,7 @@ function __notifyMoon(pct, phaseTxt) {
         '<span class="sep"> · </span>' +
         '<button type="button" class="best-chip" data-why="evening">ΑΠΟΓΕΥΜΑ ' + bh.evening + "</button>" +
         '<span class="sep"> · </span>' +
-        '<button type="button" class="best-chip gold-hour" data-why="gold">GOLD HOUR ' + (bh.gold || "") + "</button>" +
+        '<button type="button" class="best-chip gold-hour" data-why="gold" style="background:linear-gradient(180deg,#FFF1A0,#FFD700 20%,#D4A017 70%,#B8860B)!important;border:2px solid #F5C542!important;color:#B71C1C!important;-webkit-text-fill-color:#B71C1C!important;font-weight:900!important;text-shadow:-1.5px -1.5px 0 #D4AF37,1.5px -1.5px 0 #D4AF37,-1.5px 1.5px 0 #D4AF37,1.5px 1.5px 0 #D4AF37;box-shadow:0 0 18px rgba(255,200,40,.7),inset 0 2px 0 rgba(255,255,255,.45);border-radius:999px;padding:7px 16px">GOLD HOUR ' + (bh.gold || "") + "</button>" +
         '<span class="sep"> · </span>' +
         '<button type="button" class="best-chip" data-why="night">ΝΥΧΤΑ ' + bh.night + "</button>";
       if (bh.techniques && bh.techniques.length) {
