@@ -1,3 +1,6 @@
+/* v152.0.0 FULL package */
+/* v151.1.0 chips 10-00 every 2h */
+/* v151.0.0 logic: objective score · peak hours · hour picker · current tips */
 /* v150.0.0 ROOTFIX — rod pivot restore · GOLD HOUR PNG bg · zone horizontal 2D */
 /* v149.0.0 — arrows wind TO / current TOWARD · rod calibrated · GOLD HOUR ruby · zone */
 /* v148.0.0 GOLD HOUR ruby + zone horizontal + pin */
@@ -467,7 +470,7 @@ function __notifyMoon(pct, phaseTxt) {
             function setMoonVisual(pct, phaseHtml, phaseKey) {
     var img = $("moon-img") || document.querySelector(".moon-img");
     if (img) {
-      img.src = "moon_full.png?v=101.0.0";
+      img.src = "moon_full.png?v=152.0.0";
       img.style.display = "block";
       img.style.opacity = "1";
     }
@@ -476,6 +479,51 @@ function __notifyMoon(pct, phaseTxt) {
 
 
 
+
+
+  /* ===== v151 hour preview picker ===== */
+  var __previewHour = null; /* null = live now */
+  function applyScoreActivity(sc, previewLabel) {
+    if (!sc) return;
+    if ($("score-num")) $("score-num").textContent = sc.score;
+    if ($("score-lab")) $("score-lab").textContent = sc.label || "";
+    if ($("score-stars")) {
+      var st = sc.stars || 1;
+      $("score-stars").textContent = "★★★★★".slice(0, st) + "☆☆☆☆☆".slice(st);
+    }
+    if (typeof animateScoreRod === "function") animateScoreRod(sc.score);
+    else if (typeof setRodAngle === "function") setRodAngle(sc.score, false);
+    var ap = sc.activity;
+    if ($("activity-pct")) $("activity-pct").textContent = ap + "%";
+    var fill = document.querySelector(".activity-fill, #activity-fill");
+    if (fill) fill.style.setProperty("width", ap + "%", "important");
+    var meta = $("hour-pick-meta");
+    if (meta) {
+      meta.textContent = previewLabel
+        ? ("Πρόβλεψη " + previewLabel + " · Score " + sc.score + " · Activity " + ap)
+        : ("Live · Score " + sc.score + " · Activity " + ap);
+    }
+  }
+  function bindHourPicker(data) {
+    var card = document.getElementById("hour-pick-card");
+    if (!card || !data) return;
+    card.querySelectorAll(".hour-chip").forEach(function (btn) {
+      btn.onclick = function () {
+        card.querySelectorAll(".hour-chip").forEach(function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        var h = btn.getAttribute("data-hour");
+        if (h === "now") {
+          __previewHour = null;
+          var sc = FDData.computeScore(data);
+          applyScoreActivity(sc, null);
+        } else {
+          __previewHour = parseInt(h, 10);
+          var sc2 = FDData.computeScore(data, __previewHour + 0.5);
+          var lab = (parseInt(h,10) < 10 ? "0" : "") + parseInt(h,10) + ":00"; applyScoreActivity(sc2, lab);
+        }
+      };
+    });
+  }
 
   /* scoreToAngle/setRodAngle defined above */
   function scoreStars(score) {
@@ -570,6 +618,7 @@ function __notifyMoon(pct, phaseTxt) {
       var leeLab = dirZ != null ? compass(dirZ + 180) : null;
       var windFrom = dirZ != null ? compass(dirZ) : null;
       var flowTo = cdegZ != null ? compass(Number(cdegZ)) : null; /* current deg = flow TOWARD */
+      var fromDirZ = cdegZ != null ? compass((Number(cdegZ) + 180) % 360) : null;
 
       var where = "";
       if (bfZ >= 4 && leeLab) {
@@ -723,6 +772,7 @@ function __notifyMoon(pct, phaseTxt) {
     // Techniques live stars
     if (FDData.computeTechniques) {
       var techs = FDData.computeTechniques(data, sc);
+      window.__fdTechs = techs;
       var byId = {};
       techs.forEach(function (t) { byId[t.id] = t; });
       document.querySelectorAll(".tech").forEach(function (btn) {
@@ -1046,29 +1096,43 @@ function __notifyMoon(pct, phaseTxt) {
   
   
   function techInfo(id) {
+    var live = null;
+    try {
+      var list = window.__fdTechs || [];
+      list.forEach(function (t) {
+        var tid = t.id;
+        if (id === "shore_jig") id = "shore";
+        if (tid === id) live = t;
+      });
+    } catch (e) {}
     var map = {
       spinning: {
         title: "SPINNING",
-        body: "Τεχνητά (soft bait / hard bait) σε κίνηση.\\nΙδανικό: μέτριο ρεύμα, αυγή/δύση, άνεμος 2–4 bf.\\nΔολώματα: soft jerk, minnow, surface.\\nΣυμβουλή: ψάξε δομές και αλλαγές βάθους."
+        body: "• Ψάρεμα κόντρα σε ρεύμα & καιρό\n• Υψηλή παλίρροια + χαμηλές–μέτριες ταχύτητες ρεύματος\n• Μέθοδος τόπου: έξω→μέσα · επιφάνεια→βυθός\n• Εναλλαγές χρωμάτων / πλεύσεων\n• Kotsiruy: πάνω κρικάκι = pencil πιο βαθιά · κάτω = επιφανείας"
       },
       lrf: {
         title: "LRF",
-        body: "Light Rock Fishing — λεπτά πετονιά / μικρά τεχνητά.\\nΙδανικό: ήρεμη θάλασσα, ελαφρύς άνεμος, πρωί.\\nΔολώματα: micro jigs, tiny soft baits.\\nΣυμβουλή: άνεμος στην πλάτη, φυσική παρουσίαση."
+        body: "• Παράμαλλο max Ø 0,25 mm — να μην χαλάει η κίνηση του τεχνητού\n• Άνεμος από πίσω σου\n• Κόντρα στο ρεύμα · επιφάνεια μετά βυθός\n• Σαργός: τεχνητό που βυθίζεται / πλανάκι\n• Συχνές εναλλαγές χρωμάτων"
       },
       english: {
         title: "ΕΓΓΛΕΖΙΚΟ",
-        body: "Φελλός / φυσικό δόλωμα (ζυμάρι, γαρίδα).\\nΙδανικό: ήπιο–μέτριο κύμα, παλίρροια σε κίνηση, δύση.\\nΔολώματα: ζυμάρι, γαρίδα, ψαροτροφή.\\nΣυμβουλή: ψάξε ρεύμα στην άκρη της φάτσας."
+        body: "• Παράμαλλο ~1 m σε ήπιες συνθήκες (φυσική κίνηση)\n• Μετά το κόμπο στόπερ → χάντρα\n• Ροή φάτσα σε παραλία / δομή · δόλωμα κόντρα\n• Συναγρίδα / μελανούρι / λούτσος → χαμηλά ρεύματα\n• Μελανούρι: κέντρο κολπίσκου · ποτέ πίσω (ορμόνες φόβου)"
       },
       shore: {
         title: "SHORE JIGGING",
-        body: "Μεταλλικά / jigs από την ακτή.\\nΙδανικό: μέτριος άνεμος, ρεύμα, δύση/βράδυ.\\nΔολώματα: shore jigs 10–40g.\\nΣυμβουλή: ρίξε κατά μήκος ρεύματος, όχι κόντρα σε ακραίο."
+        body: "• Παράμαλλο ~3 m\n• Υψηλή παλίρροια · χαμηλές ταχύτητες ρευμάτων\n• Πάντα κόντρα στα ρεύματα\n• Τόπος με ρεύμα φάτσα στην παραλία\n• Αντίθετα άνεμος & ρεύμα → σημείο ουδετεροποίησης"
       },
       shore_jig: {
         title: "SHORE JIGGING",
-        body: "Μεταλλικά / jigs από την ακτή.\\nΙδανικό: μέτριος άνεμος, ρεύμα, δύση/βράδυ.\\nΔολώματα: shore jigs 10–40g."
+        body: "• Παράμαλλο ~3 m\n• Υψηλή παλίρροια · χαμηλές ταχύτητες ρευμάτων\n• Πάντα κόντρα στα ρεύματα\n• Τόπος με ρεύμα φάτσα στην παραλία"
       }
     };
+    if (id === "shore_jig") id = "shore";
     var t = map[id] || { title: id, body: "Πληροφορίες τεχνικής." };
+    if (live && live.tips && live.tips.length) {
+      t.body = live.tips.map(function (x) { return "• " + x; }).join("\n") + "\n\n" + t.body;
+      if (live.window) t.body = "Παράθυρο: " + live.window + "\n" + (live.label ? ("Αξιολόγηση: " + live.label + " (" + live.stars + "★)\n\n") : "\n") + t.body;
+    }
     showAppSheet(t.title, t.body);
   }
 
