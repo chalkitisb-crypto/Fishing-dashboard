@@ -2774,17 +2774,8 @@ img.score-rod-live,
   background:linear-gradient(180deg,rgba(255,120,40,.35),rgba(255,80,20,.12) 45%,transparent 70%);
   opacity:0;transition:opacity .8s ease;
 }
-.hero-sun{
-  position:absolute;z-index:2;width:52px;height:52px;border-radius:50%;
-  left:50%;top:30%;transform:translate(-50%,-50%);
-  background:radial-gradient(circle at 35% 35%,#fff6c8 0%,#ffe566 25%,#f5c542 55%,#e89a20 100%);
-  box-shadow:0 0 24px 8px rgba(255,200,60,.75),0 0 48px 16px rgba(255,160,40,.4);
-  pointer-events:none;opacity:0;transition:opacity .6s ease, left 1s linear, top 1s linear;
-}
-.hero-sun--warm{
-  background:radial-gradient(circle at 35% 35%,#ffe8a0 0%,#ffb347 40%,#ff7a18 75%,#e85d10 100%);
-  box-shadow:0 0 28px 10px rgba(255,120,40,.8),0 0 56px 18px rgba(255,80,20,.45);
-}
+.hero-sun{background:none!important;box-shadow:none!important;}
+.hero-sun--warm{background:none!important;}
 .hero-night{
   position:absolute;inset:0;z-index:3;pointer-events:none;
   background:linear-gradient(180deg,rgba(2,8,24,.85),rgba(2,10,28,.55) 50%,rgba(2,12,30,.35));
@@ -3418,3 +3409,45 @@ button.best-chip.gold-hour,
   filter:drop-shadow(0 0 6px rgba(245,197,66,.35)) brightness(0.85) contrast(1.05);
   opacity:0.75;
 }
+
+
+/* === v155 HERO SUN FIX — realistic, no blue circle === */
+.hero-sun{
+  position:absolute!important;
+  z-index:2!important;
+  width:88px!important;
+  height:88px!important;
+  border-radius:0!important;
+  background:none!important;
+  background-image:none!important;
+  box-shadow:none!important;
+  pointer-events:none!important;
+  opacity:0;
+  transition:opacity .6s ease, left 1.2s linear, top 1.2s linear, transform 1.2s linear;
+  overflow:visible!important;
+}
+.hero-sun img,
+#hero-sun-img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  display:block!important;
+  background:none!important;
+  border-radius:0!important;
+  filter:drop-shadow(0 0 18px rgba(255,200,80,.65)) drop-shadow(0 0 40px rgba(255,160,40,.35))!important;
+}
+.hero-sun--warm{
+  background:none!important;
+  box-shadow:none!important;
+}
+.hero-sun--warm img{
+  filter:drop-shadow(0 0 20px rgba(255,120,40,.75)) drop-shadow(0 0 48px rgba(255,80,20,.4))!important;
+}
+.hero-base-img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  display:block!important;
+}
+.hero-sky-tint{opacity:0!important;} /* plates carry sky color — no extra blue tint */

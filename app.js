@@ -1,3 +1,4 @@
+/* v155.0.0 hero plates + realistic sun no blue ring */
 /* v153.0.0 HERO plates time×weather + live rain + moon % */
 /* v152.0.0 FULL package */
 /* v151.1.0 chips 10-00 every 2h */
@@ -397,7 +398,7 @@ function __notifyMoon(pct, phaseTxt) {
         sunEl.style.left = x + "%";
         sunEl.style.top = y + "%";
         sunEl.style.opacity = "1";
-        sunEl.style.transform = "translate(-50%,-50%) scale(" + (0.85 + Math.sin(progress * Math.PI) * 0.25) + ")";
+        sunEl.style.transform = "translate(-50%,-50%) scale(" + (0.95 + Math.sin(progress * Math.PI) * 0.35) + ")";
         var nearHorizon = progress < 0.18 || progress > 0.82;
         sunEl.classList.toggle("hero-sun--warm", nearHorizon);
         var sunImg = $("hero-sun-img");
@@ -605,7 +606,7 @@ function __notifyMoon(pct, phaseTxt) {
             function setMoonVisual(pct, phaseHtml, phaseKey) {
     var img = $("moon-img") || document.querySelector(".moon-img");
     if (img) {
-      img.src = "moon_full.png?v=153.0.0";
+      img.src = "moon_full.png?v=155.0.0";
       img.style.display = "block";
       img.style.opacity = "1";
     }
