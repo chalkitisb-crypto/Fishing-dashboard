@@ -4307,3 +4307,61 @@ section.card.sea-strip {
   font-weight: 700 !important;
   font-size: 13px !important;
 }
+
+
+/* v171 tight moon layout · no empty right gap */
+.moon-card {
+  padding: 8px 10px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+.moon-card .moon-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+  min-height: 0 !important;
+}
+.moon-card .moon-info {
+  flex: 0 1 auto !important;
+  max-width: 50% !important;
+}
+.moon-card .moon-disc,
+#moon-disc {
+  width: 108px !important;
+  height: 108px !important;
+  flex: 0 0 108px !important;
+  max-width: 108px !important;
+  max-height: 108px !important;
+}
+.moon-times {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+  gap: 18px !important;
+  margin-top: 6px !important;
+  padding-top: 6px !important;
+}
+.moon-time {
+  gap: 3px !important;
+  font-size: 11px !important;
+}
+.moon-time .mt-crescent {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* v172 tight — kill empty right gap */
+.moon-card .moon-body {
+  justify-content: flex-start !important;
+  gap: 10px !important;
+}
+.moon-card .moon-info {
+  flex: 0 0 auto !important;
+  margin-right: auto !important;
+}
+.moon-times {
+  justify-content: flex-start !important;
+  gap: 16px !important;
+}

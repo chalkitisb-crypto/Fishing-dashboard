@@ -673,7 +673,7 @@ function __notifyMoon(pct, phaseTxt) {
             function setMoonVisual(pct, phaseHtml, phaseKey) {
     var img = $("moon-img") || document.querySelector(".moon-img");
     if (img) {
-      img.src = "moon_full.png?v=170.0.0";
+      img.src = "moon_full.png?v=172.0.0";
       img.style.display = "block";
       img.style.opacity = "1";
     }
