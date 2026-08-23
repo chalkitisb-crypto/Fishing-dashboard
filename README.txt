@@ -1,8 +1,7 @@
-FD_v166_MERGED = v164 + v165
-- λεπτά βέλη · χρώμα δύναμης
-- πίεση ευανάγνωστη + red dot τώρα + glow
-- παλίρροια red dot live
-- σελήνη 64px
-- θάλασσα ultra-mini ~40px
-
-Overwrite: style.css index.html app.js data.js
+v167
+- Wind arrows: FROM→TO (blows toward) + CSS meteo mapping
+- Current arrows: flow toward start→end
+- Red dots small (like reference: ~3px + white ring)
+- Moon restored 96px balanced
+- Tide red dot + taller chart
+- Zone horizontal rectangle ~140px

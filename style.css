@@ -3998,3 +3998,103 @@ section.card.sea-strip {
   color: #7ad7ff !important;
   white-space: nowrap !important;
 }
+
+
+/* v167 moon restore · zone horizontal · tide chart visible · small live dot */
+
+/* Moon: restore balanced compact card (not broken tiny disc) */
+.moon-card {
+  padding: 10px 12px !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+}
+.moon-card .sec-title {
+  margin-bottom: 6px !important;
+  font-size: 10px !important;
+}
+.moon-card .moon-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-height: 100px !important;
+}
+.moon-card .moon-disc,
+#moon-disc {
+  width: 96px !important;
+  height: 96px !important;
+  max-width: 96px !important;
+  max-height: 96px !important;
+  flex: 0 0 96px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+}
+#moon-canvas,
+#moon-img,
+.moon-disc .moon-img {
+  width: 96px !important;
+  height: 96px !important;
+  max-width: 96px !important;
+  max-height: 96px !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+}
+
+/* Zone: horizontal rectangle like expanded */
+.zone-card,
+.zone-card-h {
+  width: 100% !important;
+  padding: 10px 12px !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+.zone-card .zone-body,
+.zone-card-h .zone-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  min-height: 140px !important;
+  max-height: 160px !important;
+}
+.zone-map-wrap {
+  flex: 0 0 55% !important;
+  max-width: 55% !important;
+  min-height: 140px !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+.zone-map,
+.zone-map-fill {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 140px !important;
+  max-height: 160px !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+.zone-side {
+  flex: 1 1 45% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  font-size: 12px !important;
+}
+
+/* Tide chart must show + room for red dot */
+.tide-body,
+.tide-body.chart-premium {
+  min-height: 140px !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+#tide-svg,
+.tide-body .chart-svg-tall {
+  width: 100% !important;
+  height: 140px !important;
+  min-height: 140px !important;
+  display: block !important;
+  overflow: visible !important;
+}

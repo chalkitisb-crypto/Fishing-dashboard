@@ -62,8 +62,13 @@ function __notifyMoon(pct, phaseTxt) {
     var root = $("wind-hours");
     if (!root) return;
     root.innerHTML = windHours.map(function (h) {
+      /* API deg = FROM; arrow shows WHERE wind blows (TO) */
+      var from = Number(h.deg) || 0;
+      var to = (from + 180) % 360;
+      /* tip points east at 0° CSS → meteo 0°N needs -90 */
+      var cssDeg = (to - 90 + 360) % 360;
       return '<article class="wh-cell wind-cell"><div class="wind-arrow ' + h.cls +
-        '" style="transform:rotate(' + (((Number(h.deg) || 0) + 180) % 360) + 'deg)"></div>' +
+        '" style="transform:rotate(' + cssDeg + 'deg)"></div>' +
         '<time>' + h.t + '</time><span class="lab">' + h.dir +
         '</span><strong>' + h.bf + '</strong></article>';
     }).join("");
@@ -73,9 +78,11 @@ function __notifyMoon(pct, phaseTxt) {
     var root = $("current-hours");
     if (!root) return;
     root.innerHTML = currentHours.map(function (h) {
-      /* ocean current dir: arrow points TO flow (API FROM) → no +180 if wind uses +180 */
+      /* API deg = flow TOWARD (start → end) */
+      var to = Number(h.deg) || 0;
+      var cssDeg = (to - 90 + 360) % 360;
       return '<article class="wh-cell"><div class="wind-arrow ' + h.cls +
-        '" style="transform:rotate(' + ((Number(h.deg) || 0) % 360) + 'deg)"></div>' +
+        '" style="transform:rotate(' + cssDeg + 'deg)"></div>' +
         '<time>' + h.t + '</time><span class="lab">' + h.dir +
         '</span><strong>' + h.kn + ' kn</strong></article>';
     }).join("");
@@ -162,9 +169,8 @@ function __notifyMoon(pct, phaseTxt) {
       if (dots && pts[liveIdx] != null) {
         var lx = X(liveIdx).toFixed(1), ly = Y(pts[liveIdx]).toFixed(1);
         dots.innerHTML +=
-          '<circle cx="' + lx + '" cy="' + ly + '" r="9" fill="#ff1a1a" opacity="0.25"/>' +
-          '<circle cx="' + lx + '" cy="' + ly + '" r="6" fill="#ff2a2a" opacity="0.45"/>' +
-          '<circle cx="' + lx + '" cy="' + ly + '" r="4.2" fill="#ff1a1a" stroke="#ffffff" stroke-width="2"/>';
+          '<circle cx="' + lx + '" cy="' + ly + '" r="5" fill="#ff2a2a" opacity="0.35"/>' +
+          '<circle cx="' + lx + '" cy="' + ly + '" r="3.2" fill="#e01010" stroke="#ffffff" stroke-width="1.6"/>';
       }
     } catch (eLive) {}
   }
@@ -215,11 +221,9 @@ function __notifyMoon(pct, phaseTxt) {
       var liveIdx = 0;
       html +=
         '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
-        '" r="9" fill="#ff1a1a" opacity="0.25"/>' +
+        '" r="5" fill="#ff2a2a" opacity="0.35"/>' +
         '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
-        '" r="6" fill="#ff2a2a" opacity="0.45"/>' +
-        '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
-        '" r="4.2" fill="#ff1a1a" stroke="#ffffff" stroke-width="2"/>';
+        '" r="3.2" fill="#e01010" stroke="#ffffff" stroke-width="1.6"/>';
       dots.innerHTML = html;
     }
     if (axis) {
