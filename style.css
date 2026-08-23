@@ -3392,3 +3392,29 @@ button.best-chip.gold-hour,
   color: #9ee6a8;
   font-weight: 600;
 }
+
+
+/* === v153 HERO live plates + rain === */
+.hero-bg{position:relative;overflow:hidden;isolation:isolate}
+.hero-base-img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center bottom;
+  transition:opacity 1.2s ease;
+  z-index:0;
+}
+.hero-plate-b{opacity:0;z-index:0}
+.hero-base-img.is-front{opacity:1;z-index:0}
+.hero-sky-tint{z-index:1}
+.hero-sun,.hero-moon{z-index:2}
+.hero-night{z-index:3}
+.hero-stars{z-index:4}
+.hero-rain{
+  position:absolute;inset:0;width:100%;height:100%;
+  z-index:6;pointer-events:none;opacity:0;
+  transition:opacity .6s ease;
+}
+.hero-rain.is-on{opacity:1}
+.hero-moon.is-cloudy img{
+  filter:drop-shadow(0 0 6px rgba(245,197,66,.35)) brightness(0.85) contrast(1.05);
+  opacity:0.75;
+}

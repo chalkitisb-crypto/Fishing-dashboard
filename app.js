@@ -1,3 +1,4 @@
+/* v153.0.0 HERO plates time×weather + live rain + moon % */
 /* v152.0.0 FULL package */
 /* v151.1.0 chips 10-00 every 2h */
 /* v151.0.0 logic: objective score · peak hours · hour picker · current tips */
@@ -212,6 +213,145 @@ function __notifyMoon(pct, phaseTxt) {
     box.dataset.ready = "1";
     return box;
   }
+  /* v153 — landscape plates by time×weather · live rain · moon % */
+  var __heroPlateKey = "";
+  var __heroPlateFlip = false;
+  var __rainRAF = null;
+  var __rainDrops = [];
+
+  function weatherBucket(c) {
+    c = c || {};
+    var code = c.weatherCode != null ? Number(c.weatherCode) : null;
+    var desc = (c.condition || c.desc || c.weather || "").toString().toLowerCase();
+    if (code != null) {
+      if (code >= 95) return "storm";
+      if (code >= 80) return "rain";
+      if (code >= 61) return "rain";
+      if (code >= 51) return "rain";
+      if (code >= 45) return "cloudy";
+      if (code >= 3) return "cloudy";
+      if (code >= 2) return "cloudy";
+      return "clear";
+    }
+    if (/καταιγ|storm|thunder/.test(desc)) return "storm";
+    if (/βροχ|rain|drizzle|ψιλ/.test(desc)) return "rain";
+    if (/συννε|cloud|ομίχ|fog|overcast|νεφ/.test(desc)) return "cloudy";
+    if (/αραι|partly|λίγα/.test(desc)) return "cloudy";
+    return "clear";
+  }
+
+  function timePlateKey(mins, rise, set) {
+    var span = Math.max(1, set - rise);
+    var p = (mins - rise) / span;
+    if (mins < rise - 40 || mins > set + 40) return "night";
+    if (mins < rise + 50) return "dawn";
+    if (mins > set - 50) return "dusk";
+    if (mins > set - 110) return "gold";
+    return "day";
+  }
+
+  function resolveHeroPlate(timeKey, wx) {
+    if (wx === "storm") return "hero_plate_storm.jpg";
+    if (wx === "rain") return "hero_plate_rain.jpg";
+    if (wx === "cloudy" && (timeKey === "night" || timeKey === "day" || timeKey === "gold"))
+      return "hero_plate_cloudy.jpg";
+    var map = {
+      dawn: "hero_plate_dawn.jpg",
+      day: "hero_plate_day.jpg",
+      gold: "hero_plate_gold.jpg",
+      dusk: "hero_plate_dusk.jpg",
+      night: "hero_plate_night.jpg"
+    };
+    return map[timeKey] || "hero_plate_day.jpg";
+  }
+
+  function setHeroPlate(src) {
+    var a = $("hero-plate-a");
+    var b = $("hero-plate-b");
+    if (!a) return;
+    if (!b) {
+      if (a.getAttribute("src") !== src) a.src = src;
+      return;
+    }
+    if (__heroPlateKey === src) return;
+    __heroPlateKey = src;
+    var front = __heroPlateFlip ? b : a;
+    var back = __heroPlateFlip ? a : b;
+    back.src = src;
+    back.onload = function () {
+      back.style.opacity = "1";
+      front.style.opacity = "0";
+      __heroPlateFlip = !__heroPlateFlip;
+    };
+    // if cached
+    if (back.complete) {
+      back.style.opacity = "1";
+      front.style.opacity = "0";
+      __heroPlateFlip = !__heroPlateFlip;
+    }
+  }
+
+  function ensureLiveRain() {
+    var canvas = $("hero-rain");
+    if (!canvas || canvas.dataset.ready === "1") return canvas;
+    canvas.dataset.ready = "1";
+    var ctx = canvas.getContext("2d");
+    function resize() {
+      var r = canvas.parentElement.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.floor(r.width * (window.devicePixelRatio || 1)));
+      canvas.height = Math.max(1, Math.floor(r.height * (window.devicePixelRatio || 1)));
+    }
+    resize();
+    window.addEventListener("resize", resize);
+    function spawn(n, heavy) {
+      __rainDrops = [];
+      for (var i = 0; i < n; i++) {
+        __rainDrops.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          len: heavy ? 14 + Math.random() * 18 : 8 + Math.random() * 12,
+          spd: heavy ? 12 + Math.random() * 10 : 6 + Math.random() * 8,
+          op: 0.25 + Math.random() * 0.45
+        });
+      }
+    }
+    canvas.__setIntensity = function (level) {
+      if (level <= 0) {
+        canvas.classList.remove("is-on");
+        if (__rainRAF) { cancelAnimationFrame(__rainRAF); __rainRAF = null; }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+      canvas.classList.add("is-on");
+      spawn(level === 2 ? 90 : 55, level === 2);
+      if (__rainRAF) return;
+      function frame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = "rgba(200,220,255,0.55)";
+        ctx.lineWidth = Math.max(1, canvas.width / 400);
+        ctx.lineCap = "round";
+        for (var i = 0; i < __rainDrops.length; i++) {
+          var d = __rainDrops[i];
+          ctx.globalAlpha = d.op;
+          ctx.beginPath();
+          ctx.moveTo(d.x, d.y);
+          ctx.lineTo(d.x - d.len * 0.15, d.y + d.len);
+          ctx.stroke();
+          d.y += d.spd * (canvas.height / 300);
+          d.x -= d.spd * 0.12;
+          if (d.y > canvas.height) {
+            d.y = -10;
+            d.x = Math.random() * canvas.width;
+          }
+        }
+        ctx.globalAlpha = 1;
+        __rainRAF = requestAnimationFrame(frame);
+      }
+      __rainRAF = requestAnimationFrame(frame);
+    };
+    return canvas;
+  }
+
   function updateHeroSky(sun, c) {
     sun = sun || {};
     c = c || {};
@@ -229,15 +369,35 @@ function __notifyMoon(pct, phaseTxt) {
       progress = (mins - rise) / Math.max(1, set - rise);
       progress = Math.max(0, Math.min(1, progress));
     }
-    // position: x 8%→92%, y arc (high at midday)
+
+    var timeKey = timePlateKey(mins, rise, set);
+    var wx = weatherBucket(c);
+    setHeroPlate(resolveHeroPlate(timeKey, wx));
+
+    // Live rain
+    var rainCanvas = ensureLiveRain();
+    if (rainCanvas && rainCanvas.__setIntensity) {
+      if (wx === "storm") rainCanvas.__setIntensity(2);
+      else if (wx === "rain") rainCanvas.__setIntensity(1);
+      else rainCanvas.__setIntensity(0);
+    }
+
+    // Sun arc — hide when rain/storm/heavy cloud
     if (sunEl) {
-      if (isDay) {
+      var showSun = isDay && wx !== "storm" && wx !== "rain";
+      if (showSun && wx === "cloudy") {
+        sunEl.style.opacity = "0.35";
+      }
+      if (showSun && wx !== "cloudy") {
         var x = 8 + progress * 84;
-        var y = 58 - Math.sin(progress * Math.PI) * 48;
+        var y = 72 - Math.sin(progress * Math.PI) * 52;
+        // keep lower near horizon at dawn/dusk
+        if (progress < 0.12) y = 78 - progress * 80;
+        if (progress > 0.88) y = 78 - (1 - progress) * 80;
         sunEl.style.left = x + "%";
         sunEl.style.top = y + "%";
         sunEl.style.opacity = "1";
-        sunEl.style.transform = "translate(-50%,-50%) scale(" + (0.9 + Math.sin(progress * Math.PI) * 0.2) + ")";
+        sunEl.style.transform = "translate(-50%,-50%) scale(" + (0.85 + Math.sin(progress * Math.PI) * 0.25) + ")";
         var nearHorizon = progress < 0.18 || progress > 0.82;
         sunEl.classList.toggle("hero-sun--warm", nearHorizon);
         var sunImg = $("hero-sun-img");
@@ -248,79 +408,54 @@ function __notifyMoon(pct, phaseTxt) {
             sunImg.setAttribute("data-src", want);
           }
         }
-      } else {
+      } else if (!showSun) {
         sunEl.style.opacity = "0";
       }
     }
-    // Night moon: ONE realistic gold texture · phase shade by live %
+
+    // Night factor
+    var nightOp = 0;
+    if (!isDay) nightOp = 1;
+    else if (progress < 0.08) nightOp = 1 - progress / 0.08;
+    else if (progress > 0.92) nightOp = (progress - 0.92) / 0.08;
+    if (nightEl) nightEl.style.opacity = String(Math.max(0, Math.min(0.55, nightOp * 0.55)));
+    if (starsEl) {
+      var starOp = (!isDay || nightOp > 0.5) && wx !== "storm" ? Math.max(nightOp, isDay ? 0 : 0.85) : 0;
+      if (wx === "cloudy" && !isDay) starOp *= 0.25;
+      starsEl.style.opacity = String(starOp);
+    }
+    if (tintEl) {
+      var warm = (timeKey === "dawn" || timeKey === "gold" || timeKey === "dusk") && wx === "clear";
+      tintEl.style.opacity = warm ? "0.45" : "0";
+    }
+
+    // Moon — real % · visible at night even with clouds
     var moonEl = $("hero-moon");
-    var moonImg = $("hero-moon-img");
     var moonShade = $("hero-moon-shade");
     if (moonEl) {
-      if (!isDay && nightOp > 0.2) {
+      var showMoon = !isDay || nightOp > 0.35;
+      if (wx === "storm") showMoon = false;
+      if (showMoon) {
         var pct = 50;
         try {
           if (window.__fdLastData && window.__fdLastData.moon && window.__fdLastData.moon.pct != null)
             pct = Number(window.__fdLastData.moon.pct);
         } catch (e) {}
-        // shade: 0% = full dark overlay from right, 100% = no shade
-        // use linear-gradient mask approx of illuminated fraction
+        moonEl.style.opacity = wx === "cloudy" ? "0.7" : "1";
+        moonEl.classList.toggle("is-cloudy", wx === "cloudy");
+        moonEl.style.left = "72%";
+        moonEl.style.top = "16%";
         if (moonShade) {
           var illum = Math.max(0, Math.min(100, pct)) / 100;
-          // dark part covers (1-illum) from the left (simple waxing approximation)
           var darkPct = Math.round((1 - illum) * 100);
           moonShade.style.background =
             "linear-gradient(90deg, rgba(2,6,18,0.92) 0%, rgba(2,6,18,0.92) " + darkPct + "%, transparent " + Math.min(100, darkPct + 18) + "%)";
         }
-        moonEl.style.opacity = "1";
       } else {
         moonEl.style.opacity = "0";
       }
     }
-    // night opacity
-    var nightOp = 0;
-    if (!isDay) {
-      nightOp = 0.72;
-    } else if (progress < 0.08) {
-      nightOp = 0.55 * (1 - progress / 0.08);
-    } else if (progress > 0.92) {
-      nightOp = 0.55 * ((progress - 0.92) / 0.08);
-    }
-    if (nightEl) nightEl.style.opacity = String(nightOp);
-    // sky tint: warm at dawn/dusk
-    if (tintEl) {
-      var warm = 0;
-      if (isDay && (progress < 0.18 || progress > 0.82)) {
-        warm = progress < 0.18 ? (1 - progress / 0.18) : ((progress - 0.82) / 0.18);
-      }
-      tintEl.style.opacity = String(warm * 0.45);
-    }
-    // stars: night + clear (weatherCode 0/1 or no rain)
-    var code = c.weatherCode != null ? Number(c.weatherCode) : 0;
-    var clear = code <= 1 && !(c.rain > 0.2);
-    var showStars = !isDay && clear && nightOp > 0.25;
-    if (starsEl) {
-      starsEl.style.opacity = showStars ? "1" : "0";
-    }
-    // rain overlay from precip probability / rain mm
-    var rainEl = $("hero-rain");
-    if (rainEl) {
-      var prob = c.precipProb != null ? Number(c.precipProb) : 0;
-      var mm = c.rain != null ? Number(c.rain) : 0;
-      var rainOp = 0;
-      if (mm > 0.2) rainOp = Math.min(0.55, 0.2 + mm * 0.15);
-      else if (prob >= 60) rainOp = 0.15 + (prob - 60) / 100;
-      else if (prob >= 40) rainOp = 0.08;
-      rainEl.style.opacity = String(rainOp);
-      rainEl.classList.toggle("hero-rain--on", rainOp > 0.05);
-    }
   }
-  // refresh sun position every 30s
-  setInterval(function () {
-    try {
-      if (window.__fdLastData) updateHeroSky(window.__fdLastData.sun, window.__fdLastData.current);
-    } catch (e) {}
-  }, 30000);
 
   function applyHero(data) {
     if (!data) return;
@@ -470,7 +605,7 @@ function __notifyMoon(pct, phaseTxt) {
             function setMoonVisual(pct, phaseHtml, phaseKey) {
     var img = $("moon-img") || document.querySelector(".moon-img");
     if (img) {
-      img.src = "moon_full.png?v=152.0.0";
+      img.src = "moon_full.png?v=153.0.0";
       img.style.display = "block";
       img.style.opacity = "1";
     }

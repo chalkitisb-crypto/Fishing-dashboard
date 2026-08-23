@@ -8,9 +8,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <title>Fishing Dashboard — Κάλυμνος</title>
   <link rel="manifest" href="manifest.json"/>
-  <link rel="stylesheet" href="style.css?v=152.0.0"/>
+  <link rel="stylesheet" href="style.css?v=153.0.0"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" defer></script>
-  <script src="moon.js?v=152.0.0" defer></script>
+  <script src="moon.js?v=153.0.0" defer></script>
 </head>
 <body>
 <div class="app">
@@ -43,8 +43,9 @@
     <div id="data-status" class="data-status">Σύνδεση δεδομένων…</div>
     <!-- HERO: sun full-bleed background -->
     <section class="card hero">
-      <div class="hero-bg">
-        <img src="hero_base.jpg" alt="" class="sun-img hero-base-img"/>
+            <div class="hero-bg">
+        <img src="hero_plate_day.jpg" alt="" class="hero-base-img" id="hero-plate-a"/>
+        <img src="hero_plate_day.jpg" alt="" class="hero-base-img hero-plate-b" id="hero-plate-b"/>
         <div class="hero-sky-tint" id="hero-sky-tint"></div>
         <div class="hero-stars" id="hero-stars" aria-hidden="true"></div>
         <div class="hero-sun" id="hero-sun" aria-hidden="true">
@@ -55,9 +56,8 @@
           <div class="hero-moon-shade" id="hero-moon-shade"></div>
         </div>
         <div class="hero-night" id="hero-night"></div>
-        <div class="hero-rain" id="hero-rain" aria-hidden="true"></div>
-      </div>
-      <div class="hero-overlay">
+        <canvas class="hero-rain" id="hero-rain" aria-hidden="true"></canvas>
+<div class="hero-overlay">
         <div class="hero-date">
           <div class="hero-dow" id="hero-dow">—</div>
           <div class="hero-day" id="hero-day">—</div>
@@ -114,7 +114,7 @@
         <div class="moon-body">
           <div class="moon-disc" id="moon-disc">
             <canvas id="moon-canvas" width="256" height="256" aria-hidden="true"></canvas>
-            <img id="moon-img" class="moon-img" src="moon_full.png?v=152.0.0" alt="" hidden/>
+            <img id="moon-img" class="moon-img" src="moon_full.png?v=153.0.0" alt="" hidden/>
           </div>
           <div class="moon-info">
             <div class="moon-pct" id="moon-pct">—</div>
@@ -197,9 +197,9 @@
         <div class="sec-title score-title"><i class="dot"></i> FISHING SCORE</div>
         <div class="score-wrap" id="score-wrap">
           <div class="score-dial" id="score-dial">
-            <img class="score-gauge-bg" src="score_gauge_bg.jpg?v=152.0.0" alt=""/>
+            <img class="score-gauge-bg" src="score_gauge_bg.jpg?v=153.0.0" alt=""/>
             <div class="score-pivot" id="score-pivot">
-              <img class="score-rod-live" id="score-rod-arm" src="score_rod_layer.png?v=152.0.0" alt=""/>
+              <img class="score-rod-live" id="score-rod-arm" src="score_rod_layer.png?v=153.0.0" alt=""/>
             </div>
           </div>
           <div class="score-meta" id="score-meta">
@@ -214,7 +214,7 @@
         <section class="card activity-card">
           <div class="sec-title"><i class="dot"></i> FISH ACTIVITY</div>
           <div class="activity-body">
-            <img class="activity-panel" id="activity-panel" src="activity_body.jpg?v=152.0.0" alt=""/>
+            <img class="activity-panel" id="activity-panel" src="activity_body.jpg?v=153.0.0" alt=""/>
             <div class="activity-bar-slot" id="activity-bar-wrap">
               <svg class="activity-svg" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true">
                 <defs>
@@ -246,7 +246,7 @@
         <section class="card zone-card zone-card-h">
           <div class="sec-title"><i class="dot"></i> ΖΩΝΗ</div>
           <div class="zone-body">
-            <div class="zone-map-wrap"><img class="zone-map zone-map-fill" src="zone_map.png?v=152.0.0" alt="Χάρτης"/><div id="zone-pin" class="zone-pin" aria-hidden="true"></div></div>
+            <div class="zone-map-wrap"><img class="zone-map zone-map-fill" src="zone_map.png?v=153.0.0" alt="Χάρτης"/><div id="zone-pin" class="zone-pin" aria-hidden="true"></div></div>
             <div class="zone-info">
               <div class="zone-label">Βέλτιστη ζώνη</div>
               <div class="zone-place" id="zone-place">📍 Κάλυμνος · Νότια άκρη · 2–4μ</div>
@@ -333,8 +333,8 @@
     <button class="nav-item" data-nav="settings" type="button"><span>⚙</span>ΡΥΘΜΙΣΕΙΣ</button>
   </nav>
 </div>
-<script src="data.js?v=152.0.0"></script>
-<script src="app.js?v=152.0.0"></script>
+<script src="data.js?v=153.0.0"></script>
+<script src="app.js?v=153.0.0"></script>
 
 <div id="widget-modal" class="widget-modal" hidden>
   <div class="widget-modal-backdrop" id="widget-modal-backdrop"></div>
