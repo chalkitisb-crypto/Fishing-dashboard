@@ -1,19 +1,8 @@
-FD_v158_HERO_PLATES
-====================
-Μέθοδος: ήλιος/σελήνη ΜΕΣΑ στην πλάκα (όχι overlay).
+FD_v160_LAYOUT_MIN — μόνο 3 αρχεία
+====================================
+Overwrite στη ρίζα GitHub:
+  style.css
+  index.html
+  app.js
 
-Αρχεία:
-  assets/hero_plate_dawn.jpg
-  assets/hero_plate_day.jpg
-  assets/hero_plate_gold.jpg
-  assets/hero_plate_dusk.jpg
-  assets/hero_plate_night.jpg
-  assets/hero_plate_cloudy.jpg
-  assets/hero_plate_rain.jpg
-  assets/hero_plate_storm.jpg
-  style.css          → merge ή append
-  hero-plates.js     → <script src="hero-plates.js?v=158"></script> πριν το κλείσιμο body
-                       και κάλεσε HeroPlates.update(wx) όταν έρχονται δεδομένα καιρού
-
-Κρύβει παλιό .hero-sun overlay.
-Live βροχή: canvas σταγόνες όταν rain/storm.
+?v=160.0.0 ήδη μέσα στο index.

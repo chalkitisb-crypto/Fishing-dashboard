@@ -3468,3 +3468,224 @@ button.best-chip.gold-hour,
   object-fit: cover;
   transition: opacity 0.9s ease;
 }
+
+
+/* ===== v160 compact strip layout ===== */
+:root {
+  --strip-h: 88px;
+  --strip-chart-h: 72px;
+  --sea-line-h: 44px;
+}
+
+/* full-width strips instead of 2-col short cards */
+.row.row-2,
+.row.row-sea {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.row.row-2 > .card,
+.row.row-sea > .card {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Wind / Currents — tight horizontal scroll strips */
+.card.card-scroll {
+  padding: 8px 10px !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+.card.card-scroll .sec-title {
+  margin-bottom: 6px !important;
+  font-size: 10px;
+}
+.card.card-scroll .h-scroll {
+  gap: 6px;
+  padding-bottom: 2px;
+}
+.card.card-scroll .wh-cell {
+  flex: 0 0 64px !important;
+  min-width: 64px !important;
+  padding: 6px 3px !important;
+  border-radius: 12px;
+  gap: 1px !important;
+}
+.card.card-scroll .wh-ico {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+/* Pressure + Tides — horizontal strip with short chart */
+.pressure-body,
+.tide-body {
+  min-height: 0 !important;
+  height: var(--strip-chart-h) !important;
+  max-height: var(--strip-chart-h) !important;
+}
+.chart-svg-tall {
+  height: var(--strip-chart-h) !important;
+  max-height: var(--strip-chart-h) !important;
+}
+.card:has(#pressure-svg),
+.card:has(#tide-svg) {
+  padding: 8px 10px !important;
+  min-height: 0 !important;
+}
+.card:has(#pressure-svg) .sec-title,
+.card:has(#tide-svg) .sec-title {
+  margin-bottom: 4px !important;
+  font-size: 10px;
+}
+
+/* Sea conditions — single horizontal line */
+.row-sea .card:has(.sea-grid),
+.card.sea-strip {
+  padding: 6px 10px !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+.sea-grid {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  grid-template-columns: none !important;
+  min-height: var(--sea-line-h);
+}
+.sea-grid > div {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+}
+.sea-grid > div span {
+  font-size: 9px;
+  opacity: 0.75;
+}
+.sea-grid > div b {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Zone — horizontal strip */
+.zone-card-h,
+.zone-card {
+  padding: 8px 10px !important;
+  min-height: 0 !important;
+}
+.zone-card-h .sec-title,
+.zone-card .sec-title {
+  margin-bottom: 6px !important;
+  font-size: 10px;
+}
+.zone-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch;
+  gap: 10px;
+  min-height: 96px;
+}
+.zone-map-wrap {
+  flex: 0 0 42%;
+  max-width: 160px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.zone-map {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.zone-side {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  font-size: 12px;
+}
+
+/* Layout density from settings */
+body.layout-compact .card {
+  padding: 8px 10px !important;
+}
+body.layout-compact .sec-title {
+  font-size: 10px;
+  margin-bottom: 6px !important;
+}
+body.layout-compact .pressure-body,
+body.layout-compact .tide-body,
+body.layout-compact .chart-svg-tall {
+  height: 64px !important;
+  max-height: 64px !important;
+}
+body.layout-comfortable .pressure-body,
+body.layout-comfortable .tide-body,
+body.layout-comfortable .chart-svg-tall {
+  height: 110px !important;
+  max-height: 110px !important;
+}
+body.layout-comfortable .card.card-scroll .wh-cell {
+  flex-basis: 76px !important;
+  min-width: 76px !important;
+}
+
+/* Widget size scale */
+body.wsize-s .card:not(.hero):not(.score-card):not(.activity-card) {
+  transform-origin: top center;
+}
+body.wsize-s {
+  --strip-chart-h: 56px;
+  --sea-line-h: 36px;
+}
+body.wsize-m {
+  --strip-chart-h: 72px;
+  --sea-line-h: 44px;
+}
+body.wsize-l {
+  --strip-chart-h: 100px;
+  --sea-line-h: 52px;
+}
+
+/* Settings layout panel */
+.set-block {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(53,200,255,.2);
+}
+.set-block h4 {
+  margin: 0 0 8px;
+  font-size: 11px;
+  letter-spacing: .5px;
+  color: var(--cyan, #35c8ff);
+}
+.set-row-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.set-chip {
+  appearance: none;
+  border: 1px solid rgba(53,200,255,.35);
+  background: rgba(8,20,36,.85);
+  color: #cfefff;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.set-chip.is-on {
+  border-color: rgba(245,197,66,.8);
+  box-shadow: 0 0 12px rgba(245,197,66,.25);
+  color: #f5c542;
+}
