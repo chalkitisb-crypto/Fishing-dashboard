@@ -96,68 +96,82 @@ function __notifyMoon(pct, phaseTxt) {
       svg.setAttribute("viewBox", "0 0 320 150");
     }
     var w = 320, h = 150;
-    var padL = 28, padR = 8, padT = 16, padB = 24;
-    var min = Math.min.apply(null, pts) - 1;
-    var max = Math.max.apply(null, pts) + 1;
+    var padL = 30, padR = 10, padT = 20, padB = 26;
+    var min = Math.min.apply(null, pts) - 0.5;
+    var max = Math.max.apply(null, pts) + 0.5;
     if (max <= min) max = min + 2;
     function X(i) { return padL + (i * (w - padL - padR)) / Math.max(1, pts.length - 1); }
     function Y(v) { return padT + (1 - (v - min) / (max - min)) * (h - padT - padB); }
     var pairs = pts.map(function (v, i) { return X(i).toFixed(1) + "," + Y(v).toFixed(1); });
     line.setAttribute("points", pairs.join(" "));
+    line.setAttribute("stroke", "#f5c542");
+    line.setAttribute("stroke-width", "2.2");
+    line.setAttribute("fill", "none");
     if (area) {
       area.setAttribute("d",
         "M" + X(0).toFixed(1) + "," + (h - padB) + " " +
         pairs.map(function (p) { return "L" + p; }).join(" ") +
         " L" + X(pts.length - 1).toFixed(1) + "," + (h - padB) + " Z");
     }
+    /* sparse value labels — every ~4 points + first/last */
     if (dots) {
-      dots.innerHTML = pts.map(function (v, i) {
-        return '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(v).toFixed(1) +
-          '" r="4" fill="#f5c542" stroke="#1a1000" stroke-width="1"/>' +
-          '<text x="' + X(i).toFixed(1) + '" y="' + (Y(v) - 8).toFixed(1) +
-          '" text-anchor="middle" fill="#f5c542" font-size="9" font-weight="700">' +
-          Math.round(v) + "</text>";
-      }).join("");
+      var step = Math.max(1, Math.floor(pts.length / 6));
+      var htmlD = "";
+      for (var i = 0; i < pts.length; i++) {
+        if (i !== 0 && i !== pts.length - 1 && (i % step) !== 0) continue;
+        htmlD += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(pts[i]).toFixed(1) +
+          '" r="2.8" fill="#f5c542" stroke="#1a1000" stroke-width="1"/>';
+        htmlD += '<text x="' + X(i).toFixed(1) + '" y="' + (Y(pts[i]) - 7).toFixed(1) +
+          '" text-anchor="middle" fill="#f5c542" font-size="8" font-weight="600">' +
+          Math.round(pts[i]) + "</text>";
+      }
+      dots.innerHTML = htmlD;
     }
     if (grid) {
       var ticks = [];
-      var step = Math.max(1, Math.round((max - min) / 4));
-      for (var v = Math.ceil(min); v <= max; v += step) {
+      var stepV = Math.max(1, Math.round((max - min) / 3));
+      for (var v = Math.ceil(min); v <= max; v += stepV) {
         var y = Y(v);
         ticks.push('<line x1="' + padL + '" y1="' + y + '" x2="' + (w - padR) +
           '" y2="' + y + '" stroke="rgba(53,200,255,.12)" stroke-dasharray="3 4"/>');
         ticks.push('<text x="' + (padL - 4) + '" y="' + (y + 3) +
           '" text-anchor="end" fill="rgba(53,200,255,.55)" font-size="8">' + v + "</text>");
       }
-      // time labels
+      /* time labels sparse */
+      var tStep = Math.max(1, Math.floor(pts.length / 5));
       for (var i = 0; i < pts.length; i++) {
+        if (i !== 0 && i !== pts.length - 1 && (i % tStep) !== 0) continue;
         var t = times[i] || "";
-        if (t) ticks.push('<text x="' + X(i).toFixed(1) + '" y="' + (h - 8) +
-          '" text-anchor="middle" fill="rgba(53,200,255,.5)" font-size="8">' + t + "</text>");
+        if (t) ticks.push('<text x="' + X(i).toFixed(1) + '" y="' + (h - 6) +
+          '" text-anchor="middle" fill="rgba(53,200,255,.55)" font-size="8">' + t + "</text>");
       }
       grid.innerHTML = ticks.join("");
     }
+    /* LIVE red dot — match current hour to times[] */
     try {
-      var nowH = new Date().getHours();
-      var liveIdx = 0, best = 99;
+      var now = new Date();
+      var nowM = now.getHours() * 60 + now.getMinutes();
+      var liveIdx = 0, best = 1e9;
       for (var li = 0; li < times.length; li++) {
-        var th = parseInt(String(times[li]).split(":")[0], 10);
-        var dff = Math.abs(th - nowH);
+        var parts = String(times[li] || "0:0").split(":");
+        var tm = parseInt(parts[0], 10) * 60 + parseInt(parts[1] || "0", 10);
+        var dff = Math.abs(tm - nowM);
+        if (dff > 12 * 60) dff = 24 * 60 - dff;
         if (dff < best) { best = dff; liveIdx = li; }
       }
       if (dots && pts[liveIdx] != null) {
-        dots.innerHTML += '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
-          '" r="7" fill="#ff2a2a" opacity="0.35"/>' +
-          '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
-          '" r="4.5" fill="#ff1a1a" stroke="#fff" stroke-width="2"/>';
+        var lx = X(liveIdx).toFixed(1), ly = Y(pts[liveIdx]).toFixed(1);
+        dots.innerHTML +=
+          '<circle cx="' + lx + '" cy="' + ly + '" r="9" fill="#ff1a1a" opacity="0.25"/>' +
+          '<circle cx="' + lx + '" cy="' + ly + '" r="6" fill="#ff2a2a" opacity="0.45"/>' +
+          '<circle cx="' + lx + '" cy="' + ly + '" r="4.2" fill="#ff1a1a" stroke="#ffffff" stroke-width="2"/>';
       }
     } catch (eLive) {}
   }
 
-
     function drawTide(pts, times) {
     pts = pts || tidePts;
-    times = times || (typeof pressureTimes !== "undefined" ? null : null);
+    times = times || window._tideTimes || [];
     var line = $("tide-line");
     var area = $("tide-area");
     var dots = $("tide-dots");
@@ -167,7 +181,7 @@ function __notifyMoon(pct, phaseTxt) {
     var tsvg = $("tide-svg");
     if (tsvg) { tsvg.setAttribute("preserveAspectRatio", "none"); }
     var w = 320, h = 130;
-    var padL = 6, padR = 6, padT = 14, padB = 22;
+    var padL = 8, padR = 8, padT = 16, padB = 24;
     var min = Math.min.apply(null, pts);
     var max = Math.max.apply(null, pts);
     var span = max - min || 0.2;
@@ -178,7 +192,7 @@ function __notifyMoon(pct, phaseTxt) {
     var pairs = pts.map(function (v, i) { return X(i).toFixed(1) + "," + Y(v).toFixed(1); });
     line.setAttribute("points", pairs.join(" "));
     line.setAttribute("stroke", "#35c8ff");
-    line.setAttribute("stroke-width", "3");
+    line.setAttribute("stroke-width", "2.8");
     line.setAttribute("fill", "none");
     if (area) {
       area.setAttribute("d",
@@ -186,37 +200,37 @@ function __notifyMoon(pct, phaseTxt) {
         pairs.map(function (p) { return "L" + p; }).join(" ") +
         " L" + X(pts.length - 1).toFixed(1) + "," + (h - padB) + " Z");
     }
+    var html = "";
     if (dots) {
-      var html = "";
       for (var i = 0; i < pts.length; i++) {
-        var isExt = false;
-        if (i === 0 || i === pts.length - 1) isExt = true;
-        else if ((pts[i] >= pts[i-1] && pts[i] >= pts[i+1]) || (pts[i] <= pts[i-1] && pts[i] <= pts[i+1])) isExt = true;
+        var isExt = (i === 0 || i === pts.length - 1);
+        if (!isExt && i > 0 && i < pts.length - 1) {
+          if ((pts[i] >= pts[i-1] && pts[i] >= pts[i+1]) || (pts[i] <= pts[i-1] && pts[i] <= pts[i+1])) isExt = true;
+        }
         if (!isExt) continue;
         html += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(pts[i]).toFixed(1) +
-          '" r="4.2" fill="#fff" stroke="#35c8ff" stroke-width="2"/>';
+          '" r="3.5" fill="#fff" stroke="#35c8ff" stroke-width="2"/>';
       }
+      /* LIVE red dot — series starts at now (index 0) */
+      var liveIdx = 0;
+      html +=
+        '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
+        '" r="9" fill="#ff1a1a" opacity="0.25"/>' +
+        '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
+        '" r="6" fill="#ff2a2a" opacity="0.45"/>' +
+        '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
+        '" r="4.2" fill="#ff1a1a" stroke="#ffffff" stroke-width="2"/>';
       dots.innerHTML = html;
-      try {
-        var liveIdx = 0;
-        if (pts[liveIdx] != null) {
-          dots.innerHTML += '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
-            '" r="7" fill="#ff2a2a" opacity="0.35"/>' +
-            '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
-            '" r="4.5" fill="#ff1a1a" stroke="#fff" stroke-width="2"/>';
-        }
-      } catch (eT) {}
     }
-    // time axis labels from code
     if (axis) {
       var labels = "";
       var n = pts.length;
-      var idxs = n <= 4 ? [0, n-1] : [0, Math.floor(n/3), Math.floor(2*n/3), n-1];
-      var tArr = window._tideTimes || [];
+      var idxs = n <= 4 ? [0, n-1] : [0, Math.floor(n/4), Math.floor(n/2), Math.floor(3*n/4), n-1];
+      var tArr = times.length ? times : (window._tideTimes || []);
       idxs.forEach(function (i) {
         var lab = tArr[i] ? tArr[i] : "";
         if (!lab) return;
-        labels += '<text x="' + X(i).toFixed(1) + '" y="' + (h - 4) +
+        labels += '<text x="' + X(i).toFixed(1) + '" y="' + (h - 5) +
           '" text-anchor="middle" fill="#7ad7ff" font-size="9">' + lab + '</text>';
       });
       axis.innerHTML = labels;
@@ -225,7 +239,6 @@ function __notifyMoon(pct, phaseTxt) {
 
 
 
-  
   function parseHHMM(s) {
     var p = String(s || "06:30").split(":");
     return parseInt(p[0], 10) * 60 + parseInt(p[1] || "0", 10);

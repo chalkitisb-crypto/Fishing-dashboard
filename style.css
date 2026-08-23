@@ -3862,32 +3862,139 @@ section.card.card-scroll {
 }
 
 
-/* v163 arrows · moon · sea */
+
+
+
+/* v164 refined arrows · readable charts · compact moon/sea */
 .wind-arrow {
-  width: 16px !important;
-  height: 16px !important;
+  width: 14px !important;
+  height: 10px !important;
   font-size: 0 !important;
   line-height: 0 !important;
   display: inline-block !important;
   background: currentColor !important;
   color: #3ddc84;
-  clip-path: polygon(0% 25%, 55% 25%, 55% 0%, 100% 50%, 55% 100%, 55% 75%, 0% 75%);
-  filter: drop-shadow(0 0 5px currentColor) drop-shadow(0 0 10px currentColor);
+  /* thinner stem arrow */
+  clip-path: polygon(0% 35%, 58% 35%, 58% 8%, 100% 50%, 58% 92%, 58% 65%, 0% 65%);
+  filter: drop-shadow(0 0 4px currentColor) drop-shadow(0 0 8px currentColor);
   transform-origin: center center;
 }
 .wind-arrow.g { color: #3ddc84 !important; }
 .wind-arrow.o { color: #f5c542 !important; }
 .wind-arrow.r { color: #ff5a5a !important; }
 
-.moon-card { padding: 8px 10px !important; min-height: 0 !important; }
-.moon-card .moon-disc, #moon-disc {
-  width: 88px !important; height: 88px !important;
-  max-width: 88px !important; max-height: 88px !important;
+/* Moon compact — original-ish strip size */
+.row.row-moon,
+.moon-card {
+  max-width: 100%;
 }
-#moon-canvas, #moon-img { width: 88px !important; height: 88px !important; }
+.moon-card {
+  padding: 6px 8px !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+.moon-card .moon-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 10px !important;
+  min-height: 0 !important;
+}
+.moon-card .moon-disc,
+#moon-disc {
+  width: 64px !important;
+  height: 64px !important;
+  max-width: 64px !important;
+  max-height: 64px !important;
+  flex: 0 0 64px !important;
+}
+#moon-canvas,
+#moon-img {
+  width: 64px !important;
+  height: 64px !important;
+  max-width: 64px !important;
+  max-height: 64px !important;
+}
+.moon-card .moon-pct,
+.moon-card .moon-phase-lab {
+  font-size: 22px !important;
+}
+.moon-card .sec-title {
+  margin-bottom: 4px !important;
+  font-size: 10px !important;
+}
 
-.sea-strip, .card.sea-strip { padding: 2px 8px !important; min-height: 0 !important; }
-.sea-strip .sec-title { margin-bottom: 0 !important; font-size: 9px !important; }
-.sea-grid { min-height: 28px !important; gap: 2px !important; }
-.sea-grid > div span { font-size: 8px !important; }
-.sea-grid > div b { font-size: 11px !important; }
+
+
+/* Pressure chart readability */
+#pressure-svg {
+  height: 120px !important;
+  min-height: 120px !important;
+}
+.pressure-body {
+  overflow: visible !important;
+}
+
+
+/* v165 sea ultra-mini chip */
+.sea-strip,
+.card.sea-strip,
+section.card.sea-strip {
+  padding: 4px 8px !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: 40px !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
+  overflow: hidden !important;
+}
+.sea-strip .sec-title {
+  margin: 0 !important;
+  font-size: 8px !important;
+  letter-spacing: 0.3px !important;
+  white-space: nowrap !important;
+  flex: 0 0 auto !important;
+  opacity: 0.85;
+}
+.sea-strip .sec-title .dot {
+  width: 5px !important;
+  height: 5px !important;
+}
+.sea-strip .sea-grid {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  flex: 1 1 auto !important;
+  gap: 0 !important;
+  min-height: 0 !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.sea-strip .sea-grid > div {
+  flex: 1 1 0 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: baseline !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  padding: 0 2px !important;
+  border: none !important;
+  background: transparent !important;
+  min-width: 0 !important;
+}
+.sea-strip .sea-grid > div span {
+  font-size: 8px !important;
+  opacity: 0.65 !important;
+  white-space: nowrap !important;
+}
+.sea-strip .sea-grid > div b {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #7ad7ff !important;
+  white-space: nowrap !important;
+}

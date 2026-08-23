@@ -1,2 +1,8 @@
-v163: arrows locked shape + strength colors, live red dots, pressure/tide 24h full width, moon smaller, sea min
-Files: style.css index.html app.js data.js
+FD_v166_MERGED = v164 + v165
+- λεπτά βέλη · χρώμα δύναμης
+- πίεση ευανάγνωστη + red dot τώρα + glow
+- παλίρροια red dot live
+- σελήνη 64px
+- θάλασσα ultra-mini ~40px
+
+Overwrite: style.css index.html app.js data.js
