@@ -4365,3 +4365,173 @@ section.card.sea-strip {
   justify-content: flex-start !important;
   gap: 16px !important;
 }
+
+
+/* ========== v173 MOON COMPACT + CANVAS2D ========== */
+.moon-card,
+[data-widget="moon"],
+.card.moon-card {
+  padding: 8px 10px 8px 10px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+.moon-card .moon-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+  width: auto !important;
+  max-width: 100% !important;
+}
+.moon-card .moon-info {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+.moon-card .moon-disc,
+#moon-disc {
+  width: 100px !important;
+  height: 100px !important;
+  min-width: 100px !important;
+  min-height: 100px !important;
+  max-width: 100px !important;
+  max-height: 100px !important;
+  flex: 0 0 100px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  position: relative !important;
+  box-shadow: 0 0 18px rgba(245,197,66,0.45) !important;
+  background: transparent !important;
+}
+#moon-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  border-radius: 50% !important;
+}
+.moon-times {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  gap: 14px !important;
+  margin-top: 6px !important;
+  padding-top: 6px !important;
+  width: auto !important;
+}
+.moon-time {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  font-size: 11px !important;
+  color: #f5c542 !important;
+  white-space: nowrap !important;
+}
+.moon-time .mt-crescent {
+  width: 14px !important;
+  height: 14px !important;
+  object-fit: contain !important;
+  flex-shrink: 0 !important;
+}
+/* hide any leftover empty flex grow */
+.moon-card .moon-body::after,
+.moon-card .moon-spacer {
+  display: none !important;
+  content: none !important;
+  width: 0 !important;
+  flex: 0 !important;
+}
+
+
+/* ========== v174 MOON = exact v55 method that worked ========== */
+.moon-card {
+  padding: 8px 10px !important;
+  box-sizing: border-box !important;
+}
+.moon-card .moon-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+}
+.moon-card .moon-info {
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+}
+.moon-disc {
+  position: relative !important;
+  width: 100px !important;
+  height: 100px !important;
+  min-width: 100px !important;
+  min-height: 100px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+  background: transparent !important;
+}
+.moon-img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  transform-origin: center center !important;
+  filter: brightness(1.2) contrast(1.06) !important;
+}
+/* ONLY the texture spins — shade stays fixed for correct phase */
+.moon-spin .moon-img {
+  animation: moonSpin174 30s linear infinite !important;
+}
+@keyframes moonSpin174 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.moon-shade, .moon-lit {
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: 50% !important;
+  pointer-events: none !important;
+}
+.moon-shade { z-index: 2 !important; }
+.moon-lit   { z-index: 3 !important; }
+/* shade must NOT spin with image */
+.moon-spin .moon-shade,
+.moon-spin .moon-lit {
+  transform: none !important;
+  animation: none !important;
+}
+.moon-glow {
+  box-shadow: 0 0 14px rgba(245,197,66,0.40), 0 0 32px rgba(245,197,66,0.18) !important;
+}
+#moon-canvas { display: none !important; }
+.moon-times {
+  display: flex !important;
+  justify-content: flex-start !important;
+  gap: 14px !important;
+  margin-top: 6px !important;
+}
+.moon-time {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  color: #f5c542 !important;
+  font-size: 11px !important;
+  white-space: nowrap !important;
+}
+.moon-time .mt-crescent {
+  width: 14px !important;
+  height: 14px !important;
+  object-fit: contain !important;
+}
+
+/* v175: never flip set crescent */
+.moon-time .mt-crescent,
+img.mt-crescent,
+img[src*="crescent_set"] {
+  transform: none !important;
+  scale: none !important;
+}
