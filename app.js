@@ -154,26 +154,29 @@ function __notifyMoon(pct, phaseTxt) {
       }
       grid.innerHTML = ticks.join("");
     }
-    /* LIVE red dot — match current hour to times[] */
+
+    /* live red dot at closest hour to now */
     try {
       var now = new Date();
-      var nowM = now.getHours() * 60 + now.getMinutes();
+      var nowMin = now.getHours() * 60 + now.getMinutes();
       var liveIdx = 0, best = 1e9;
       for (var li = 0; li < times.length; li++) {
         var parts = String(times[li] || "0:0").split(":");
         var tm = parseInt(parts[0], 10) * 60 + parseInt(parts[1] || "0", 10);
-        var dff = Math.abs(tm - nowM);
+        var dff = Math.abs(tm - nowMin);
         if (dff > 12 * 60) dff = 24 * 60 - dff;
         if (dff < best) { best = dff; liveIdx = li; }
       }
       if (dots && pts[liveIdx] != null) {
-        var lx = X(liveIdx).toFixed(1), ly = Y(pts[liveIdx]).toFixed(1);
+        var lx = X(liveIdx), ly = Y(pts[liveIdx]);
         dots.innerHTML +=
-          '<circle cx="' + lx + '" cy="' + ly + '" r="5" fill="#ff2a2a" opacity="0.35"/>' +
-          '<circle cx="' + lx + '" cy="' + ly + '" r="3.2" fill="#e01010" stroke="#ffffff" stroke-width="1.6"/>';
+          '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="5" fill="#ff2a2a" opacity="0.4"/>' +
+          '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="2.6" fill="#ff1a1a" stroke="#fff" stroke-width="1.6"/>';
       }
     } catch (eLive) {}
-  }
+
+    /* LIVE red dot — match current hour to times[] */
+}
 
     function drawTide(pts, times) {
     pts = pts || tidePts;
@@ -225,6 +228,29 @@ function __notifyMoon(pct, phaseTxt) {
         '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
         '" r="3.2" fill="#e01010" stroke="#ffffff" stroke-width="1.6"/>';
       dots.innerHTML = html;
+      try {
+        var liveIdx = 0;
+        var tArr = window._tideTimes || [];
+        if (tArr.length) {
+          var now = new Date();
+          var nowMin = now.getHours() * 60 + now.getMinutes();
+          var best = 1e9;
+          for (var ti = 0; ti < tArr.length; ti++) {
+            var pp = String(tArr[ti] || "").split(":");
+            if (pp.length < 1) continue;
+            var tm = parseInt(pp[0], 10) * 60 + parseInt(pp[1] || "0", 10);
+            var dff = Math.abs(tm - nowMin);
+            if (dff > 12 * 60) dff = 24 * 60 - dff;
+            if (dff < best) { best = dff; liveIdx = ti; }
+          }
+        }
+        if (pts[liveIdx] != null) {
+          var lx = X(liveIdx), ly = Y(pts[liveIdx]);
+          dots.innerHTML +=
+            '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="5" fill="#ff2a2a" opacity="0.4"/>' +
+            '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="2.6" fill="#ff1a1a" stroke="#fff" stroke-width="1.6"/>';
+        }
+      } catch (eT) {}
     }
     if (axis) {
       var labels = "";
@@ -1014,6 +1040,7 @@ function __notifyMoon(pct, phaseTxt) {
     pressurePts = data.pressurePts || [];
     pressureTimes = data.pressureTimes || [];
     tidePts = data.tidePts || tidePts;
+    if (data.tideTimes) window._tideTimes = data.tideTimes;
     applyHero(data);
     var exs = data.tideExtrema || [];
     var low = null, high = null;
@@ -1029,7 +1056,8 @@ function __notifyMoon(pct, phaseTxt) {
     renderCurrents();
     drawPressure();
     window._tideTimes = data.tideTimes || [];
-    drawTide(data.tidePts || tidePts);
+    window._tideTimes = data.tideTimes || window._tideTimes || [];
+    drawTide(data.tidePts || tidePts, data.tideTimes);
   }
 
   function loadLive() {

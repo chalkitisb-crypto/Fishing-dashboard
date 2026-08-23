@@ -4098,3 +4098,81 @@ section.card.sea-strip {
   display: block !important;
   overflow: visible !important;
 }
+
+
+/* v168 pressure line + area glow */
+#pressure-line,
+.pressure-body polyline,
+#pressure-svg polyline {
+  stroke: #f5c542 !important;
+  stroke-width: 3.5 !important;
+  filter: drop-shadow(0 0 3px #f5c542) drop-shadow(0 0 8px rgba(245,197,66,.9)) drop-shadow(0 0 14px rgba(245,197,66,.45)) !important;
+}
+#pressure-area,
+.pressure-body path {
+  fill: rgba(245,197,66,.22) !important;
+  filter: drop-shadow(0 0 6px rgba(245,197,66,.35));
+}
+#pressure-svg {
+  overflow: visible !important;
+}
+
+/* Moon smaller compact */
+.moon-card {
+  padding: 6px 8px !important;
+  min-height: 0 !important;
+}
+.moon-card .moon-body {
+  gap: 6px !important;
+  min-height: 0 !important;
+}
+.moon-card .moon-disc,
+#moon-disc {
+  width: 72px !important;
+  height: 72px !important;
+  max-width: 72px !important;
+  max-height: 72px !important;
+}
+#moon-canvas, #moon-img {
+  width: 72px !important;
+  height: 72px !important;
+}
+.moon-card .moon-pct { font-size: 28px !important; }
+.moon-card .moon-phase-lab { font-size: 11px !important; }
+
+/* Sea = small BOX not full-width strip */
+.sea-strip,
+.card.sea-strip {
+  width: auto !important;
+  max-width: 280px !important;
+  margin: 0 auto 0 0 !important;
+  padding: 6px 8px !important;
+  border-radius: 12px !important;
+  display: inline-block !important;
+  min-height: 0 !important;
+}
+.sea-strip .sec-title {
+  font-size: 9px !important;
+  margin-bottom: 4px !important;
+}
+.sea-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 4px 10px !important;
+  min-height: 0 !important;
+}
+.sea-grid > div {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 1px !important;
+}
+.sea-grid > div span {
+  font-size: 9px !important;
+  color: #ffffff !important;
+  opacity: 0.95 !important;
+}
+.sea-grid > div b {
+  font-size: 12px !important;
+  color: #7ad7ff !important;
+}

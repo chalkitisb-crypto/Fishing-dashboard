@@ -1,7 +1,5 @@
-v167
-- Wind arrows: FROM→TO (blows toward) + CSS meteo mapping
-- Current arrows: flow toward start→end
-- Red dots small (like reference: ~3px + white ring)
-- Moon restored 96px balanced
-- Tide red dot + taller chart
-- Zone horizontal rectangle ~140px
+v168
+- pressure line stronger gold glow + area
+- red dot follows clock time (pressure + tide)
+- moon 72px
+- sea small box 2x2, white labels
