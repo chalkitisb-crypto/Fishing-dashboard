@@ -88,6 +88,30 @@ function __notifyMoon(pct, phaseTxt) {
     }).join("");
   }
 
+
+  function placeLiveDot(groupId, x, y) {
+    var g = $(groupId);
+    if (!g) return;
+    g.innerHTML =
+      '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="6" fill="#ff2a2a" opacity="0.35"></circle>' +
+      '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="3.4" fill="#e01010" stroke="#ffffff" stroke-width="1.8"></circle>';
+  }
+  function liveIndexFromTimes(times) {
+    if (!times || !times.length) return 0;
+    var now = new Date();
+    var nowMin = now.getHours() * 60 + now.getMinutes();
+    var liveIdx = 0, best = 1e9;
+    for (var li = 0; li < times.length; li++) {
+      var parts = String(times[li] || "0:0").split(":");
+      var tm = parseInt(parts[0], 10) * 60 + parseInt(parts[1] || "0", 10);
+      if (isNaN(tm)) continue;
+      var dff = Math.abs(tm - nowMin);
+      if (dff > 12 * 60) dff = 24 * 60 - dff;
+      if (dff < best) { best = dff; liveIdx = li; }
+    }
+    return liveIdx;
+  }
+
   function drawPressure() {
     var line = $("pressure-line");
     var area = $("pressure-area");
@@ -154,26 +178,12 @@ function __notifyMoon(pct, phaseTxt) {
       }
       grid.innerHTML = ticks.join("");
     }
-
-    /* live red dot at closest hour to now */
     try {
-      var now = new Date();
-      var nowMin = now.getHours() * 60 + now.getMinutes();
-      var liveIdx = 0, best = 1e9;
-      for (var li = 0; li < times.length; li++) {
-        var parts = String(times[li] || "0:0").split(":");
-        var tm = parseInt(parts[0], 10) * 60 + parseInt(parts[1] || "0", 10);
-        var dff = Math.abs(tm - nowMin);
-        if (dff > 12 * 60) dff = 24 * 60 - dff;
-        if (dff < best) { best = dff; liveIdx = li; }
-      }
-      if (dots && pts[liveIdx] != null) {
-        var lx = X(liveIdx), ly = Y(pts[liveIdx]);
-        dots.innerHTML +=
-          '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="5" fill="#ff2a2a" opacity="0.4"/>' +
-          '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="2.6" fill="#ff1a1a" stroke="#fff" stroke-width="1.6"/>';
-      }
+      var li = liveIndexFromTimes(times);
+      if (pts[li] != null) placeLiveDot("pressure-live", X(li), Y(pts[li]));
     } catch (eLive) {}
+
+    
 
     /* LIVE red dot — match current hour to times[] */
 }
@@ -229,28 +239,11 @@ function __notifyMoon(pct, phaseTxt) {
         '" r="3.2" fill="#e01010" stroke="#ffffff" stroke-width="1.6"/>';
       dots.innerHTML = html;
       try {
-        var liveIdx = 0;
-        var tArr = window._tideTimes || [];
-        if (tArr.length) {
-          var now = new Date();
-          var nowMin = now.getHours() * 60 + now.getMinutes();
-          var best = 1e9;
-          for (var ti = 0; ti < tArr.length; ti++) {
-            var pp = String(tArr[ti] || "").split(":");
-            if (pp.length < 1) continue;
-            var tm = parseInt(pp[0], 10) * 60 + parseInt(pp[1] || "0", 10);
-            var dff = Math.abs(tm - nowMin);
-            if (dff > 12 * 60) dff = 24 * 60 - dff;
-            if (dff < best) { best = dff; liveIdx = ti; }
-          }
-        }
-        if (pts[liveIdx] != null) {
-          var lx = X(liveIdx), ly = Y(pts[liveIdx]);
-          dots.innerHTML +=
-            '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="5" fill="#ff2a2a" opacity="0.4"/>' +
-            '<circle cx="' + lx.toFixed(1) + '" cy="' + ly.toFixed(1) + '" r="2.6" fill="#ff1a1a" stroke="#fff" stroke-width="1.6"/>';
-        }
+        var tArr = (times && times.length) ? times : (window._tideTimes || []);
+        var li = liveIndexFromTimes(tArr);
+        if (pts[li] != null) placeLiveDot("tide-live", X(li), Y(pts[li]));
       } catch (eT) {}
+      
     }
     if (axis) {
       var labels = "";

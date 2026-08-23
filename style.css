@@ -4176,3 +4176,52 @@ section.card.sea-strip {
   font-size: 12px !important;
   color: #7ad7ff !important;
 }
+
+
+/* ===== v169 ROOT FIX: moon compact + live dots visible + pressure glow ===== */
+#moon-disc.moon-disc,
+#moon-disc,
+.moon-card #moon-disc,
+.moon-card .moon-disc {
+  width: 68px !important;
+  height: 68px !important;
+  max-width: 68px !important;
+  max-height: 68px !important;
+  min-width: 68px !important;
+  min-height: 68px !important;
+  flex: 0 0 68px !important;
+}
+.moon-card #moon-canvas,
+.moon-card #moon-img,
+#moon-disc #moon-canvas,
+#moon-disc #moon-img,
+#moon-img.moon-img {
+  width: 68px !important;
+  height: 68px !important;
+  max-width: 68px !important;
+  max-height: 68px !important;
+}
+.moon-card {
+  padding: 6px 8px !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+.moon-card .moon-body {
+  min-height: 0 !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+.moon-card .moon-pct { font-size: 26px !important; line-height: 1.1 !important; }
+.moon-card .moon-phase-lab { font-size: 11px !important; }
+
+#pressure-live, #tide-live {
+  pointer-events: none;
+}
+#pressure-svg, #tide-svg {
+  overflow: visible !important;
+}
+#pressure-line {
+  stroke: #f5c542 !important;
+  stroke-width: 3.2 !important;
+  filter: url(#pressureGlow) drop-shadow(0 0 4px #f5c542) drop-shadow(0 0 12px rgba(245,197,66,.7)) !important;
+}

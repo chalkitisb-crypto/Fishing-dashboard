@@ -1,5 +1,5 @@
-v168
-- pressure line stronger gold glow + area
-- red dot follows clock time (pressure + tide)
-- moon 72px
-- sea small box 2x2, white labels
+v169 ROOT CAUSE FIX
+1. Broken <polyline pressure-line> was corrupting SVG → dots never reliable
+2. Live dots now in dedicated <g id="pressure-live"> / <g id="tide-live"> ON TOP (never overwritten)
+3. Live index = closest hour to clock time
+4. Moon: final 68px block kills 120px conflicts
