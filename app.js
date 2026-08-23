@@ -63,7 +63,7 @@ function __notifyMoon(pct, phaseTxt) {
     if (!root) return;
     root.innerHTML = windHours.map(function (h) {
       return '<article class="wh-cell wind-cell"><div class="wind-arrow ' + h.cls +
-        '" style="transform:rotate(' + (((Number(h.deg) || 0) + 180) % 360) + 'deg)">▲</div>' +
+        '" style="transform:rotate(' + (((Number(h.deg) || 0) + 180) % 360) + 'deg)"></div>' +
         '<time>' + h.t + '</time><span class="lab">' + h.dir +
         '</span><strong>' + h.bf + '</strong></article>';
     }).join("");
@@ -75,7 +75,7 @@ function __notifyMoon(pct, phaseTxt) {
     root.innerHTML = currentHours.map(function (h) {
       /* ocean current dir: arrow points TO flow (API FROM) → no +180 if wind uses +180 */
       return '<article class="wh-cell"><div class="wind-arrow ' + h.cls +
-        '" style="transform:rotate(' + ((Number(h.deg) || 0) % 360) + 'deg)">▲</div>' +
+        '" style="transform:rotate(' + ((Number(h.deg) || 0) % 360) + 'deg)"></div>' +
         '<time>' + h.t + '</time><span class="lab">' + h.dir +
         '</span><strong>' + h.kn + ' kn</strong></article>';
     }).join("");
@@ -90,8 +90,13 @@ function __notifyMoon(pct, phaseTxt) {
     if (!line || !pressurePts || pressurePts.length < 2) return;
     var pts = pressurePts;
     var times = pressureTimes || [];
+    var svg = $("pressure-svg");
+    if (svg) {
+      svg.setAttribute("preserveAspectRatio", "none");
+      svg.setAttribute("viewBox", "0 0 320 150");
+    }
     var w = 320, h = 150;
-    var padL = 36, padR = 12, padT = 18, padB = 28;
+    var padL = 28, padR = 8, padT = 16, padB = 24;
     var min = Math.min.apply(null, pts) - 1;
     var max = Math.max.apply(null, pts) + 1;
     if (max <= min) max = min + 2;
@@ -132,6 +137,21 @@ function __notifyMoon(pct, phaseTxt) {
       }
       grid.innerHTML = ticks.join("");
     }
+    try {
+      var nowH = new Date().getHours();
+      var liveIdx = 0, best = 99;
+      for (var li = 0; li < times.length; li++) {
+        var th = parseInt(String(times[li]).split(":")[0], 10);
+        var dff = Math.abs(th - nowH);
+        if (dff < best) { best = dff; liveIdx = li; }
+      }
+      if (dots && pts[liveIdx] != null) {
+        dots.innerHTML += '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
+          '" r="7" fill="#ff2a2a" opacity="0.35"/>' +
+          '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
+          '" r="4.5" fill="#ff1a1a" stroke="#fff" stroke-width="2"/>';
+      }
+    } catch (eLive) {}
   }
 
 
@@ -144,8 +164,10 @@ function __notifyMoon(pct, phaseTxt) {
     var axis = $("tide-axis");
     if (!line) return;
     if (!pts || pts.length < 2) pts = [0.2, 0.5, 1.0, 0.6, 0.25, 0.45, 0.9];
+    var tsvg = $("tide-svg");
+    if (tsvg) { tsvg.setAttribute("preserveAspectRatio", "none"); }
     var w = 320, h = 130;
-    var padL = 8, padR = 8, padT = 14, padB = 22;
+    var padL = 6, padR = 6, padT = 14, padB = 22;
     var min = Math.min.apply(null, pts);
     var max = Math.max.apply(null, pts);
     var span = max - min || 0.2;
@@ -175,6 +197,15 @@ function __notifyMoon(pct, phaseTxt) {
           '" r="4.2" fill="#fff" stroke="#35c8ff" stroke-width="2"/>';
       }
       dots.innerHTML = html;
+      try {
+        var liveIdx = 0;
+        if (pts[liveIdx] != null) {
+          dots.innerHTML += '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
+            '" r="7" fill="#ff2a2a" opacity="0.35"/>' +
+            '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
+            '" r="4.5" fill="#ff1a1a" stroke="#fff" stroke-width="2"/>';
+        }
+      } catch (eT) {}
     }
     // time axis labels from code
     if (axis) {

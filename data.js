@@ -175,8 +175,10 @@
         bf: bf,
         cls: bfClass(bf)
       });
+    }
+    for (i = startIdx; i < Math.min(startIdx + 24, (h.time || []).length); i++) {
       pressurePts.push(h.pressure_msl[i]);
-      pressureTimes.push(t);
+      pressureTimes.push(hhmm(h.time[i]));
     }
 
     var mh = (marine && marine.hourly) || {};
@@ -238,8 +240,8 @@
     var tidePts = [];
     var tideTimes = [];
     var tideNow = tideHeightAt(now);
-    for (i = 0; i < 13; i++) {
-      var td = new Date(now.getTime() + (i - 2) * 3600 * 1000);
+    for (i = 0; i < 25; i++) {
+      var td = new Date(now.getTime() + i * 3600 * 1000);
       tidePts.push(Math.round(tideHeightAt(td) * 100) / 100);
       tideTimes.push(hhmm(td.toISOString()));
     }

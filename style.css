@@ -3835,3 +3835,59 @@ section.card.card-scroll {
   font-size: 13px !important;
   justify-content: center !important;
 }
+
+
+/* v162 pressure full-bleed chart */
+#pressure-svg,
+.pressure-body .chart-svg,
+.pressure-body .chart-svg-tall {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 110px !important;
+  min-height: 110px !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.pressure-body,
+.pressure-body.chart-premium {
+  width: 100% !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+#tide-svg {
+  width: 100% !important;
+  height: 130px !important;
+  display: block !important;
+}
+
+
+/* v163 arrows · moon · sea */
+.wind-arrow {
+  width: 16px !important;
+  height: 16px !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  display: inline-block !important;
+  background: currentColor !important;
+  color: #3ddc84;
+  clip-path: polygon(0% 25%, 55% 25%, 55% 0%, 100% 50%, 55% 100%, 55% 75%, 0% 75%);
+  filter: drop-shadow(0 0 5px currentColor) drop-shadow(0 0 10px currentColor);
+  transform-origin: center center;
+}
+.wind-arrow.g { color: #3ddc84 !important; }
+.wind-arrow.o { color: #f5c542 !important; }
+.wind-arrow.r { color: #ff5a5a !important; }
+
+.moon-card { padding: 8px 10px !important; min-height: 0 !important; }
+.moon-card .moon-disc, #moon-disc {
+  width: 88px !important; height: 88px !important;
+  max-width: 88px !important; max-height: 88px !important;
+}
+#moon-canvas, #moon-img { width: 88px !important; height: 88px !important; }
+
+.sea-strip, .card.sea-strip { padding: 2px 8px !important; min-height: 0 !important; }
+.sea-strip .sec-title { margin-bottom: 0 !important; font-size: 9px !important; }
+.sea-grid { min-height: 28px !important; gap: 2px !important; }
+.sea-grid > div span { font-size: 8px !important; }
+.sea-grid > div b { font-size: 11px !important; }

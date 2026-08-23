@@ -1,9 +1,2 @@
-FD_v161_STRIPS — 2 αρχεία
-========================
-style.css + index.html → overwrite ρίζα
-
-• Πίεση: γράφημα 100% πλάτος widget
-• Ρεύματα: full-width μακρόστενο (βγήκε από row με σελήνη)
-• Θάλασσα: πιο σφιχτή γραμμή
-• Παλίρροιες: ύψος 130px, χωρίς crop
-• Ζώνη: ~220px, μέγεθος σαν ανοιχτό modal
+v163: arrows locked shape + strength colors, live red dots, pressure/tide 24h full width, moon smaller, sea min
+Files: style.css index.html app.js data.js
