@@ -4225,3 +4225,85 @@ section.card.sea-strip {
   stroke-width: 3.2 !important;
   filter: url(#pressureGlow) drop-shadow(0 0 4px #f5c542) drop-shadow(0 0 12px rgba(245,197,66,.7)) !important;
 }
+
+
+/* v170 moon WebGL 3D + crescents · widget ~ activity height */
+.moon-card {
+  padding: 10px 12px !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+.moon-card .moon-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 14px !important;
+  min-height: 120px !important;
+}
+.moon-card .moon-disc,
+#moon-disc {
+  width: 112px !important;
+  height: 112px !important;
+  max-width: 112px !important;
+  max-height: 112px !important;
+  flex: 0 0 112px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  background: transparent !important;
+  box-shadow: 0 0 18px rgba(245,197,66,.35) !important;
+  position: relative !important;
+}
+#moon-canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+}
+#moon-img { display: none !important; }
+
+.moon-card .moon-pct,
+#moon-pct {
+  color: #f5c542 !important;
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 12px rgba(245,197,66,.45);
+}
+.moon-card .moon-phase,
+#moon-phase {
+  color: #f5c542 !important;
+  font-size: 12px !important;
+}
+
+.moon-times {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  margin-top: 8px !important;
+  padding-top: 6px !important;
+  border-top: 1px solid rgba(245,197,66,.15);
+}
+.moon-time {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 4px !important;
+  color: #f5c542 !important;
+  font-size: 12px !important;
+}
+.moon-time .mt-crescent {
+  width: 16px !important;
+  height: 16px !important;
+  object-fit: contain !important;
+}
+.moon-time .mt-ico,
+.moon-time .mt-lab,
+.moon-time strong,
+#moon-rise, #moon-set {
+  color: #f5c542 !important;
+}
+.moon-time strong,
+#moon-rise, #moon-set {
+  font-weight: 700 !important;
+  font-size: 13px !important;
+}
