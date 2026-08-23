@@ -3689,3 +3689,149 @@ body.wsize-l {
   box-shadow: 0 0 12px rgba(245,197,66,.25);
   color: #f5c542;
 }
+
+
+/* ===== v161 strip fixes ===== */
+
+/* Moon alone full width (currents extracted) */
+.row.row-moon {
+  display: block !important;
+  grid-template-columns: none !important;
+}
+.row.row-moon > .moon-card {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Currents full-width strip like wind */
+#current-hours {
+  width: 100%;
+}
+section.card.card-scroll:has(#current-hours),
+section.card.card-scroll {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Pressure: chart fills entire widget width */
+.pressure-body,
+.pressure-body.chart-premium {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+#pressure-svg,
+.pressure-body .chart-svg,
+.pressure-body .chart-svg-tall {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 96px !important;
+  min-height: 96px !important;
+  max-height: none !important;
+  display: block !important;
+  margin: 0 !important;
+}
+/* labels under pressure full width */
+#pressure-labels,
+.pressure-labels {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: space-between;
+}
+
+/* Sea tighter single line */
+.sea-strip,
+.row-sea-stack .sea-strip,
+.card.sea-strip {
+  padding: 4px 8px !important;
+  min-height: 0 !important;
+}
+.sea-strip .sec-title {
+  margin-bottom: 2px !important;
+  font-size: 10px !important;
+}
+.sea-grid {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  gap: 4px !important;
+  min-height: 32px !important;
+  align-items: center !important;
+}
+.sea-grid > div span { font-size: 8px !important; }
+.sea-grid > div b { font-size: 11px !important; }
+
+/* Sea + tides stacked full width */
+.row-sea-stack {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+.row-sea-stack > .card {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Tides: no crop — taller chart, full width, overflow visible */
+.tide-body,
+.tide-body.chart-premium {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 120px !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding: 0 !important;
+}
+#tide-svg,
+.tide-body .chart-svg,
+.tide-body .chart-svg-tall,
+#tide-svg.chart-svg-tall {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 130px !important;
+  min-height: 130px !important;
+  max-height: none !important;
+  display: block !important;
+  overflow: visible !important;
+}
+
+/* Zone: expanded size (like modal open) */
+.zone-card,
+.zone-card-h {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 12px !important;
+  min-height: 220px !important;
+}
+.zone-card .zone-body,
+.zone-card-h .zone-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  min-height: 180px !important;
+}
+.zone-map-wrap {
+  flex: 0 0 48% !important;
+  max-width: none !important;
+  min-height: 180px !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+}
+.zone-map,
+.zone-map-fill {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 180px !important;
+  object-fit: cover !important;
+}
+.zone-side {
+  flex: 1 1 auto !important;
+  font-size: 13px !important;
+  justify-content: center !important;
+}
