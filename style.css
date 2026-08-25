@@ -3271,7 +3271,7 @@ button.best-chip.gold-hour[data-why="gold"] {
 #best-line .best-chip.gold-hour,
 button.best-chip.gold-hour,
 .best-chip.gold-hour[data-why="gold"] {
-  background-image: url("gold_hour_bg.png?v=150.0.0") !important;
+  background-image: url("gold_hour_bg.png?v=182.0.0") !important;
   background-size: 100% 100% !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
@@ -4916,4 +4916,288 @@ section.zone-card {
   bottom: 16% !important;
   top: auto !important;
   object-fit: contain !important;
+}
+
+
+/* ===== v179 ROOT FIXES — final overrides ===== */
+
+/* Hour clock: fixed % positions (Safari-safe, no CSS var rotate) */
+.hour-clock {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 300px !important;
+  height: 280px !important;
+  margin: 10px auto !important;
+  overflow: visible !important;
+}
+.hour-clock .hc-center {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 5 !important;
+  width: 92px !important;
+  height: 68px !important;
+  border: none !important;
+  border-radius: 50% 50% 48% 48% / 55% 55% 45% 45% !important;
+  background: radial-gradient(ellipse at 40% 30%, #ffe58a, #f5c542 50%, #c9970d) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+  font-size: 15px !important;
+  box-shadow: 0 0 20px rgba(245,197,66,.7) !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+}
+.hour-clock .hc-cloud {
+  position: absolute !important;
+  z-index: 4 !important;
+  width: 56px !important;
+  height: 34px !important;
+  border: 1.5px solid rgba(53,200,255,.75) !important;
+  border-radius: 50% 50% 48% 48% / 55% 55% 45% 45% !important;
+  background: rgba(6, 24, 42, 0.95) !important;
+  color: #e8f4ff !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  box-shadow: 0 0 8px rgba(53,200,255,.4) !important;
+  transform: translate(-50%, -50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.hour-clock .hc-cloud.active {
+  border-color: #f5c542 !important;
+  color: #f5c542 !important;
+}
+/* clock positions — percent of container */
+.hc-pos-12 { left: 50% !important; top: 8% !important; }
+.hc-pos-14 { left: 82% !important; top: 22% !important; }
+.hc-pos-16 { left: 92% !important; top: 50% !important; }
+.hc-pos-18 { left: 82% !important; top: 78% !important; }
+.hc-pos-20 { left: 50% !important; top: 92% !important; }
+.hc-pos-22 { left: 18% !important; top: 78% !important; }
+.hc-pos-00 { left: 8% !important; top: 50% !important; }
+.hc-pos-10 { left: 18% !important; top: 22% !important; }
+
+/* Gold Hour — nuclear override at file end */
+#best-line button.best-chip.gold-hour,
+#best-line .best-chip.gold-hour,
+button.best-chip.gold-hour[data-why="gold"],
+.best-chip.gold-hour {
+  background: linear-gradient(145deg, #6B0F1A 0%, #C41E3A 28%, #E8B923 60%, #FFD700 88%) !important;
+  border: 1.5px solid #E8C547 !important;
+  color: #C41E3A !important;
+  font-weight: 800 !important;
+  box-shadow: 0 0 14px rgba(196,30,58,.5), 0 0 8px rgba(232,185,35,.35) !important;
+}
+#best-line .best-chip.gold-hour .gh-txt,
+#best-line .best-chip.gold-hour .gh-time,
+.best-chip.gold-hour .gh-txt,
+.best-chip.gold-hour .gh-time {
+  color: #C41E3A !important;
+  font-weight: 800 !important;
+}
+
+/* Zone horizontal no clip */
+.zone-card .zone-body,
+.zone-card-h .zone-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 10px !important;
+  overflow: visible !important;
+}
+.zone-card .zone-info,
+.zone-card-h .zone-info {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+.zone-card .zone-place,
+.zone-card-h .zone-place {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+  color: #7ad7ff !important;
+}
+
+
+/* v180 zone: horizontal, clear map, pin visible */
+.zone-card, .zone-card-h, section.card.zone-card {
+  width: 100% !important;
+  overflow: visible !important;
+}
+.zone-card .zone-body, .zone-card-h .zone-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-height: 120px !important;
+  width: 100% !important;
+}
+.zone-map-wrap {
+  flex: 0 0 46% !important;
+  width: 46% !important;
+  min-height: 110px !important;
+  height: 120px !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background: #061018 !important;
+  position: relative !important;
+  border: 1px solid rgba(53,200,255,.25) !important;
+}
+.zone-map, .zone-map-fill, .zone-map-wrap img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  display: block !important;
+  opacity: 1 !important;
+  filter: brightness(1.15) contrast(1.1) drop-shadow(0 0 6px rgba(53,200,255,.45)) !important;
+}
+.zone-pin, #zone-pin {
+  position: absolute !important;
+  width: 14px !important;
+  height: 14px !important;
+  background: #ff2a2a !important;
+  border: 2px solid #fff !important;
+  border-radius: 50% 50% 50% 0 !important;
+  transform: rotate(-45deg) translate(50%, -20%) !important;
+  box-shadow: 0 0 10px rgba(255,40,40,.8) !important;
+  z-index: 5 !important;
+  display: block !important;
+}
+.zone-info {
+  flex: 1 1 50% !important;
+  min-width: 0 !important;
+  padding-right: 4px !important;
+}
+.zone-place, #zone-place {
+  white-space: normal !important;
+  overflow: visible !important;
+  max-height: none !important;
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+  color: #7ad7ff !important;
+}
+
+
+/* ===== v182 Method A: locked image + hit areas ===== */
+.hour-clock {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 340px !important;
+  margin: 8px auto 4px !important;
+  aspect-ratio: 3 / 4 !important;
+  height: auto !important;
+  min-height: 280px !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+.hour-clock-bg {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  pointer-events: none !important;
+  user-select: none !important;
+  border-radius: 16px !important;
+}
+/* transparent hit buttons over clouds — large enough to tap */
+.hour-clock .hc-hit {
+  position: absolute !important;
+  z-index: 6 !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  -webkit-tap-highlight-color: transparent !important;
+  border-radius: 50% !important;
+}
+.hour-clock .hc-hit:active,
+.hour-clock .hc-hit.active {
+  box-shadow: 0 0 0 2px rgba(245,197,66,.55) !important;
+  background: rgba(245,197,66,.12) !important;
+}
+/* positions tuned to locked IMG_0590 clock layout */
+.hc-hit-center {
+  left: 50% !important; top: 48% !important;
+  width: 34% !important; height: 22% !important;
+  transform: translate(-50%, -50%) !important;
+  border-radius: 40% !important;
+}
+.hc-hit-12 { left: 50% !important; top: 14% !important; width: 18% !important; height: 11% !important; transform: translate(-50%, -50%) !important; }
+.hc-hit-14 { left: 78% !important; top: 26% !important; width: 18% !important; height: 11% !important; transform: translate(-50%, -50%) !important; }
+.hc-hit-16 { left: 88% !important; top: 48% !important; width: 18% !important; height: 11% !important; transform: translate(-50%, -50%) !important; }
+.hc-hit-18 { left: 78% !important; top: 70% !important; width: 18% !important; height: 11% !important; transform: translate(-50%, -50%) !important; }
+.hc-hit-20 { left: 50% !important; top: 82% !important; width: 18% !important; height: 11% !important; transform: translate(-50%, -50%) !important; }
+.hc-hit-22 { left: 28% !important; top: 76% !important; width: 18% !important; height: 11% !important; transform: translate(-50%, -50%) !important; }
+.hc-hit-00 { left: 18% !important; top: 52% !important; width: 18% !important; height: 11% !important; transform: translate(-50%, -50%) !important; }
+.hc-hit-10 { left: 22% !important; top: 28% !important; width: 18% !important; height: 11% !important; transform: translate(-50%, -50%) !important; }
+
+.hour-hint {
+  text-align: center !important;
+  font-size: 12px !important;
+  color: #8fdf8f !important;
+  margin: 4px 0 0 !important;
+}
+
+/* Gold Hour locked JPG */
+#best-line button.best-chip.gold-hour,
+button.best-chip.gold-hour,
+.best-chip.gold-hour {
+  background: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 4px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  border-radius: 0 !important;
+}
+.best-chip.gold-hour .gh-lock-img {
+  height: 38px !important;
+  width: auto !important;
+  max-width: 190px !important;
+  display: block !important;
+  object-fit: contain !important;
+  filter: drop-shadow(0 0 8px rgba(232,185,35,.5)) !important;
+}
+.best-chip.gold-hour .gh-txt { display: none !important; }
+.best-chip.gold-hour .gh-time {
+  color: #f5c542 !important;
+  font-weight: 800 !important;
+  font-size: 12px !important;
+}
+
+/* Zone horizontal */
+.zone-card .zone-body, .zone-card-h .zone-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+.zone-map-wrap {
+  flex: 0 0 46% !important;
+  min-height: 110px !important;
+  position: relative !important;
+}
+.zone-map, .zone-map-fill {
+  width: 100% !important; height: 100% !important;
+  object-fit: contain !important;
+  filter: brightness(1.15) drop-shadow(0 0 6px rgba(53,200,255,.4)) !important;
+}
+.zone-place {
+  white-space: normal !important;
+  overflow: visible !important;
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+  color: #7ad7ff !important;
 }

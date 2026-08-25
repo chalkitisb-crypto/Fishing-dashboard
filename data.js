@@ -248,10 +248,17 @@
     // next high/low rough
     var tideExtrema = [];
     for (i = 1; i < tidePts.length - 1; i++) {
-      if (tidePts[i] >= tidePts[i - 1] && tidePts[i] >= tidePts[i + 1])
-        tideExtrema.push({ t: tideTimes[i], h: tidePts[i], type: "High" });
-      if (tidePts[i] <= tidePts[i - 1] && tidePts[i] <= tidePts[i + 1])
-        tideExtrema.push({ t: tideTimes[i], h: tidePts[i], type: "Low" });
+      var isHigh = tidePts[i] > tidePts[i - 1] && tidePts[i] >= tidePts[i + 1];
+      var isLow  = tidePts[i] < tidePts[i - 1] && tidePts[i] <= tidePts[i + 1];
+      if (!isHigh && !isLow) continue;
+      /* skip if last extrema within ~2 samples (avoids double dots on flat peaks) */
+      if (tideExtrema.length) {
+        var last = tideExtrema[tideExtrema.length - 1];
+        var li = tideTimes.indexOf(last.t);
+        if (li >= 0 && (i - li) <= 2) continue;
+      }
+      if (isHigh) tideExtrema.push({ t: tideTimes[i], h: tidePts[i], type: "High" });
+      else tideExtrema.push({ t: tideTimes[i], h: tidePts[i], type: "Low" });
     }
 
     return {
@@ -401,22 +408,22 @@
       if (w0 < 0.15) { C = 22; factors.currentLabel = "Εκτίμηση: λάδι"; }
       else if (w0 < 0.45) { C = 55; factors.currentLabel = "Εκτίμηση: ήπια κίνηση"; }
       else { C = 48; factors.currentLabel = "Εκτίμηση: μέτρια"; }
-    } else if (ckn < 0.10) {
-      C = 16; factors.currentLabel = "Νεκρά/λάδι"; reasons.push("Ρεύμα σχεδόν μηδέν");
-    } else if (ckn < 0.18) {
-      C = 24; factors.currentLabel = "Λάδι"; reasons.push("Ρεύμα λάδι " + ckn.toFixed(2) + " kn");
-    } else if (ckn < 0.26) {
-      C = 32; factors.currentLabel = "Πολύ ασθενές"; reasons.push("Ασθενές ρεύμα " + ckn.toFixed(2) + " kn");
-    } else if (ckn < 0.40) {
-      C = 72; factors.currentLabel = "Χαμηλό ιδανικό"; reasons.push("Χαμηλό ρεύμα " + ckn.toFixed(2) + " kn");
-    } else if (ckn <= 0.70) {
-      C = 90; factors.currentLabel = "Μέτριο ιδανικό"; reasons.push("Μέτριο ρεύμα " + ckn.toFixed(2) + " kn");
-    } else if (ckn <= 1.0) {
-      C = 62; factors.currentLabel = "Δυνατό"; reasons.push("Δυνατό ρεύμα " + ckn.toFixed(2) + " kn");
-    } else if (ckn <= 1.4) {
-      C = 35; factors.currentLabel = "Πολύ δυνατό"; reasons.push("Πολύ δυνατό ρεύμα");
+    } else if (ckn < 0.12) {
+      C = 14; factors.currentLabel = "Νεκρά/λάδι"; reasons.push("Ρεύμα σχεδόν μηδέν");
+    } else if (ckn < 0.22) {
+      C = 22; factors.currentLabel = "Λάδι"; reasons.push("Ρεύμα λάδι " + ckn.toFixed(2) + " kn");
+    } else if (ckn < 0.35) {
+      C = 36; factors.currentLabel = "Ασθενές"; reasons.push("Ασθενές ρεύμα " + ckn.toFixed(2) + " kn");
+    } else if (ckn < 0.55) {
+      C = 78; factors.currentLabel = "Χαμηλό-μέτριο καλό"; reasons.push("Ρεύμα " + ckn.toFixed(2) + " kn");
+    } else if (ckn <= 0.85) {
+      C = 92; factors.currentLabel = "Μέτριο ιδανικό"; reasons.push("Μέτριο ρεύμα " + ckn.toFixed(2) + " kn");
+    } else if (ckn <= 1.15) {
+      C = 55; factors.currentLabel = "Δυνατό"; reasons.push("Δυνατό ρεύμα " + ckn.toFixed(2) + " kn");
+    } else if (ckn <= 1.5) {
+      C = 30; factors.currentLabel = "Πολύ δυνατό"; reasons.push("Πολύ δυνατό ρεύμα");
     } else {
-      C = 16; factors.currentLabel = "Ακραίο"; reasons.push("Ακραίο ρεύμα");
+      C = 14; factors.currentLabel = "Ακραίο"; reasons.push("Ακραίο ρεύμα");
     }
 
     /* --- WIND (0-100) --- */
@@ -499,7 +506,7 @@
     var score = 0.38 * C + 0.25 * W + 0.15 * P + 0.12 * T + 0.07 * Sea + 0.03 * M;
 
     /* Στατιστικό φρένο (ημερολόγιο): χαμηλό ρεύμα → χαμηλή επιτυχία · όχι τεχνητό «τιμωρητικό» cap */
-    var oil = (ckn != null && ckn < 0.25) || (ckn == null && wh != null && wh < 0.18);
+    var oil = (ckn != null && ckn < 0.34) || (ckn == null && wh != null && wh < 0.20);
     if (oil) {
       score = Math.min(score, 48);
       if (reasons.indexOf("Ρεύμα σχεδόν μηδέν") < 0 && ckn != null && ckn < 0.12)
@@ -802,7 +809,8 @@ function computeAlerts(data, sc) {
 
     if (ckn != null) {
       if (ckn < 0.08) alerts.push({ cls: "a-orange", type: "fish", ico: "fish", title: "ΡΕΥΜΑ ΝΕΚΡΟ", text: ckn.toFixed(2) + " kn — ψάξε σημείο με ροή" });
-      else if (ckn >= 0.25 && ckn <= 0.7) alerts.push({ cls: "a-green", type: "fish", ico: "fish", title: "ΚΑΛΟ ΡΕΥΜΑ", text: ckn.toFixed(2) + " kn — καλή ζώνη τσιμπημάτων" });
+      else if (ckn >= 0.12 && ckn < 0.35) alerts.push({ cls: "a-orange", type: "clock", ico: "clock", title: "ΧΑΜΗΛΟ ΡΕΥΜΑ", text: ckn.toFixed(2) + " kn — καλό για συναγρίδα · χαμηλές προσδοκίες γενικά" });
+      else if (ckn >= 0.35 && ckn <= 0.85) alerts.push({ cls: "a-green", type: "fish", ico: "fish", title: "ΚΑΛΟ ΡΕΥΜΑ", text: ckn.toFixed(2) + " kn — καλή ζώνη τσιμπημάτων" });
       else if (ckn > 1.1) alerts.push({ cls: "a-orange", type: "warn", ico: "warn", title: "ΔΥΝΑΤΟ ΡΕΥΜΑ", text: ckn.toFixed(2) + " kn — υπήνεμο / πίσω από δομή" });
     }
 

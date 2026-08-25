@@ -256,22 +256,17 @@ function __notifyMoon(pct, phaseTxt) {
     }
     var html = "";
     if (dots) {
-      for (var i = 0; i < pts.length; i++) {
-        var isExt = (i === 0 || i === pts.length - 1);
-        if (!isExt && i > 0 && i < pts.length - 1) {
-          if ((pts[i] >= pts[i-1] && pts[i] >= pts[i+1]) || (pts[i] <= pts[i-1] && pts[i] <= pts[i+1])) isExt = true;
-        }
-        if (!isExt) continue;
+      var lastExt = -99;
+      for (var i = 1; i < pts.length - 1; i++) {
+        var isHigh = pts[i] > pts[i-1] && pts[i] >= pts[i+1];
+        var isLow  = pts[i] < pts[i-1] && pts[i] <= pts[i+1];
+        if (!isHigh && !isLow) continue;
+        if (i - lastExt <= 2) continue; /* no double dots on flat peaks */
+        lastExt = i;
         html += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(pts[i]).toFixed(1) +
           '" r="3.5" fill="#fff" stroke="#35c8ff" stroke-width="2"/>';
       }
-      /* LIVE red dot — series starts at now (index 0) */
-      var liveIdx = 0;
-      html +=
-        '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
-        '" r="5" fill="#ff2a2a" opacity="0.35"/>' +
-        '<circle cx="' + X(liveIdx).toFixed(1) + '" cy="' + Y(pts[liveIdx]).toFixed(1) +
-        '" r="3.2" fill="#e01010" stroke="#ffffff" stroke-width="1.6"/>';
+      /* live red only in #tide-live group (placeLiveDot below) — not here */
       dots.innerHTML = html;
       try {
         var tArr = (times && times.length) ? times : (window._tideTimes || []);
@@ -720,7 +715,7 @@ function __notifyMoon(pct, phaseTxt) {
       img.style.setProperty("display", "block", "important");
       img.style.setProperty("visibility", "visible", "important");
       img.style.setProperty("opacity", "1", "important");
-      img.src = "moon_full.png?v=178.0.0";
+      img.src = "moon_full.png?v=182.0.0";
     }
     if (!shade) return;
     // reset any solid background from old CSS
@@ -787,9 +782,9 @@ function __notifyMoon(pct, phaseTxt) {
   function bindHourPicker(data) {
     var card = document.getElementById("hour-pick-card");
     if (!card || !data) return;
-    card.querySelectorAll(".hour-chip, .hc-cloud, .hc-center").forEach(function (btn) {
+    card.querySelectorAll(".hour-chip, .hc-cloud, .hc-center, .hc-hit").forEach(function (btn) {
       btn.onclick = function () {
-        card.querySelectorAll(".hour-chip, .hc-cloud, .hc-center").forEach(function (b) { b.classList.remove("active"); });
+        card.querySelectorAll(".hour-chip, .hc-cloud, .hc-center, .hc-hit").forEach(function (b) { b.classList.remove("active"); });
         btn.classList.add("active");
         var h = btn.getAttribute("data-hour");
         if (h === "now") {
@@ -990,7 +985,7 @@ function __notifyMoon(pct, phaseTxt) {
         '<span class="sep"> · </span>' +
         '<button type="button" class="best-chip" data-why="evening">ΑΠΟΓΕΥΜΑ ' + bh.evening + "</button>" +
         '<span class="sep"> · </span>' +
-        '<button type="button" class="best-chip gold-hour" data-why="gold"><span class="gh-txt">GOLD HOUR</span> <span class="gh-time">' + (bh.gold || "") + "</span></button>" +
+        '<button type="button" class="best-chip gold-hour" data-why="gold"><img class="gh-lock-img" src="gold_hour_btn.jpg?v=182.0.0" alt="GOLD HOUR"/><span class="gh-time">' + (bh.gold || "") + "</span></button>" +
         '<span class="sep"> · </span>' +
         '<button type="button" class="best-chip" data-why="night">ΝΥΧΤΑ ' + bh.night + "</button>";
       if (bh.techniques && bh.techniques.length) {
