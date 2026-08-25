@@ -111,6 +111,30 @@ function __notifyMoon(pct, phaseTxt) {
     }
     return liveIdx;
   }
+  /* fractional index for rolling red-dot between samples */
+  function liveFracFromTimes(times) {
+    if (!times || times.length < 2) return liveIndexFromTimes(times);
+    var now = new Date();
+    var nowMin = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+    function tMin(s) {
+      var p = String(s || "0:0").split(":");
+      return parseInt(p[0], 10) * 60 + parseInt(p[1] || "0", 10);
+    }
+    var mins = times.map(tMin);
+    /* find segment [i, i+1] containing nowMin (handle wrap) */
+    for (var i = 0; i < mins.length - 1; i++) {
+      var a = mins[i], b = mins[i + 1];
+      if (a <= b) {
+        if (nowMin >= a && nowMin <= b) {
+          var t = (nowMin - a) / Math.max(1, b - a);
+          return i + t;
+        }
+      }
+    }
+    /* before first or after last → clamp */
+    if (nowMin <= mins[0]) return 0;
+    return mins.length - 1;
+  }
 
   function drawPressure() {
     var line = $("pressure-line");
@@ -136,7 +160,8 @@ function __notifyMoon(pct, phaseTxt) {
     var pairs = pts.map(function (v, i) { return X(i).toFixed(1) + "," + Y(v).toFixed(1); });
     line.setAttribute("points", pairs.join(" "));
     line.setAttribute("stroke", "#f5c542");
-    line.setAttribute("stroke-width", "2.2");
+    line.setAttribute("stroke-width", "3.2");
+    line.setAttribute("filter", "url(#pressureGlow)");
     line.setAttribute("fill", "none");
     if (area) {
       area.setAttribute("d",
@@ -179,8 +204,18 @@ function __notifyMoon(pct, phaseTxt) {
       grid.innerHTML = ticks.join("");
     }
     try {
-      var li = liveIndexFromTimes(times);
-      if (pts[li] != null) placeLiveDot("pressure-live", X(li), Y(pts[li]));
+      var frac = (typeof liveFracFromTimes === "function") ? liveFracFromTimes(times) : liveIndexFromTimes(times);
+      var i0 = Math.floor(frac);
+      var i1 = Math.min(pts.length - 1, i0 + 1);
+      var t = frac - i0;
+      var v0 = pts[i0], v1 = pts[i1];
+      if (v0 != null && v1 != null) {
+        var xf = X(i0) * (1 - t) + X(i1) * t;
+        var yf = Y(v0) * (1 - t) + Y(v1) * t;
+        placeLiveDot("pressure-live", xf, yf);
+      } else if (v0 != null) {
+        placeLiveDot("pressure-live", X(i0), Y(v0));
+      }
     } catch (eLive) {}
 
     
@@ -241,7 +276,11 @@ function __notifyMoon(pct, phaseTxt) {
       try {
         var tArr = (times && times.length) ? times : (window._tideTimes || []);
         var li = liveIndexFromTimes(tArr);
-        if (pts[li] != null) placeLiveDot("tide-live", X(li), Y(pts[li]));
+        var fracT = (typeof liveFracFromTimes === "function") ? liveFracFromTimes(times) : li;
+      var j0 = Math.floor(fracT), j1 = Math.min(pts.length - 1, j0 + 1), tt = fracT - j0;
+      if (pts[j0] != null && pts[j1] != null)
+        placeLiveDot("tide-live", X(j0) * (1 - tt) + X(j1) * tt, Y(pts[j0]) * (1 - tt) + Y(pts[j1]) * tt);
+      else if (pts[li] != null) placeLiveDot("tide-live", X(li), Y(pts[li]));
       } catch (eT) {}
       
     }
@@ -672,61 +711,49 @@ function __notifyMoon(pct, phaseTxt) {
 
             function setMoonVisual(pct, phaseHtml, phaseKey) {
     pct = Math.max(0, Math.min(100, Number(pct) || 0));
-    var img = $("moon-img") || document.querySelector(".moon-img");
-    var shade = $("moon-shade");
-    var lit = $("moon-lit");
-    var disc = $("moon-disc") || document.querySelector(".moon-disc");
-
+    var img = document.getElementById("moon-img");
+    var shade = document.getElementById("moon-shade");
+    var lit = document.getElementById("moon-lit");
     if (img) {
       img.hidden = false;
-      img.style.display = "block";
-      img.src = "moon_full.png?v=175.0.0";
-      img.style.setProperty("filter", "brightness(1.2) contrast(1.06)", "important");
+      img.removeAttribute("hidden");
+      img.style.setProperty("display", "block", "important");
+      img.style.setProperty("visibility", "visible", "important");
+      img.style.setProperty("opacity", "1", "important");
+      img.src = "moon_full.png?v=178.0.0";
     }
-    if (disc) {
-      disc.classList.add("moon-spin");
-      disc.classList.add("moon-glow");
-    }
-
-    var phase = (phaseHtml || "").toLowerCase();
-    var waning = phase.indexOf("φθίν") >= 0 || phase.indexOf("φθιν") >= 0 ||
-      phaseKey === "waning_crescent" || phaseKey === "waning_gibbous" || phaseKey === "last_quarter" ||
-      /φθιν|waning|last|third/.test(String(phaseKey || "").toLowerCase());
-    if (phaseKey === "full" || pct >= 97) waning = false;
-
     if (!shade) return;
-    shade.style.cssText = "position:absolute;inset:0;border-radius:50%;pointer-events:none;z-index:10;";
+    // reset any solid background from old CSS
+    shade.style.setProperty("background", "transparent", "important");
+    var phase = String(phaseHtml || phaseKey || "").toLowerCase();
+    var waning = /φθίν|φθιν|waning|last/.test(phase);
+    if (pct >= 97) waning = false;
 
     if (pct >= 97) {
+      shade.style.setProperty("background", "transparent", "important");
       shade.style.setProperty("opacity", "0", "important");
-      shade.style.background = "transparent";
-      if (lit) lit.style.opacity = "0.2";
       return;
     }
     if (pct <= 3) {
       shade.style.setProperty("opacity", "1", "important");
-      shade.style.background = "rgba(2,11,24,0.93)";
-      if (lit) lit.style.opacity = "0";
+      shade.style.setProperty("background", "rgba(2,11,24,0.90)", "important");
       return;
     }
-
     shade.style.setProperty("opacity", "1", "important");
     var edge = waning ? Math.round(pct) : Math.round(100 - pct);
+    edge = Math.max(3, Math.min(97, edge));
+    var bg;
     if (waning) {
-      // light on LEFT
-      shade.style.background =
-        "linear-gradient(to right, transparent 0%, transparent " + Math.max(0, edge - 4) + "%, rgba(2,11,24,0.45) " + edge + "%, rgba(2,11,24,0.88) " + Math.min(100, edge + 6) + "%, rgba(2,11,24,0.88) 100%)";
+      bg = "linear-gradient(to right, transparent 0%, transparent " + Math.max(0,edge-5) + "%, rgba(2,11,24,0.35) " + edge + "%, rgba(2,11,24,0.85) " + Math.min(100,edge+8) + "%, rgba(2,11,24,0.85) 100%)";
     } else {
-      // waxing: light on RIGHT, dark on LEFT — at 78% thin dark left
-      shade.style.background =
-        "linear-gradient(to right, rgba(2,11,24,0.88) 0%, rgba(2,11,24,0.88) " + Math.max(0, edge - 6) + "%, rgba(2,11,24,0.45) " + edge + "%, transparent " + Math.min(100, edge + 4) + "%, transparent 100%)";
+      bg = "linear-gradient(to right, rgba(2,11,24,0.85) 0%, rgba(2,11,24,0.85) " + Math.max(0,edge-8) + "%, rgba(2,11,24,0.35) " + edge + "%, transparent " + Math.min(100,edge+5) + "%, transparent 100%)";
     }
+    shade.style.setProperty("background", bg, "important");
     if (lit) {
-      lit.style.display = "block";
-      lit.style.opacity = String(0.06 + (pct / 100) * 0.18);
+      lit.style.opacity = String(0.05 + pct/100*0.15);
       lit.style.background = waning
-        ? "radial-gradient(circle at 28% 40%, rgba(255,245,210,.35), transparent 55%)"
-        : "radial-gradient(circle at 72% 40%, rgba(255,245,210,.35), transparent 55%)";
+        ? "radial-gradient(circle at 28% 40%, rgba(255,245,210,.3), transparent 55%)"
+        : "radial-gradient(circle at 72% 40%, rgba(255,245,210,.3), transparent 55%)";
     }
   }
 
@@ -760,9 +787,9 @@ function __notifyMoon(pct, phaseTxt) {
   function bindHourPicker(data) {
     var card = document.getElementById("hour-pick-card");
     if (!card || !data) return;
-    card.querySelectorAll(".hour-chip").forEach(function (btn) {
+    card.querySelectorAll(".hour-chip, .hc-cloud, .hc-center").forEach(function (btn) {
       btn.onclick = function () {
-        card.querySelectorAll(".hour-chip").forEach(function (b) { b.classList.remove("active"); });
+        card.querySelectorAll(".hour-chip, .hc-cloud, .hc-center").forEach(function (b) { b.classList.remove("active"); });
         btn.classList.add("active");
         var h = btn.getAttribute("data-hour");
         if (h === "now") {
@@ -1546,4 +1573,21 @@ function __notifyMoon(pct, phaseTxt) {
       applyWSize(t.dataset.wsize);
     });
   });
+})();
+
+/* v176 force moon visible after data load */
+(function(){
+  function run(){
+    var el=document.getElementById("moon-pct");
+    var n=78;
+    if(el){var p=parseFloat(String(el.textContent).replace(/[^0-9.]/g,"")); if(!isNaN(p)) n=p;}
+    var ph=document.getElementById("moon-phase");
+    var key=ph?ph.textContent:"Αύξουσα";
+    if(typeof setMoonVisual==="function") setMoonVisual(n,key,key);
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",run);
+  else run();
+  setTimeout(run,300);
+  setTimeout(run,1000);
+  setTimeout(run,2500);
 })();

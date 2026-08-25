@@ -4535,3 +4535,385 @@ img[src*="crescent_set"] {
   transform: none !important;
   scale: none !important;
 }
+
+
+/* =========================================================
+   v176 CLEAN MOON — kills black disc (final overrides)
+   ========================================================= */
+#moon-img,
+img#moon-img,
+.moon-disc > img.moon-img,
+.moon-disc img {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  filter: brightness(1.35) contrast(1.1) saturate(1.15) !important;
+  animation: moonSpin176 30s linear infinite !important;
+  transform-origin: center center !important;
+}
+@keyframes moonSpin176 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.moon-disc,
+#moon-disc {
+  position: relative !important;
+  width: 100px !important;
+  height: 100px !important;
+  min-width: 100px !important;
+  min-height: 100px !important;
+  max-width: 100px !important;
+  max-height: 100px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  flex: 0 0 100px !important;
+  background: #2a1f0a !important;
+  box-shadow: 0 0 16px rgba(245,197,66,0.5), 0 0 36px rgba(245,197,66,0.22) !important;
+}
+/* SHADE: transparent by default — JS sets gradient. NEVER solid black in CSS */
+#moon-shade,
+.moon-shade {
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: 50% !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+  background: transparent !important;
+  opacity: 1 !important;
+  animation: none !important;
+  transform: none !important;
+}
+#moon-lit,
+.moon-lit {
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: 50% !important;
+  z-index: 3 !important;
+  pointer-events: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+#moon-canvas,
+canvas#moon-canvas {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.moon-card .moon-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+}
+.moon-card .moon-info {
+  flex: 0 0 auto !important;
+}
+.moon-times {
+  display: flex !important;
+  gap: 14px !important;
+  justify-content: flex-start !important;
+}
+.moon-time { color: #f5c542 !important; font-size: 11px !important; }
+.moon-time .mt-crescent {
+  width: 14px !important;
+  height: 14px !important;
+  transform: none !important;
+}
+
+
+/* ========== v177 MOON VERTICAL layout ========== */
+.moon-card,
+section.moon-card,
+[data-widget="moon"] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  padding: 10px 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* body: moon on top of text, centered column */
+.moon-card .moon-body {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+.moon-card .moon-info {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  flex: 0 0 auto !important;
+  width: 100% !important;
+}
+
+.moon-card .moon-pct {
+  font-size: 1.6rem !important;
+  font-weight: 700 !important;
+  color: #f5c542 !important;
+  line-height: 1.1 !important;
+}
+
+.moon-card .moon-phase {
+  font-size: 0.85rem !important;
+  color: #f5c542 !important;
+  text-align: center !important;
+  line-height: 1.25 !important;
+}
+
+.moon-disc,
+#moon-disc {
+  width: 110px !important;
+  height: 110px !important;
+  min-width: 110px !important;
+  min-height: 110px !important;
+  max-width: 110px !important;
+  max-height: 110px !important;
+  flex: 0 0 110px !important;
+  margin: 0 auto !important;
+}
+
+/* times: two columns, LABEL on top, HOUR under */
+.moon-times {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  gap: 28px !important;
+  width: 100% !important;
+  margin-top: 10px !important;
+  padding-top: 8px !important;
+  border-top: 1px solid rgba(245,197,66,0.15) !important;
+}
+
+.moon-time {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 2px !important;
+  color: #f5c542 !important;
+  font-size: 11px !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+
+.moon-time .mt-crescent {
+  width: 16px !important;
+  height: 16px !important;
+  object-fit: contain !important;
+  margin-bottom: 2px !important;
+  transform: none !important;
+}
+
+.moon-time .mt-lab {
+  font-size: 11px !important;
+  color: #f5c542 !important;
+  opacity: 0.9 !important;
+}
+
+.moon-time .mt-hour,
+.moon-time strong {
+  display: block !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #f5c542 !important;
+  margin-top: 2px !important;
+}
+
+/* kill old horizontal flex overrides */
+.moon-card .moon-body {
+  flex-direction: column !important;
+}
+
+
+/* ========== v178 PKG A — high confidence fixes ========== */
+
+/* --- Πρόβλεψη ώρας: συννεφάκια ορλογιακά --- */
+.hour-clock {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 320px !important;
+  height: 260px !important;
+  margin: 8px auto 4px !important;
+  display: block !important;
+}
+.hour-clock .hc-center {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 3 !important;
+  width: 88px !important;
+  height: 64px !important;
+  border: none !important;
+  border-radius: 40% 40% 38% 38% / 48% 48% 42% 42% !important;
+  background: radial-gradient(ellipse at 40% 35%, #ffe08a 0%, #f5c542 45%, #d4a017 100%) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+  font-size: 15px !important;
+  box-shadow: 0 0 18px rgba(245,197,66,.65), 0 0 4px rgba(255,200,60,.9) inset !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+.hour-clock .hc-center.active {
+  box-shadow: 0 0 24px rgba(245,197,66,.9), 0 0 6px rgba(255,220,100,.95) inset !important;
+}
+.hour-clock .hc-cloud {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: 58px !important;
+  height: 36px !important;
+  margin: 0 !important;
+  border: 1.5px solid rgba(53,200,255,.7) !important;
+  border-radius: 40% 40% 38% 38% / 48% 48% 42% 42% !important;
+  background: rgba(8, 28, 48, 0.92) !important;
+  color: #e8f4ff !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  z-index: 2 !important;
+  box-shadow: 0 0 8px rgba(53,200,255,.35) !important;
+  /* clock position: --a degrees from top */
+  transform: translate(-50%, -50%) rotate(var(--a, 0deg)) translateY(-100px) rotate(calc(-1 * var(--a, 0deg))) !important;
+}
+.hour-clock .hc-cloud.active {
+  border-color: #f5c542 !important;
+  color: #f5c542 !important;
+  box-shadow: 0 0 12px rgba(245,197,66,.5) !important;
+}
+.hour-clock .hc-cloud:active,
+.hour-clock .hc-center:active {
+  transform: translate(-50%, -50%) rotate(var(--a, 0deg)) translateY(-100px) rotate(calc(-1 * var(--a, 0deg))) scale(0.96) !important;
+}
+.hour-clock .hc-center:active {
+  transform: translate(-50%, -50%) scale(0.96) !important;
+}
+/* hide old row if residual */
+.hour-pick-row { display: none !important; }
+
+/* --- Pressure chart: stronger yellow glow like tides --- */
+#pressureGlow feGaussianBlur {
+  stdDeviation: 4 !important;
+}
+#pressure-line,
+polyline#pressure-line {
+  stroke: #f5c542 !important;
+  stroke-width: 3.2 !important;
+  filter: url(#pressureGlow) drop-shadow(0 0 6px rgba(245,197,66,.85)) !important;
+}
+#pressure-area {
+  fill: rgba(245,197,66,.22) !important;
+}
+/* live dot group always on top */
+#pressure-live, #tide-live {
+  pointer-events: none !important;
+}
+
+/* --- GOLD HOUR locked: ruby-gold button · red ruby letters --- */
+#best-line .best-chip.gold-hour,
+button.best-chip.gold-hour,
+.best-chip.gold-hour[data-why="gold"],
+button.gold-hour {
+  background: linear-gradient(145deg, #8B1A1A 0%, #C41E3A 25%, #E8B923 55%, #FFD700 78%, #C9A227 100%) !important;
+  background-image: linear-gradient(145deg, #9B1B1B 0%, #C41E3A 30%, #E8B923 58%, #FFE566 85%, #B8860B 100%) !important;
+  border: 1.5px solid #E8C547 !important;
+  color: #C41E3A !important;
+  font-weight: 800 !important;
+  text-shadow: 0 0 1px rgba(255,220,150,.4), 0 1px 0 rgba(0,0,0,.25) !important;
+  box-shadow: 0 0 14px rgba(196,30,58,.45), 0 0 8px rgba(232,185,35,.4), inset 0 1px 0 rgba(255,255,255,.25) !important;
+  border-radius: 999px !important;
+  padding: 8px 14px !important;
+}
+.best-chip.gold-hour .gh-txt,
+.best-chip.gold-hour .gh-time {
+  color: #C41E3A !important;
+  font-weight: 800 !important;
+  text-shadow: 0 0 2px rgba(255,200,100,.35) !important;
+}
+
+/* --- Zone horizontal · no text cut --- */
+.zone-card,
+.zone-card-h,
+section.zone-card {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+.zone-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 10px !important;
+  width: 100% !important;
+  min-height: 110px !important;
+}
+.zone-map-wrap {
+  flex: 0 0 48% !important;
+  max-width: 48% !important;
+  min-height: 100px !important;
+  overflow: hidden !important;
+  border-radius: 10px !important;
+}
+.zone-map, .zone-map-fill {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+}
+.zone-info {
+  flex: 1 1 50% !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 4px !important;
+}
+.zone-label {
+  font-size: 12px !important;
+  color: #35c8ff !important;
+  font-weight: 700 !important;
+}
+.zone-place {
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  color: #7ad7ff !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  word-break: break-word !important;
+  max-height: none !important;
+}
+
+/* --- Rod: tip stays inside gauge --- */
+.score-rod-live, #score-rod-arm {
+  transform-origin: 50% 100% !important;
+  width: 62% !important;
+  max-height: 62% !important;
+  left: 19% !important;
+  bottom: 16% !important;
+  top: auto !important;
+  object-fit: contain !important;
+}

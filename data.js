@@ -401,22 +401,22 @@
       if (w0 < 0.15) { C = 22; factors.currentLabel = "Εκτίμηση: λάδι"; }
       else if (w0 < 0.45) { C = 55; factors.currentLabel = "Εκτίμηση: ήπια κίνηση"; }
       else { C = 48; factors.currentLabel = "Εκτίμηση: μέτρια"; }
-    } else if (ckn < 0.08) {
-      C = 18; factors.currentLabel = "Νεκρά/λάδι"; reasons.push("Ρεύμα σχεδόν μηδέν");
-    } else if (ckn < 0.14) {
-      C = 28; factors.currentLabel = "Πολύ ασθενές"; reasons.push("Ασθενές ρεύμα " + ckn.toFixed(2) + " kn");
-    } else if (ckn < 0.20) {
-      C = 38; factors.currentLabel = "Ασθενές"; reasons.push("Ασθενές ρεύμα " + ckn.toFixed(2) + " kn");
-    } else if (ckn < 0.28) {
-      C = 58; factors.currentLabel = "Ασθενές-μέτριο"; reasons.push("Ρεύμα " + ckn.toFixed(2) + " kn");
-    } else if (ckn <= 0.50) {
-      C = 92; factors.currentLabel = "Μέτριο ιδανικό"; reasons.push("Μέτριο ρεύμα " + ckn.toFixed(2) + " kn");
-    } else if (ckn <= 0.75) {
-      C = 68; factors.currentLabel = "Δυνατό"; reasons.push("Δυνατό ρεύμα " + ckn.toFixed(2) + " kn");
-    } else if (ckn <= 1.2) {
-      C = 38; factors.currentLabel = "Πολύ δυνατό"; reasons.push("Πολύ δυνατό ρεύμα");
+    } else if (ckn < 0.10) {
+      C = 16; factors.currentLabel = "Νεκρά/λάδι"; reasons.push("Ρεύμα σχεδόν μηδέν");
+    } else if (ckn < 0.18) {
+      C = 24; factors.currentLabel = "Λάδι"; reasons.push("Ρεύμα λάδι " + ckn.toFixed(2) + " kn");
+    } else if (ckn < 0.26) {
+      C = 32; factors.currentLabel = "Πολύ ασθενές"; reasons.push("Ασθενές ρεύμα " + ckn.toFixed(2) + " kn");
+    } else if (ckn < 0.40) {
+      C = 72; factors.currentLabel = "Χαμηλό ιδανικό"; reasons.push("Χαμηλό ρεύμα " + ckn.toFixed(2) + " kn");
+    } else if (ckn <= 0.70) {
+      C = 90; factors.currentLabel = "Μέτριο ιδανικό"; reasons.push("Μέτριο ρεύμα " + ckn.toFixed(2) + " kn");
+    } else if (ckn <= 1.0) {
+      C = 62; factors.currentLabel = "Δυνατό"; reasons.push("Δυνατό ρεύμα " + ckn.toFixed(2) + " kn");
+    } else if (ckn <= 1.4) {
+      C = 35; factors.currentLabel = "Πολύ δυνατό"; reasons.push("Πολύ δυνατό ρεύμα");
     } else {
-      C = 18; factors.currentLabel = "Ακραίο"; reasons.push("Ακραίο ρεύμα");
+      C = 16; factors.currentLabel = "Ακραίο"; reasons.push("Ακραίο ρεύμα");
     }
 
     /* --- WIND (0-100) --- */
@@ -427,8 +427,8 @@
     if (bf == null && kmh == null) W = 45;
     else if (bf <= 0) { W = 28; reasons.push("Άπνοια"); }
     else if (bf === 1) W = 48;
-    else if (bf === 2) { W = 82; reasons.push("Άνεμος 2 bf"); }
-    else if (bf === 3) { W = 92; reasons.push("Άνεμος 3 bf ιδανικός"); }
+    else if (bf === 2) { W = 70; reasons.push("Άνεμος 2 bf"); }
+    else if (bf === 3) { W = 78; reasons.push("Άνεμος 3 bf"); }
     else if (bf === 4) { W = 78; reasons.push("Άνεμος 4 bf"); }
     else if (bf === 5) { W = 48; reasons.push("Άνεμος 5 bf"); }
     else { W = 25; reasons.push("Δυνατός άνεμος " + bf + " bf"); }
@@ -499,9 +499,9 @@
     var score = 0.38 * C + 0.25 * W + 0.15 * P + 0.12 * T + 0.07 * Sea + 0.03 * M;
 
     /* Στατιστικό φρένο (ημερολόγιο): χαμηλό ρεύμα → χαμηλή επιτυχία · όχι τεχνητό «τιμωρητικό» cap */
-    var oil = (ckn != null && ckn < 0.18) || (ckn == null && wh != null && wh < 0.15);
+    var oil = (ckn != null && ckn < 0.25) || (ckn == null && wh != null && wh < 0.18);
     if (oil) {
-      score = Math.min(score, 50);
+      score = Math.min(score, 48);
       if (reasons.indexOf("Ρεύμα σχεδόν μηδέν") < 0 && ckn != null && ckn < 0.12)
         reasons.push("Ρεύμα σχεδόν μηδέν");
     }
@@ -512,7 +512,7 @@
 
     /* Activity: more sensitive to current "now" */
     var activity = 0.42 * C + 0.22 * W + 0.12 * P + 0.14 * T + 0.06 * Sea + 0.04 * M;
-    if (oil) activity = Math.min(activity, 45);
+    if (oil) activity = Math.min(activity, 42);
     activity = Math.round(clamp(activity, 0, 100));
 
     /* Calibration anchor: 20/08 Arginonta oil+4bf → ~48/42 */
