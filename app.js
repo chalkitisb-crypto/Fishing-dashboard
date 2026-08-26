@@ -1,4 +1,4 @@
-/* v186.0.0 PRESSURE stronger neon glow line */
+/* v189.0.0 PRESSURE glow 3-stroke preview match */
 /* v184.0.0 HERO locked plates — no fake sun overlay */
 /* v155.0.0 hero plates + realistic sun no blue ring */
 /* v153.0.0 HERO plates time×weather + live rain + moon % */
@@ -165,8 +165,9 @@ function __notifyMoon(pct, phaseTxt) {
     function X(i) { return padL + (i * (w - padL - padR)) / Math.max(1, pts.length - 1); }
     function Y(v) { return padT + (1 - (v - min) / (max - min)) * (h - padT - padB); }
     var pairs = pts.map(function (v, i) { return X(i).toFixed(1) + "," + Y(v).toFixed(1); });
-    line.setAttribute("points", pairs.join(" "));
-    line.setAttribute("stroke", "#f5c542");
+    var ptsStr = pairs.join(" ");
+    line.setAttribute("points", ptsStr);
+    line.setAttribute("stroke", "#ffe27a");
     line.setAttribute("stroke-width", "2.8");
     line.setAttribute("stroke-linecap", "round");
     line.setAttribute("stroke-linejoin", "round");
@@ -174,11 +175,25 @@ function __notifyMoon(pct, phaseTxt) {
     line.setAttribute("fill", "none");
     var glow = $("pressure-glow-line");
     if (glow) {
-      glow.setAttribute("points", pairs.join(" "));
+      glow.setAttribute("points", ptsStr);
       glow.setAttribute("stroke", "#f5c542");
+      glow.setAttribute("stroke-width", "14");
+      glow.setAttribute("opacity", "0.28");
       glow.setAttribute("fill", "none");
+      glow.setAttribute("filter", "url(#pressureGlowHalo)");
       glow.setAttribute("stroke-linecap", "round");
       glow.setAttribute("stroke-linejoin", "round");
+    }
+    var mid = $("pressure-glow-mid");
+    if (mid) {
+      mid.setAttribute("points", ptsStr);
+      mid.setAttribute("stroke", "#f5c542");
+      mid.setAttribute("stroke-width", "8");
+      mid.setAttribute("opacity", "0.40");
+      mid.setAttribute("fill", "none");
+      mid.setAttribute("filter", "url(#pressureGlowHalo)");
+      mid.setAttribute("stroke-linecap", "round");
+      mid.setAttribute("stroke-linejoin", "round");
     }
     if (area) {
       area.setAttribute("fill", "url(#pressureGrad)");
@@ -370,7 +385,7 @@ function __notifyMoon(pct, phaseTxt) {
   }
 
   function resolveHeroPlate(timeKey, wx) {
-    var V = "?v=187.0.0";
+    var V = "?v=189.0.0";
     if (wx === "storm") return "hero_plate_storm.jpg" + V;
     if (wx === "rain") return "hero_plate_day.jpg" + V;
     var map = {

@@ -5499,3 +5499,95 @@ polyline#pressure-line,
   stroke-linecap: round !important;
   filter: url(#pressureGlow) drop-shadow(0 0 3px #fff3b0) drop-shadow(0 0 8px #f5c542) drop-shadow(0 0 16px rgba(245,197,66,.9)) !important;
 }
+
+
+/* === v188.0.0 PRESSURE SVG-only glow (no CSS blur — Safari draws this) === */
+.card:has(#pressure-svg),
+.pressure-body,
+.pressure-body.chart-premium,
+#pressure-svg,
+.pressure-body svg {
+  overflow: visible !important;
+}
+#pressure-glow-line {
+  fill: none !important;
+  stroke: #f5c542 !important;
+  stroke-width: 16 !important;
+  filter: url(#pressureGlowWide) !important;
+  opacity: 0.9 !important;
+}
+#pressure-glow-mid {
+  fill: none !important;
+  stroke: #f5c542 !important;
+  stroke-width: 7 !important;
+  filter: url(#pressureGlow) !important;
+  opacity: 1 !important;
+}
+#pressure-line,
+polyline#pressure-line,
+.pressure-body polyline#pressure-line {
+  stroke: #ffe27a !important;
+  stroke-width: 2.6 !important;
+  filter: none !important;
+}
+#pressure-area,
+path#pressure-area {
+  fill: url(#pressureGrad) !important;
+  opacity: 1 !important;
+}
+
+
+/* === v188.0.0 PRESSURE glow = tides method, yellow, kAsiy lock === */
+#pressure-glow-mid { display: none !important; }
+#pressure-glow-line {
+  fill: none !important;
+  stroke: #f5c542 !important;
+  stroke-width: 11 !important;
+  opacity: 0.32 !important;
+  filter: none !important;
+}
+#pressure-line,
+polyline#pressure-line,
+.pressure-body polyline#pressure-line {
+  stroke: #f5c542 !important;
+  stroke-width: 2.8 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+  filter: url(#pressureGlow) drop-shadow(0 0 4px rgba(245,197,66,.75)) drop-shadow(0 0 10px rgba(245,197,66,.4)) !important;
+}
+#pressure-area,
+path#pressure-area {
+  fill: url(#pressureGrad) !important;
+  opacity: 1 !important;
+}
+
+
+/* === v189.0.0 PRESSURE glow = 3 SVG strokes, tides filters, preview lock === */
+#pressure-glow-line {
+  fill: none !important;
+  stroke: #f5c542 !important;
+  stroke-width: 14 !important;
+  opacity: 0.28 !important;
+  filter: url(#pressureGlowHalo) !important;
+}
+#pressure-glow-mid {
+  display: inline !important;
+  fill: none !important;
+  stroke: #f5c542 !important;
+  stroke-width: 8 !important;
+  opacity: 0.40 !important;
+  filter: url(#pressureGlowHalo) !important;
+}
+#pressure-line,
+polyline#pressure-line,
+.pressure-body polyline#pressure-line {
+  stroke: #ffe27a !important;
+  stroke-width: 2.8 !important;
+  filter: url(#pressureGlow) drop-shadow(0 0 4px rgba(245,197,66,.75)) drop-shadow(0 0 10px rgba(245,197,66,.4)) !important;
+}
+#pressure-area,
+path#pressure-area {
+  fill: url(#pressureGrad) !important;
+  opacity: 1 !important;
+}
+#pressure-svg, .pressure-body svg { overflow: visible !important; }
