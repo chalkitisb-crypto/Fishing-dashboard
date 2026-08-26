@@ -3271,7 +3271,7 @@ button.best-chip.gold-hour[data-why="gold"] {
 #best-line .best-chip.gold-hour,
 button.best-chip.gold-hour,
 .best-chip.gold-hour[data-why="gold"] {
-  background-image: url("gold_hour_bg.png?v=182.0.0") !important;
+  background-image: url("gold_hour_bg.png?v=183.0.0") !important;
   background-size: 100% 100% !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
@@ -5200,4 +5200,199 @@ button.best-chip.gold-hour,
   font-size: 12px !important;
   line-height: 1.45 !important;
   color: #7ad7ff !important;
+}
+
+
+/* ===== v183 PRECISION FIXES ===== */
+
+/* Hour: no double frame, cropped image (no baked title) */
+.hour-clock {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 320px !important;
+  margin: 4px auto !important;
+  aspect-ratio: auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  overflow: visible !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.hour-clock-bg {
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  border-radius: 12px !important;
+  pointer-events: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+/* kill residual gold circle / old center styles */
+.hour-clock .hc-center,
+.hour-clock .hc-cloud {
+  display: none !important;
+}
+.hour-clock .hc-hit {
+  position: absolute !important;
+  z-index: 6 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+.hour-clock .hc-hit.active {
+  box-shadow: none !important;
+  background: rgba(245,197,66,.08) !important;
+  border-radius: 50% !important;
+}
+/* positions for CROPPED image (title removed) — recalibrated */
+.hc-hit-center { left: 50% !important; top: 45% !important; width: 36% !important; height: 24% !important; transform: translate(-50%,-50%) !important; border-radius: 40% !important; }
+.hc-hit-12 { left: 50% !important; top: 8% !important; width: 20% !important; height: 12% !important; transform: translate(-50%,-50%) !important; }
+.hc-hit-14 { left: 80% !important; top: 20% !important; width: 20% !important; height: 12% !important; transform: translate(-50%,-50%) !important; }
+.hc-hit-16 { left: 90% !important; top: 45% !important; width: 20% !important; height: 12% !important; transform: translate(-50%,-50%) !important; }
+.hc-hit-18 { left: 80% !important; top: 72% !important; width: 20% !important; height: 12% !important; transform: translate(-50%,-50%) !important; }
+.hc-hit-20 { left: 50% !important; top: 88% !important; width: 20% !important; height: 12% !important; transform: translate(-50%,-50%) !important; }
+.hc-hit-22 { left: 26% !important; top: 80% !important; width: 20% !important; height: 12% !important; transform: translate(-50%,-50%) !important; }
+.hc-hit-00 { left: 12% !important; top: 48% !important; width: 20% !important; height: 12% !important; transform: translate(-50%,-50%) !important; }
+.hc-hit-10 { left: 18% !important; top: 20% !important; width: 20% !important; height: 12% !important; transform: translate(-50%,-50%) !important; }
+
+/* Gold Hour: size like other chips, no black box, time beside locked art */
+#best-line button.best-chip.gold-hour,
+button.best-chip.gold-hour,
+.best-chip.gold-hour {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  border-radius: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  vertical-align: middle !important;
+}
+.best-chip.gold-hour .gh-lock-img {
+  height: 34px !important;
+  width: auto !important;
+  max-height: 34px !important;
+  display: block !important;
+  object-fit: contain !important;
+  border: none !important;
+  background: transparent !important;
+  filter: drop-shadow(0 0 6px rgba(232,185,35,.45)) !important;
+}
+.best-chip.gold-hour .gh-txt { display: none !important; }
+.best-chip.gold-hour .gh-time {
+  color: #f5c542 !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  font-family: inherit !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Zone: full-width horizontal strip like best-hours */
+.zone-card,
+.zone-card-h,
+section.card.zone-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  grid-column: 1 / -1 !important;
+}
+.row-score-act,
+.row:has(.zone-card) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+}
+.zone-card .zone-body,
+.zone-card-h .zone-body {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 14px !important;
+  min-height: 100px !important;
+  width: 100% !important;
+}
+.zone-map-wrap {
+  flex: 0 0 42% !important;
+  width: 42% !important;
+  height: 110px !important;
+  min-height: 110px !important;
+  position: relative !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background: #061018 !important;
+  border: 1px solid rgba(53,200,255,.3) !important;
+}
+.zone-map, .zone-map-fill {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  filter: brightness(1.25) contrast(1.1) drop-shadow(0 0 8px rgba(53,200,255,.5)) !important;
+}
+/* SINGLE pin only — CSS pin; hide if map already has marker via opacity on pseudo */
+.zone-pin, #zone-pin {
+  position: absolute !important;
+  left: 58% !important;
+  top: 42% !important;
+  width: 12px !important;
+  height: 12px !important;
+  background: #ff2a2a !important;
+  border: 2px solid #fff !important;
+  border-radius: 50% 50% 50% 0 !important;
+  transform: rotate(-45deg) !important;
+  box-shadow: 0 0 8px rgba(255,40,40,.9) !important;
+  z-index: 4 !important;
+  /* if double: user said double — hide map baked pin can't, so hide CSS when needed */
+}
+/* prevent second pin from ::after */
+.zone-pin::before, .zone-pin::after, #zone-pin::before, #zone-pin::after {
+  display: none !important;
+  content: none !important;
+}
+.zone-info {
+  flex: 1 1 50% !important;
+  min-width: 0 !important;
+}
+.zone-label {
+  font-size: 11px !important;
+  color: #8adfff !important;
+  margin-bottom: 4px !important;
+}
+.zone-place, #zone-place {
+  white-space: normal !important;
+  overflow: visible !important;
+  max-height: none !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+  color: #b8e8ff !important;
+}
+
+/* Pressure: stronger yellow glow + rolling red works via JS */
+#pressure-svg, .pressure-body svg {
+  overflow: visible !important;
+}
+#pressure-line, .pressure-line {
+  stroke: #f5c542 !important;
+  stroke-width: 2.6 !important;
+  filter: drop-shadow(0 0 4px rgba(245,197,66,.9)) drop-shadow(0 0 10px rgba(245,197,66,.55)) !important;
+}
+#pressure-area, .pressure-area {
+  fill: url(#pressureGrad) !important;
+  opacity: 0.45 !important;
+}
+#pressure-live {
+  filter: drop-shadow(0 0 4px rgba(255,40,40,.9)) !important;
 }

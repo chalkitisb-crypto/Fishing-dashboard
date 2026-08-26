@@ -715,7 +715,7 @@ function __notifyMoon(pct, phaseTxt) {
       img.style.setProperty("display", "block", "important");
       img.style.setProperty("visibility", "visible", "important");
       img.style.setProperty("opacity", "1", "important");
-      img.src = "moon_full.png?v=182.0.0";
+      img.src = "moon_full.png?v=183.0.0";
     }
     if (!shade) return;
     // reset any solid background from old CSS
@@ -985,7 +985,7 @@ function __notifyMoon(pct, phaseTxt) {
         '<span class="sep"> · </span>' +
         '<button type="button" class="best-chip" data-why="evening">ΑΠΟΓΕΥΜΑ ' + bh.evening + "</button>" +
         '<span class="sep"> · </span>' +
-        '<button type="button" class="best-chip gold-hour" data-why="gold"><img class="gh-lock-img" src="gold_hour_btn.jpg?v=182.0.0" alt="GOLD HOUR"/><span class="gh-time">' + (bh.gold || "") + "</span></button>" +
+        '<button type="button" class="best-chip gold-hour" data-why="gold"><img class="gh-lock-img" src="gold_hour_btn.png?v=183.0.0" alt="GOLD HOUR"/><span class="gh-time">' + (bh.gold || "") + "</span></button>" +
         '<span class="sep"> · </span>' +
         '<button type="button" class="best-chip" data-why="night">ΝΥΧΤΑ ' + bh.night + "</button>";
       if (bh.techniques && bh.techniques.length) {
@@ -1586,3 +1586,11 @@ function __notifyMoon(pct, phaseTxt) {
   setTimeout(run,1000);
   setTimeout(run,2500);
 })();
+
+  /* v183: keep red dots rolling with time */
+  setInterval(function () {
+    try {
+      if (typeof drawPressure === "function") drawPressure();
+      if (typeof drawTide === "function") drawTide();
+    } catch (e) {}
+  }, 60000);
