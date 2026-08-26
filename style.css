@@ -5672,3 +5672,50 @@ path#pressure-area {
 #pressure-grid, #pressure-labels, #pressure-dots, #pressure-live {
   opacity: 1 !important;
 }
+
+
+/* === v193.0.0 PRESSURE: line ALWAYS visible, canvas bloom underneath === */
+#pressure-line,
+polyline#pressure-line,
+.pressure-body polyline#pressure-line {
+  opacity: 1 !important;
+  display: inline !important;
+  stroke: #f5c542 !important;
+  stroke-width: 3 !important;
+  fill: none !important;
+  filter: url(#pressureGlow) drop-shadow(0 0 6px rgba(245,197,66,.85)) drop-shadow(0 0 12px rgba(245,197,66,.4)) !important;
+}
+#pressure-area,
+path#pressure-area {
+  opacity: 1 !important;
+  fill: url(#pressureGrad) !important;
+}
+#pressure-bloom {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+#pressure-svg {
+  position: relative !important;
+  z-index: 2 !important;
+}
+.pressure-chart-stack { position: relative !important; }
+
+
+/* === v194.0.0 LAST: SVG line always on, canvas halo under === */
+.pressure-chart-stack{position:relative;display:block;width:100%}
+#pressure-bloom{position:absolute;inset:0;width:100%;height:100%;display:block!important;pointer-events:none;z-index:0}
+#pressure-svg{position:relative;z-index:1;display:block;width:100%}
+#pressure-line,
+polyline#pressure-line{
+  opacity:1!important;
+  stroke:#f5c542!important;
+  stroke-width:2.8!important;
+  fill:none!important;
+  filter:url(#pressureGlow) drop-shadow(0 0 6px rgba(245,197,66,.85)) drop-shadow(0 0 12px rgba(245,197,66,.4))!important;
+}
+#pressure-area{opacity:1!important;fill:url(#pressureGrad)!important}
+#pressure-glow-line,#pressure-glow-mid{display:none!important}

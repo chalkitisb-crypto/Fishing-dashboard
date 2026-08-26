@@ -1,4 +1,4 @@
-/* v192.0.0 PRESSURE canvas bloom */
+/* v194.0.0 PRESSURE svg line + canvas halo under */
 /* v184.0.0 HERO locked plates — no fake sun overlay */
 /* v155.0.0 hero plates + realistic sun no blue ring */
 /* v153.0.0 HERO plates time×weather + live rain + moon % */
@@ -168,30 +168,40 @@ function __notifyMoon(pct, phaseTxt) {
     var ptsStr = pairs.join(" ");
     if (line) {
       line.setAttribute("points", ptsStr);
-      line.setAttribute("stroke", "transparent");
+      line.setAttribute("stroke", "#f5c542");
+      line.setAttribute("stroke-width", "2.8");
       line.setAttribute("fill", "none");
-      line.removeAttribute("filter");
+      line.setAttribute("stroke-linecap", "round");
+      line.setAttribute("stroke-linejoin", "round");
+      line.setAttribute("filter", "url(#pressureGlow)");
+      line.style.opacity = "1";
     }
     var glow = $("pressure-glow-line");
-    if (glow) { glow.setAttribute("points", ""); glow.setAttribute("stroke", "transparent"); }
+    if (glow) glow.setAttribute("points", "");
     var mid = $("pressure-glow-mid");
     if (mid) mid.setAttribute("points", "");
     if (area) {
-      area.setAttribute("fill", "transparent");
+      area.setAttribute("fill", "url(#pressureGrad)");
       area.setAttribute("d",
         "M" + X(0).toFixed(1) + "," + (h - padB) + " " +
         pairs.map(function (p) { return "L" + p; }).join(" ") +
         " L" + X(pts.length - 1).toFixed(1) + "," + (h - padB) + " Z");
     }
-    (function drawBloom() {
+    (function drawHalo() {
       var c = $("pressure-bloom");
-      if (!c || !c.getContext) return;
+      var svgEl = $("pressure-svg");
+      if (!c || !c.getContext || !svgEl) return;
+      var rect = svgEl.getBoundingClientRect();
+      var dpr = window.devicePixelRatio || 1;
+      var cw = Math.max(2, Math.round((rect.width || 320) * dpr));
+      var ch = Math.max(2, Math.round((rect.height || 150) * dpr));
+      if (c.width !== cw) c.width = cw;
+      if (c.height !== ch) c.height = ch;
+      c.style.display = "block";
       var ctx = c.getContext("2d");
-      var cw = c.width, ch = c.height;
-      var sx = cw / w, sy = ch / h;
       ctx.clearRect(0, 0, cw, ch);
       ctx.save();
-      ctx.scale(sx, sy);
+      ctx.scale(cw / w, ch / h);
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
       ctx.beginPath();
@@ -199,30 +209,10 @@ function __notifyMoon(pct, phaseTxt) {
         if (i === 0) ctx.moveTo(X(i), Y(v));
         else ctx.lineTo(X(i), Y(v));
       });
-      ctx.lineTo(X(pts.length - 1), h - padB);
-      ctx.lineTo(X(0), h - padB);
-      ctx.closePath();
-      var g = ctx.createLinearGradient(0, padT, 0, h - padB);
-      g.addColorStop(0, "rgba(245,197,66,0.50)");
-      g.addColorStop(0.55, "rgba(245,197,66,0.16)");
-      g.addColorStop(1, "rgba(245,197,66,0.02)");
-      ctx.fillStyle = g;
-      ctx.fill();
-      ctx.beginPath();
-      pts.forEach(function (v, i) {
-        if (i === 0) ctx.moveTo(X(i), Y(v));
-        else ctx.lineTo(X(i), Y(v));
-      });
       ctx.strokeStyle = "#f5c542";
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 6;
       ctx.shadowColor = "#f5c542";
-      ctx.shadowBlur = 18;
-      ctx.stroke();
-      ctx.shadowBlur = 10;
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-      ctx.strokeStyle = "#ffe27a";
-      ctx.lineWidth = 2.4;
+      ctx.shadowBlur = 16;
       ctx.stroke();
       ctx.restore();
     })();
@@ -409,7 +399,7 @@ function __notifyMoon(pct, phaseTxt) {
   }
 
   function resolveHeroPlate(timeKey, wx) {
-    var V = "?v=192.0.0";
+    var V = "?v=194.0.0";
     if (wx === "storm") return "hero_plate_storm.jpg" + V;
     if (wx === "rain") return "hero_plate_day.jpg" + V;
     var map = {
