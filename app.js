@@ -1,4 +1,4 @@
-/* v185.0.0 PRESSURE yellow glow + rolling red-dot on 24h curve */
+/* v186.0.0 PRESSURE stronger neon glow line */
 /* v184.0.0 HERO locked plates — no fake sun overlay */
 /* v155.0.0 hero plates + realistic sun no blue ring */
 /* v153.0.0 HERO plates time×weather + live rain + moon % */
@@ -167,9 +167,19 @@ function __notifyMoon(pct, phaseTxt) {
     var pairs = pts.map(function (v, i) { return X(i).toFixed(1) + "," + Y(v).toFixed(1); });
     line.setAttribute("points", pairs.join(" "));
     line.setAttribute("stroke", "#f5c542");
-    line.setAttribute("stroke-width", "3.2");
+    line.setAttribute("stroke-width", "2.8");
+    line.setAttribute("stroke-linecap", "round");
+    line.setAttribute("stroke-linejoin", "round");
     line.setAttribute("filter", "url(#pressureGlow)");
     line.setAttribute("fill", "none");
+    var glow = $("pressure-glow-line");
+    if (glow) {
+      glow.setAttribute("points", pairs.join(" "));
+      glow.setAttribute("stroke", "#f5c542");
+      glow.setAttribute("fill", "none");
+      glow.setAttribute("stroke-linecap", "round");
+      glow.setAttribute("stroke-linejoin", "round");
+    }
     if (area) {
       area.setAttribute("fill", "url(#pressureGrad)");
       area.setAttribute("d",
@@ -360,7 +370,7 @@ function __notifyMoon(pct, phaseTxt) {
   }
 
   function resolveHeroPlate(timeKey, wx) {
-    var V = "?v=185.0.0";
+    var V = "?v=187.0.0";
     if (wx === "storm") return "hero_plate_storm.jpg" + V;
     if (wx === "rain") return "hero_plate_day.jpg" + V;
     var map = {

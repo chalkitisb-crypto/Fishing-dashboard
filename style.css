@@ -5454,3 +5454,48 @@ path#pressure-area {
 #pressure-live {
   filter: drop-shadow(0 0 5px rgba(255,32,32,.95)) !important;
 }
+
+
+/* === v186.0.0 PRESSURE neon glow — underlay blur + sharp core === */
+#pressure-glow-line {
+  fill: none !important;
+  stroke: #f5c542 !important;
+  stroke-width: 9 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+  opacity: 0.62 !important;
+  filter: blur(3.4px) drop-shadow(0 0 8px #f5c542) drop-shadow(0 0 16px rgba(245,197,66,.85)) !important;
+}
+#pressure-line,
+polyline#pressure-line,
+.pressure-body polyline#pressure-line {
+  stroke: #ffe27a !important;
+  stroke-width: 2.8 !important;
+  stroke-linecap: round !important;
+  filter: url(#pressureGlow) drop-shadow(0 0 3px #fff3b0) drop-shadow(0 0 8px #f5c542) drop-shadow(0 0 16px rgba(245,197,66,.9)) !important;
+}
+#pressure-area,
+path#pressure-area {
+  fill: url(#pressureGrad) !important;
+  opacity: 1 !important;
+}
+
+
+/* === v187.0.0 PRESSURE glow FIRST locked (more intense) === */
+#pressure-glow-line {
+  fill: none !important;
+  stroke: #f5c542 !important;
+  stroke-width: 9 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+  opacity: 0.62 !important;
+  filter: blur(3.4px) drop-shadow(0 0 8px #f5c542) drop-shadow(0 0 16px rgba(245,197,66,.85)) !important;
+}
+#pressure-line,
+polyline#pressure-line,
+.pressure-body polyline#pressure-line {
+  stroke: #ffe27a !important;
+  stroke-width: 2.8 !important;
+  stroke-linecap: round !important;
+  filter: url(#pressureGlow) drop-shadow(0 0 3px #fff3b0) drop-shadow(0 0 8px #f5c542) drop-shadow(0 0 16px rgba(245,197,66,.9)) !important;
+}
