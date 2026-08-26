@@ -5431,3 +5431,26 @@ section.card.zone-card {
 }
 .hero-rain { z-index: 6 !important; pointer-events: none !important; }
 .hero-overlay, .hero-metrics { z-index: 7 !important; }
+
+
+/* === v185.0.0 PRESSURE: yellow neon line + yellow glow shadow + live red-dot === */
+#pressure-svg,
+.pressure-body svg {
+  overflow: visible !important;
+}
+#pressure-line,
+polyline#pressure-line,
+.pressure-body polyline#pressure-line {
+  stroke: #f5c542 !important;
+  stroke-width: 3.2 !important;
+  filter: url(#pressureGlow) drop-shadow(0 0 5px #f5c542) drop-shadow(0 0 12px rgba(245,197,66,.75)) !important;
+}
+#pressure-area,
+path#pressure-area {
+  fill: url(#pressureGrad) !important;
+  opacity: 1 !important;
+  filter: drop-shadow(0 10px 8px rgba(245,197,66,.28));
+}
+#pressure-live {
+  filter: drop-shadow(0 0 5px rgba(255,32,32,.95)) !important;
+}

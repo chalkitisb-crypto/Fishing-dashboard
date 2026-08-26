@@ -1,3 +1,4 @@
+/* v185.0.0 PRESSURE yellow glow + rolling red-dot on 24h curve */
 /* v184.0.0 HERO locked plates — no fake sun overlay */
 /* v155.0.0 hero plates + realistic sun no blue ring */
 /* v153.0.0 HERO plates time×weather + live rain + moon % */
@@ -94,8 +95,8 @@ function __notifyMoon(pct, phaseTxt) {
     var g = $(groupId);
     if (!g) return;
     g.innerHTML =
-      '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="6" fill="#ff2a2a" opacity="0.35"></circle>' +
-      '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="3.4" fill="#e01010" stroke="#ffffff" stroke-width="1.8"></circle>';
+      '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="4.4" fill="#ff2a2a" opacity="0.38"></circle>' +
+      '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="2.7" fill="#e01010" stroke="#ffffff" stroke-width="1.5"></circle>';
   }
   function liveIndexFromTimes(times) {
     if (!times || !times.length) return 0;
@@ -119,20 +120,25 @@ function __notifyMoon(pct, phaseTxt) {
     var nowMin = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
     function tMin(s) {
       var p = String(s || "0:0").split(":");
-      return parseInt(p[0], 10) * 60 + parseInt(p[1] || "0", 10);
+      var hh = parseInt(p[0], 10);
+      var mm = parseInt(p[1] || "0", 10);
+      if (hh === 24) return 24 * 60;
+      return hh * 60 + mm;
     }
     var mins = times.map(tMin);
-    /* find segment [i, i+1] containing nowMin (handle wrap) */
+    /* forecast-forward series (starts near now) → map by clock across full width */
+    if (mins[0] > 45 && Math.abs(nowMin - mins[0]) < 90) {
+      return (nowMin / (24 * 60)) * (times.length - 1);
+    }
     for (var i = 0; i < mins.length - 1; i++) {
       var a = mins[i], b = mins[i + 1];
-      if (a <= b) {
-        if (nowMin >= a && nowMin <= b) {
-          var t = (nowMin - a) / Math.max(1, b - a);
-          return i + t;
-        }
+      if (b < a) b += 24 * 60;
+      var nm = nowMin;
+      if (b > 24 * 60 && nm < a) nm += 24 * 60;
+      if (nm >= a && nm <= b) {
+        return i + (nm - a) / Math.max(1, b - a);
       }
     }
-    /* before first or after last → clamp */
     if (nowMin <= mins[0]) return 0;
     return mins.length - 1;
   }
@@ -165,6 +171,7 @@ function __notifyMoon(pct, phaseTxt) {
     line.setAttribute("filter", "url(#pressureGlow)");
     line.setAttribute("fill", "none");
     if (area) {
+      area.setAttribute("fill", "url(#pressureGrad)");
       area.setAttribute("d",
         "M" + X(0).toFixed(1) + "," + (h - padB) + " " +
         pairs.map(function (p) { return "L" + p; }).join(" ") +
@@ -353,7 +360,7 @@ function __notifyMoon(pct, phaseTxt) {
   }
 
   function resolveHeroPlate(timeKey, wx) {
-    var V = "?v=184.0.0";
+    var V = "?v=185.0.0";
     if (wx === "storm") return "hero_plate_storm.jpg" + V;
     if (wx === "rain") return "hero_plate_day.jpg" + V;
     var map = {
@@ -1602,4 +1609,4 @@ function __notifyMoon(pct, phaseTxt) {
       if (typeof drawPressure === "function") drawPressure();
       if (typeof drawTide === "function") drawTide();
     } catch (e) {}
-  }, 60000);
+  }, 15000);

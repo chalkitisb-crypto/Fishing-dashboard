@@ -1,3 +1,4 @@
+/* v185.0.0 pressure: calendar-day series + rolling red-dot */
 /* v152.0.0 FULL — formula + hour picker + diary tips/techniques/alerts */
 /* v151.2.0 no score floor — can go 30 or below */
 /* v151.2.0 objective score/activity + peak best hours */
@@ -176,10 +177,34 @@
         cls: bfClass(bf)
       });
     }
-    for (i = startIdx; i < Math.min(startIdx + 24, (h.time || []).length); i++) {
-      pressurePts.push(h.pressure_msl[i]);
-      pressureTimes.push(hhmm(h.time[i]));
-    }
+    /* v185: full calendar day 00:00→24:00 so red-dot tracks clock across the widget */
+    (function () {
+      var yyyy = now.getFullYear();
+      var mm = String(now.getMonth() + 1); if (mm.length < 2) mm = "0" + mm;
+      var dd = String(now.getDate()); if (dd.length < 2) dd = "0" + dd;
+      var dayStr = yyyy + "-" + mm + "-" + dd;
+      var timesArr = h.time || [];
+      var prArr = h.pressure_msl || [];
+      var lastToday = -1;
+      for (var pi = 0; pi < timesArr.length; pi++) {
+        if (String(timesArr[pi]).indexOf(dayStr) === 0 && prArr[pi] != null) {
+          pressurePts.push(prArr[pi]);
+          pressureTimes.push(hhmm(timesArr[pi]));
+          lastToday = pi;
+        }
+      }
+      if (lastToday >= 0 && timesArr[lastToday + 1] != null && prArr[lastToday + 1] != null) {
+        pressurePts.push(prArr[lastToday + 1]);
+        pressureTimes.push("24:00");
+      }
+      if (pressurePts.length < 2) {
+        for (var fj = startIdx; fj < Math.min(startIdx + 24, timesArr.length); fj++) {
+          if (prArr[fj] == null) continue;
+          pressurePts.push(prArr[fj]);
+          pressureTimes.push(hhmm(timesArr[fj]));
+        }
+      }
+    })();
 
     var mh = (marine && marine.hourly) || {};
     var mi = 0;
