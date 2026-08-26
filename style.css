@@ -5396,3 +5396,38 @@ section.card.zone-card {
 #pressure-live {
   filter: drop-shadow(0 0 4px rgba(255,40,40,.9)) !important;
 }
+
+
+/* === v184.0.0 HERO locked photoreal plates — no fake sun/moon/stars === */
+.hero-sun,
+#hero-sun,
+.hero-sun img,
+#hero-sun-img,
+.hero-moon,
+#hero-moon,
+.hero-moon img,
+#hero-moon-img,
+.hero-moon-shade,
+.hero-stars,
+#hero-stars,
+.hero-night,
+#hero-night,
+.hero-sky-tint,
+#hero-sky-tint {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.hero-base-img,
+#hero-plate-a,
+#hero-plate-b {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: block !important;
+}
+.hero-rain { z-index: 6 !important; pointer-events: none !important; }
+.hero-overlay, .hero-metrics { z-index: 7 !important; }

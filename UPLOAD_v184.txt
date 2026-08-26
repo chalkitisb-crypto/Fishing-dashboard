@@ -1,0 +1,36 @@
+FD v184.0.0 — HERO locked plates
+================================
+Ανέβασε ΟΛΑ τα αρχεία αυτού του φακέλου στη ΡΙΖΑ του GitHub
+(chalkitisb-crypto/Fishing-dashboard) — Replace existing.
+
+Αρχεία:
+- index.html
+- style.css
+- app.js
+- hero_plate_dawn.jpg
+- hero_plate_sunrise.jpg
+- hero_plate_day.jpg
+- hero_plate_gold.jpg
+- hero_plate_dusk.jpg      (ίδιο με gold)
+- hero_plate_night.jpg
+- hero_plate_storm.jpg
+- hero_plate_rain.jpg      (ίδιο με day — η βροχή είναι live overlay)
+- hero_plate_cloudy.jpg    (ίδιο με day)
+
+Μετά το upload:
+1. Netlify → Deploys → Trigger deploy → Clear cache and deploy site
+   (αν δεν το βρίσκεις: Site configuration → Build & deploy → Post processing
+    ή απλά νέο deploy από GitHub)
+2. Στο κινητό: Safari/Chrome κλείσε το tab, ξανά άνοιξε
+   https://candid-cupcake-f746b2.netlify.app/?v=184
+3. Hard refresh
+
+Τι να τσεκάρεις:
+- Τοπίο = το κλειδωμένο (όχι άλλος κολπίσκος)
+- Μέρα: χωρίς ψημένο ήλιο, χωρίς τεχνητό δίσκο
+- Ανατολή (πρωί): ήλιος χαμηλά ΑΡΙΣΤΕΡΑ, μέσα στην εικόνα
+- Δύση: πορτοκαλί, ήλιος ΔΕΞΙΑ, μέσα στην εικόνα
+- Νύχτα: αστέρια + σελήνη στην εικόνα (όχι overlay)
+- Καταιγίδα: κύμα στα βράχια + αστραπή
+- Αν βρέχει: σταγόνες ΠΕΦΤΟΥΝ πάνω στο τοπίο
+- Κανένας ψεύτικος ήλιος από κώδικα

@@ -1,3 +1,4 @@
+/* v184.0.0 HERO locked plates — no fake sun overlay */
 /* v155.0.0 hero plates + realistic sun no blue ring */
 /* v153.0.0 HERO plates time×weather + live rain + moon % */
 /* v152.0.0 FULL package */
@@ -343,28 +344,27 @@ function __notifyMoon(pct, phaseTxt) {
   }
 
   function timePlateKey(mins, rise, set) {
-    var span = Math.max(1, set - rise);
-    var p = (mins - rise) / span;
     if (mins < rise - 40 || mins > set + 40) return "night";
-    if (mins < rise + 50) return "dawn";
+    if (mins < rise) return "dawn";
+    if (mins < rise + 55) return "sunrise";
     if (mins > set - 50) return "dusk";
     if (mins > set - 110) return "gold";
     return "day";
   }
 
   function resolveHeroPlate(timeKey, wx) {
-    if (wx === "storm") return "hero_plate_storm.jpg";
-    if (wx === "rain") return "hero_plate_rain.jpg";
-    if (wx === "cloudy" && (timeKey === "night" || timeKey === "day" || timeKey === "gold"))
-      return "hero_plate_cloudy.jpg";
+    var V = "?v=184.0.0";
+    if (wx === "storm") return "hero_plate_storm.jpg" + V;
+    if (wx === "rain") return "hero_plate_day.jpg" + V;
     var map = {
       dawn: "hero_plate_dawn.jpg",
+      sunrise: "hero_plate_sunrise.jpg",
       day: "hero_plate_day.jpg",
       gold: "hero_plate_gold.jpg",
-      dusk: "hero_plate_dusk.jpg",
+      dusk: "hero_plate_gold.jpg",
       night: "hero_plate_night.jpg"
     };
-    return map[timeKey] || "hero_plate_day.jpg";
+    return (map[timeKey] || "hero_plate_day.jpg") + V;
   }
 
   function setHeroPlate(src) {
@@ -483,6 +483,15 @@ function __notifyMoon(pct, phaseTxt) {
       else if (wx === "rain") rainCanvas.__setIntensity(1);
       else rainCanvas.__setIntensity(0);
     }
+
+    // v184: plates already contain photoreal sun/moon/stars — NEVER draw overlay disks
+    if (sunEl) { sunEl.style.opacity = "0"; sunEl.style.display = "none"; }
+    if (nightEl) { nightEl.style.opacity = "0"; }
+    if (starsEl) { starsEl.style.opacity = "0"; }
+    if (tintEl) { tintEl.style.opacity = "0"; }
+    var moonElHide = $("hero-moon");
+    if (moonElHide) { moonElHide.style.opacity = "0"; moonElHide.style.display = "none"; }
+    return; // rain already set above
 
     // Sun arc — hide when rain/storm/heavy cloud
     if (sunEl) {
