@@ -1,4 +1,4 @@
-/* v189.0.0 PRESSURE glow 3-stroke preview match */
+/* v192.0.0 PRESSURE canvas bloom */
 /* v184.0.0 HERO locked plates — no fake sun overlay */
 /* v155.0.0 hero plates + realistic sun no blue ring */
 /* v153.0.0 HERO plates time×weather + live rain + moon % */
@@ -149,7 +149,7 @@ function __notifyMoon(pct, phaseTxt) {
     var dots = $("pressure-dots");
     var labels = $("pressure-labels");
     var grid = $("pressure-grid");
-    if (!line || !pressurePts || pressurePts.length < 2) return;
+    if (!pressurePts || pressurePts.length < 2) return;
     var pts = pressurePts;
     var times = pressureTimes || [];
     var svg = $("pressure-svg");
@@ -166,42 +166,66 @@ function __notifyMoon(pct, phaseTxt) {
     function Y(v) { return padT + (1 - (v - min) / (max - min)) * (h - padT - padB); }
     var pairs = pts.map(function (v, i) { return X(i).toFixed(1) + "," + Y(v).toFixed(1); });
     var ptsStr = pairs.join(" ");
-    line.setAttribute("points", ptsStr);
-    line.setAttribute("stroke", "#ffe27a");
-    line.setAttribute("stroke-width", "2.8");
-    line.setAttribute("stroke-linecap", "round");
-    line.setAttribute("stroke-linejoin", "round");
-    line.setAttribute("filter", "url(#pressureGlow)");
-    line.setAttribute("fill", "none");
+    if (line) {
+      line.setAttribute("points", ptsStr);
+      line.setAttribute("stroke", "transparent");
+      line.setAttribute("fill", "none");
+      line.removeAttribute("filter");
+    }
     var glow = $("pressure-glow-line");
-    if (glow) {
-      glow.setAttribute("points", ptsStr);
-      glow.setAttribute("stroke", "#f5c542");
-      glow.setAttribute("stroke-width", "14");
-      glow.setAttribute("opacity", "0.28");
-      glow.setAttribute("fill", "none");
-      glow.setAttribute("filter", "url(#pressureGlowHalo)");
-      glow.setAttribute("stroke-linecap", "round");
-      glow.setAttribute("stroke-linejoin", "round");
-    }
+    if (glow) { glow.setAttribute("points", ""); glow.setAttribute("stroke", "transparent"); }
     var mid = $("pressure-glow-mid");
-    if (mid) {
-      mid.setAttribute("points", ptsStr);
-      mid.setAttribute("stroke", "#f5c542");
-      mid.setAttribute("stroke-width", "8");
-      mid.setAttribute("opacity", "0.40");
-      mid.setAttribute("fill", "none");
-      mid.setAttribute("filter", "url(#pressureGlowHalo)");
-      mid.setAttribute("stroke-linecap", "round");
-      mid.setAttribute("stroke-linejoin", "round");
-    }
+    if (mid) mid.setAttribute("points", "");
     if (area) {
-      area.setAttribute("fill", "url(#pressureGrad)");
+      area.setAttribute("fill", "transparent");
       area.setAttribute("d",
         "M" + X(0).toFixed(1) + "," + (h - padB) + " " +
         pairs.map(function (p) { return "L" + p; }).join(" ") +
         " L" + X(pts.length - 1).toFixed(1) + "," + (h - padB) + " Z");
     }
+    (function drawBloom() {
+      var c = $("pressure-bloom");
+      if (!c || !c.getContext) return;
+      var ctx = c.getContext("2d");
+      var cw = c.width, ch = c.height;
+      var sx = cw / w, sy = ch / h;
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.save();
+      ctx.scale(sx, sy);
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      pts.forEach(function (v, i) {
+        if (i === 0) ctx.moveTo(X(i), Y(v));
+        else ctx.lineTo(X(i), Y(v));
+      });
+      ctx.lineTo(X(pts.length - 1), h - padB);
+      ctx.lineTo(X(0), h - padB);
+      ctx.closePath();
+      var g = ctx.createLinearGradient(0, padT, 0, h - padB);
+      g.addColorStop(0, "rgba(245,197,66,0.50)");
+      g.addColorStop(0.55, "rgba(245,197,66,0.16)");
+      g.addColorStop(1, "rgba(245,197,66,0.02)");
+      ctx.fillStyle = g;
+      ctx.fill();
+      ctx.beginPath();
+      pts.forEach(function (v, i) {
+        if (i === 0) ctx.moveTo(X(i), Y(v));
+        else ctx.lineTo(X(i), Y(v));
+      });
+      ctx.strokeStyle = "#f5c542";
+      ctx.lineWidth = 3;
+      ctx.shadowColor = "#f5c542";
+      ctx.shadowBlur = 18;
+      ctx.stroke();
+      ctx.shadowBlur = 10;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = "#ffe27a";
+      ctx.lineWidth = 2.4;
+      ctx.stroke();
+      ctx.restore();
+    })();
     /* sparse value labels — every ~4 points + first/last */
     if (dots) {
       var step = Math.max(1, Math.floor(pts.length / 6));
@@ -385,7 +409,7 @@ function __notifyMoon(pct, phaseTxt) {
   }
 
   function resolveHeroPlate(timeKey, wx) {
-    var V = "?v=189.0.0";
+    var V = "?v=192.0.0";
     if (wx === "storm") return "hero_plate_storm.jpg" + V;
     if (wx === "rain") return "hero_plate_day.jpg" + V;
     var map = {
@@ -1628,6 +1652,7 @@ function __notifyMoon(pct, phaseTxt) {
   setTimeout(run,2500);
 })();
 
+  window.drawPressure = drawPressure;
   /* v183: keep red dots rolling with time */
   setInterval(function () {
     try {
