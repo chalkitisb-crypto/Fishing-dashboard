@@ -1,3 +1,4 @@
+/* v205.0.0 PRESSURE line glow only · same 2.8 width · tide live-dot */
 /* v197.0.0 PRESSURE glow 90% locked */
 /* v184.0.0 HERO locked plates — no fake sun overlay */
 /* v155.0.0 hero plates + realistic sun no blue ring */
@@ -209,11 +210,14 @@ function __notifyMoon(pct, phaseTxt) {
         if (i === 0) ctx.moveTo(X(i), Y(v));
         else ctx.lineTo(X(i), Y(v));
       });
-      ctx.strokeStyle = "rgba(245,197,66,.75)";
-      ctx.lineWidth = 3.2;
+      ctx.strokeStyle = "rgba(245,197,66,.55)";
+      ctx.lineWidth = 2.8;
       ctx.shadowColor = "#f5c542";
-      ctx.shadowBlur = 28;
-      ctx.strokeStyle = "rgba(245,197,66,.65)";
+      ctx.shadowBlur = 48;
+      ctx.stroke();
+      ctx.shadowBlur = 22;
+      ctx.strokeStyle = "rgba(255,210,74,.9)";
+      ctx.lineWidth = 2.8;
       ctx.stroke();
       ctx.restore();
     })();

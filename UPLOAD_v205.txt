@@ -1,0 +1,6 @@
+v205.0.0 — pressure line glow only
+Upload to GitHub root (overwrite):
+  index.html
+  app.js
+Check Netlify after cache clear:
+  βαρομετρική: ίδια λεπτή γραμμή 2.8, ίδιο red dot με παλίρροια, πιο glow στη γραμμή, ίδια σκιά κάτω από όλο το γράφημα
