@@ -8,9 +8,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <title>Fishing Dashboard — Κάλυμνος</title>
   <link rel="manifest" href="manifest.json"/>
-  <link rel="stylesheet" href="style.css?v=194.0.0"/>
+  <link rel="stylesheet" href="style.css?v=202.0.0"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" defer></script>
-  <script src="moon.js?v=194.0.0" defer></script>
+  <script src="moon.js?v=202.0.0" defer></script>
 </head>
 <body>
 <div class="app">
@@ -44,8 +44,8 @@
     <!-- HERO: sun full-bleed background -->
     <section class="card hero">
             <div class="hero-bg">
-        <img src="hero_plate_day.jpg?v=194.0.0" alt="" class="hero-base-img" id="hero-plate-a"/>
-        <img src="hero_plate_day.jpg?v=194.0.0" alt="" class="hero-base-img hero-plate-b" id="hero-plate-b"/>
+        <img src="hero_plate_day.jpg?v=202.0.0" alt="" class="hero-base-img" id="hero-plate-a"/>
+        <img src="hero_plate_day.jpg?v=202.0.0" alt="" class="hero-base-img hero-plate-b" id="hero-plate-b"/>
         <div class="hero-sky-tint" id="hero-sky-tint" hidden></div>
         <div class="hero-stars" id="hero-stars" aria-hidden="true" hidden></div>
         <div class="hero-sun" id="hero-sun" aria-hidden="true" hidden></div>
@@ -127,7 +127,7 @@
         <div class="sec-title"><i class="dot"></i> ΦΑΣΗ ΣΕΛΗΝΗΣ</div>
         <div class="moon-body">
           <div class="moon-disc moon-glow" id="moon-disc">
-            <img id="moon-img" class="moon-img" src="moon_full.png?v=194.0.0" alt="" width="100" height="100"/>
+            <img id="moon-img" class="moon-img" src="moon_full.png?v=202.0.0" alt="" width="100" height="100"/>
             <div class="moon-lit" id="moon-lit"></div>
             <div class="moon-shade" id="moon-shade"></div>
           </div>
@@ -138,12 +138,12 @@
         </div>
         <div class="moon-times">
           <div class="moon-time">
-            <img class="mt-crescent" src="crescent_rise.png?v=194.0.0" alt=""/>
+            <img class="mt-crescent" src="crescent_rise.png?v=202.0.0" alt=""/>
             <span class="mt-lab">↑ Ανατολή</span>
             <strong id="moon-rise" class="mt-hour">—</strong>
           </div>
           <div class="moon-time">
-            <img class="mt-crescent" src="crescent_set.png?v=194.0.0" alt=""/>
+            <img class="mt-crescent" src="crescent_set.png?v=202.0.0" alt=""/>
             <span class="mt-lab">↓ Δύση</span>
             <strong id="moon-set" class="mt-hour">—</strong>
           </div>
@@ -204,7 +204,7 @@
     <section class="card hour-pick-card" id="hour-pick-card">
                         <div class="sec-title"><i class="dot"></i> ΠΡΟΒΛΕΨΗ ΩΡΑΣ</div>
       <div class="hour-clock" id="hour-chips">
-        <img class="hour-clock-bg" src="hour_clock_bg.jpg?v=194.0.0" alt="Πρόβλεψη ώρας" draggable="false"/>
+        <img class="hour-clock-bg" src="hour_clock_bg.jpg?v=202.0.0" alt="Πρόβλεψη ώρας" draggable="false"/>
         <!-- hit areas: transparent, clock positions matching locked image -->
         <button type="button" class="hc-hit hc-hit-center active" data-hour="now" aria-label="Τώρα"></button>
         <button type="button" class="hc-hit hc-hit-12" data-hour="12" aria-label="12:00"></button>
@@ -225,15 +225,20 @@
         <div class="sec-title score-title"><i class="dot"></i> FISHING SCORE</div>
         <div class="score-wrap" id="score-wrap">
           <div class="score-dial" id="score-dial">
-            <img class="score-gauge-bg" src="score_gauge_bg.jpg?v=194.0.0" alt=""/>
+            <img class="score-gauge-bg" src="score_gauge_bg.jpg?v=202.0.0" alt=""/>
             <div class="score-pivot" id="score-pivot">
-              <img class="score-rod-live" id="score-rod-arm" src="score_rod_layer.png?v=194.0.0" alt=""/>
+              <img class="score-rod-live" id="score-rod-arm" src="score_rod_layer.png?v=202.0.0" alt=""/>
             </div>
           </div>
           <div class="score-meta" id="score-meta">
             <div class="score-stars" id="score-stars">★★★★☆</div>
             <div class="score-num-line"><span id="score-num">—</span></div>
             <div class="score-lab" id="score-lab">—</div>
+            <div class="fd-ind" id="fd-ind">
+              <span id="fd-conf">εμπιστοσύνη —</span>
+              <span id="fd-safe">ασφάλεια —</span>
+            </div>
+            <div class="fd-why" id="fd-why"></div>
             <!-- score-reasons removed v111 -->
           </div>
         </div>
@@ -242,7 +247,7 @@
         <section class="card activity-card">
           <div class="sec-title"><i class="dot"></i> FISH ACTIVITY</div>
           <div class="activity-body">
-            <img class="activity-panel" id="activity-panel" src="activity_body.jpg?v=194.0.0" alt=""/>
+            <img class="activity-panel" id="activity-panel" src="activity_body.jpg?v=202.0.0" alt=""/>
             <div class="activity-bar-slot" id="activity-bar-wrap">
               <svg class="activity-svg" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true">
                 <defs>
@@ -274,7 +279,7 @@
         <section class="card zone-card zone-card-h">
           <div class="sec-title"><i class="dot"></i> ΖΩΝΗ</div>
           <div class="zone-body">
-            <div class="zone-map-wrap"><img class="zone-map zone-map-fill" src="zone_map.png?v=194.0.0" alt="Χάρτης"/><div id="zone-pin" class="zone-pin" aria-hidden="true"></div></div>
+            <div class="zone-map-wrap"><img class="zone-map zone-map-fill" src="zone_map.png?v=202.0.0" alt="Χάρτης"/><div id="zone-pin" class="zone-pin" aria-hidden="true"></div></div>
             <div class="zone-info">
               <div class="zone-label">Βέλτιστη ζώνη</div>
               <div class="zone-place" id="zone-place">📍 Κάλυμνος · Νότια άκρη · 2–4μ</div>
@@ -331,9 +336,55 @@
   <section class="view" id="view-calendar" hidden>
     <div class="card view-card">
       <div class="sec-title"><i class="dot"></i> ΗΜΕΡΟΛΟΓΙΟ</div>
-      <p class="view-text">Score ημέρας · είδη · μήνες αναπαραγωγής.</p>
+      <p class="view-text">Καταγραφή ψαρέματος ανά ημέρα. Κάθε συσκευή έχει το δικό της ημερολόγιο.</p>
       <div class="cal-grid" id="cal-grid"></div>
-      <p class="muted">Σύντομα πλήρη δεδομένα ειδών</p>
+      <div id="cal-day-box" class="cal-day-box" hidden></div>
+      <button type="button" class="cal-add-btn" id="cal-add-open">+ Καταγραφή ψαρέματος</button>
+      <form id="cal-form" class="cal-form" hidden>
+        <label>Ημερομηνία <input type="date" id="cf-date" required></label>
+        <label>Ώρα <input type="text" id="cf-time" placeholder="18:00–20:00"></label>
+        <label>Τόπος <input type="text" id="cf-spot" placeholder="Αργινώντα"></label>
+        <label>Τεχνική <input type="text" id="cf-method" placeholder="εγγλέζικο / spinning"></label>
+        <label>Αποτέλεσμα
+          <select id="cf-result">
+            <option value="">—</option>
+            <option value="Τίποτα">Τίποτα</option>
+            <option value="Φτωχή">Φτωχή</option>
+            <option value="Καλή">Καλή</option>
+          </select>
+        </label>
+        <label>Αστέρια
+          <select id="cf-stars">
+            <option value="">—</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </label>
+        <label>Ψάρια <input type="text" id="cf-catch" placeholder="5 σαργοί, 1 Γερμανός"></label>
+        <label>Είδος-στόχος <input type="text" id="cf-target" placeholder="σαργός / τσιπούρα"></label>
+        <label>Ενεργά λεπτά <input type="number" id="cf-minutes" min="0" placeholder="120"></label>
+        <label>Έκθεση
+          <select id="cf-exposure">
+            <option value="">—</option>
+            <option value="φάτσα">φάτσα</option>
+            <option value="πλάγιος">πλάγιος</option>
+            <option value="υπήνεμο">υπήνεμο</option>
+          </select>
+        </label>
+        <label>30′ χωρίς επαφή <input type="number" id="cf-blank30" min="0" placeholder="0"></label>
+        <label>Πρόγνωση πριν <input type="text" id="cf-forecast" placeholder="π.χ. 4 bf ΒΔ, νότιο ρεύμα"></label>
+        <label>Επί τόπου <input type="text" id="cf-observed" placeholder="ό,τι είδες"></label>
+        <label>Σημειώσεις <input type="text" id="cf-note" placeholder="προαιρετικά"></label>
+        <div class="cal-form-actions">
+          <button type="submit" class="cal-save">Αποθήκευση</button>
+          <button type="button" class="cal-cancel" id="cf-cancel">Άκυρο</button>
+        </div>
+      </form>
+      <div id="cal-stats" class="cal-stats"></div>
+      <div id="cal-list" class="cal-list"></div>
     </div>
   </section>
   <section class="view" id="view-settings" hidden>
@@ -378,8 +429,8 @@
     <button class="nav-item" data-nav="settings" type="button"><span>⚙</span>ΡΥΘΜΙΣΕΙΣ</button>
   </nav>
 </div>
-<script src="data.js?v=194.0.0"></script>
-<script src="app.js?v=194.0.0"></script>
+<script src="data.js?v=202.0.0"></script>
+<script src="app.js?v=202.0.0"></script>
 
 <div id="widget-modal" class="widget-modal" hidden>
   <div class="widget-modal-backdrop" id="widget-modal-backdrop"></div>

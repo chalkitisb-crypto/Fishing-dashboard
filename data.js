@@ -262,13 +262,19 @@
       var K1 = 0.04 * Math.sin(2 * Math.PI * (t / 86164) + 0.2);
       return 0.25 + M2 + S2 + K1; // mean ~0.25 m
     }
+    function hhmmLocal(d) {
+      var hh = d.getHours();
+      var mm = d.getMinutes();
+      return (hh < 10 ? "0" : "") + hh + ":" + (mm < 10 ? "0" : "") + mm;
+    }
     var tidePts = [];
     var tideTimes = [];
     var tideNow = tideHeightAt(now);
-    for (i = 0; i < 25; i++) {
-      var td = new Date(now.getTime() + i * 3600 * 1000);
+    var day0 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+    for (i = 0; i <= 24; i++) {
+      var td = new Date(day0.getTime() + i * 3600 * 1000);
       tidePts.push(Math.round(tideHeightAt(td) * 100) / 100);
-      tideTimes.push(hhmm(td.toISOString()));
+      tideTimes.push(i === 24 ? "24:00" : hhmmLocal(td));
     }
     // next high/low rough
     var tideExtrema = [];
@@ -401,7 +407,7 @@
        Oil current CAP score<=52 · no fixed sunset bonus
        atHour: optional 0-23 for forecast preview (default = now) */
     if (!data || !data.current) {
-      return { score: 0, activity: 0, label: "Χωρίς δεδομένα", stars: 1, reasons: [], factors: {}, hour: null };
+      return { score: 0, activity: 0, catchProb: 0, technique: 0, spot: 0, confidence: "χαμηλή", safetyOk: true, safetyReason: "οκ", label: "Χωρίς δεδομένα", stars: 1, reasons: [], factors: {}, hour: null };
     }
     var c = data.current;
     var sea = data.sea || {};
@@ -451,9 +457,21 @@
       C = 14; factors.currentLabel = "Ακραίο"; reasons.push("Ακραίο ρεύμα");
     }
 
+    /* --- HOURLY overlays so best-hours move with the day --- */
+    var hIdx = Math.max(0, Math.min(23, Math.floor(hour)));
+    var wh = (data.windHours && data.windHours[hIdx]) ? data.windHours[hIdx] : null;
+    var ch = (data.currentHours && data.currentHours[hIdx]) ? data.currentHours[hIdx] : null;
+    if (wh && wh.bf != null) {
+      /* keep using this hour's wind below */
+    }
+    if (ch && ch.kn != null && (ckn == null || ch.proxy)) {
+      var knH = Number(ch.kn);
+      if (isFinite(knH)) ckn = knH;
+    }
+
     /* --- WIND (0-100) --- */
-    var kmh = c.windKmh;
-    var bf = c.bf != null ? c.bf : bfFromKmh(kmh);
+    var kmh = (wh && wh.kmh != null) ? wh.kmh : c.windKmh;
+    var bf = (wh && wh.bf != null) ? wh.bf : (c.bf != null ? c.bf : bfFromKmh(kmh));
     factors.bf = bf;
     var W = 45;
     if (bf == null && kmh == null) W = 45;
@@ -529,6 +547,10 @@
 
     /* Weighted sum → 0-100 */
     var score = 0.38 * C + 0.25 * W + 0.15 * P + 0.12 * T + 0.07 * Sea + 0.03 * M;
+    if (bf != null && bf >= 5 && ckn != null && ckn >= 0.8) {
+      score = Math.min(score, 36);
+      reasons.push("5+ bf και δυνατό ρεύμα · χαμηλή επιτυχία");
+    }
 
     /* Στατιστικό φρένο (ημερολόγιο): χαμηλό ρεύμα → χαμηλή επιτυχία · όχι τεχνητό «τιμωρητικό» cap */
     var oil = (ckn != null && ckn < 0.34) || (ckn == null && wh != null && wh < 0.20);
@@ -542,10 +564,28 @@
     /* χωρίς κατώφλι: μπορεί 30, 20, 10 αν οι παράγοντες το δίνουν */
     score = Math.round(clamp(score, 0, 100));
 
-    /* Activity: more sensitive to current "now" */
-    var activity = 0.42 * C + 0.22 * W + 0.12 * P + 0.14 * T + 0.06 * Sea + 0.04 * M;
+    /* v202 Activity = bite now from conditions. No clock×spot rule. */
+    var tod = hour;
+    var light = 52;
+    if (tod >= 5.5 && tod < 8) light = 64;
+    else if (tod >= 16 && tod < 20.5) light = 64;
+    else if (tod >= 20.5 || tod < 5.5) light = 58;
+    var activity = 0.36 * C + 0.20 * T + 0.16 * W + 0.12 * Sea + 0.10 * light + 0.04 * P + 0.02 * M;
     if (oil) activity = Math.min(activity, 42);
+    if (bf != null && bf >= 5) activity = Math.min(activity, 36);
     activity = Math.round(clamp(activity, 0, 100));
+
+    var techSuit = clamp(0.45 * W + 0.35 * Sea + 0.20 * C, 0, 100);
+    if (bf != null && bf >= 5) techSuit = Math.min(techSuit, 40);
+    techSuit = Math.round(techSuit);
+    var spotSuit = clamp(0.40 * W + 0.35 * C + 0.25 * Sea, 0, 100);
+    if (bf != null && bf >= 5) spotSuit = Math.min(spotSuit, 38);
+    spotSuit = Math.round(spotSuit);
+    var catchProb = Math.round(clamp(0.40 * activity + 0.30 * spotSuit + 0.30 * techSuit, 0, 100));
+    var confN = 7;
+    var confidence = confN < 15 ? "χαμηλή" : confN < 30 ? "μέτρια" : "υψηλή";
+    var safetyOk = !(bf != null && bf >= 6) && !(wh != null && wh >= 1.6);
+    var safetyReason = safetyOk ? "οκ" : (bf >= 6 ? "πολύ δυνατός άνεμος" : "μεγάλο κύμα");
 
     /* Calibration anchor: 20/08 Arginonta oil+4bf → ~48/42 */
     /* (natural outcome of formula; no forced override) */
@@ -564,6 +604,12 @@
     return {
       score: score,
       activity: activity,
+      catchProb: catchProb,
+      technique: techSuit,
+      spot: spotSuit,
+      confidence: confidence,
+      safetyOk: safetyOk,
+      safetyReason: safetyReason,
       label: label,
       stars: stars,
       reasons: reasons.slice(0, 5),
@@ -830,6 +876,16 @@ function computeAlerts(data, sc) {
       alerts.push({ cls: "a-cyan", type: "score", ico: "score", title: "ΜΕΤΡΙΕΣ-ΚΑΛΕΣ", text: "Score " + sc.score + " · δες GOLD / παλίρροια" });
     } else {
       alerts.push({ cls: "a-orange", type: "warn", ico: "warn", title: "ΔΥΣΚΟΛΕΣ ΣΥΝΘΗΚΕΣ", text: "Score " + sc.score + " · " + (sc.reasons[0] || "χαμηλοί παράγοντες") });
+    }
+
+    if (bf >= 4) {
+      alerts.push({ cls: "a-cyan", type: "lee", ico: "wind", title: "ΥΠΗΝΕΜΟ", text: "4+ bf: διάλεξε υπήνεμο κολπάκι, όχι φάτσα Β/ΒΔ." });
+    }
+    if (sc.safetyOk === false) {
+      alerts.push({ cls: "a-orange", type: "warn", ico: "warn", title: "ΑΣΦΑΛΕΙΑ", text: sc.safetyReason || "μη συνιστώμενη εξόρμηση σε εκτεθειμένο βράχο" });
+    }
+    if (sc.confidence) {
+      alerts.push({ cls: "a-cyan", type: "info", ico: "score", title: "ΕΜΠΙΣΤΟΣΥΝΗ " + String(sc.confidence).toUpperCase(), text: "Λίγες πλήρεις καταγραφές · το νούμερο είναι εκτίμηση, όχι εγγύηση." });
     }
 
     if (ckn != null) {

@@ -1,4 +1,4 @@
-/* v194.0.0 PRESSURE svg line + canvas halo under */
+/* v197.0.0 PRESSURE glow 90% locked */
 /* v184.0.0 HERO locked plates — no fake sun overlay */
 /* v155.0.0 hero plates + realistic sun no blue ring */
 /* v153.0.0 HERO plates time×weather + live rain + moon % */
@@ -209,10 +209,11 @@ function __notifyMoon(pct, phaseTxt) {
         if (i === 0) ctx.moveTo(X(i), Y(v));
         else ctx.lineTo(X(i), Y(v));
       });
-      ctx.strokeStyle = "#f5c542";
-      ctx.lineWidth = 6;
+      ctx.strokeStyle = "rgba(245,197,66,.75)";
+      ctx.lineWidth = 10;
       ctx.shadowColor = "#f5c542";
-      ctx.shadowBlur = 16;
+      ctx.shadowBlur = 28;
+      ctx.strokeStyle = "rgba(245,197,66,.65)";
       ctx.stroke();
       ctx.restore();
     })();
@@ -329,12 +330,14 @@ function __notifyMoon(pct, phaseTxt) {
     if (axis) {
       var labels = "";
       var n = pts.length;
-      var idxs = n <= 4 ? [0, n-1] : [0, Math.floor(n/4), Math.floor(n/2), Math.floor(3*n/4), n-1];
       var tArr = times.length ? times : (window._tideTimes || []);
+      var idxs;
+      if (n === 25 && tArr[0] === "00:00") idxs = [0, 6, 12, 18, 24];
+      else idxs = n <= 4 ? [0, n-1] : [0, Math.floor(n/4), Math.floor(n/2), Math.floor(3*n/4), n-1];
       idxs.forEach(function (i) {
         var lab = tArr[i] ? tArr[i] : "";
         if (!lab) return;
-        labels += '<text x="' + X(i).toFixed(1) + '" y="' + (h - 5) +
+        labels += '<text x="' + X(i).toFixed(1) + '" y="' + (h - 6) +
           '" text-anchor="middle" fill="#7ad7ff" font-size="9">' + lab + '</text>';
       });
       axis.innerHTML = labels;
@@ -399,7 +402,7 @@ function __notifyMoon(pct, phaseTxt) {
   }
 
   function resolveHeroPlate(timeKey, wx) {
-    var V = "?v=194.0.0";
+    var V = "?v=202.0.0";
     if (wx === "storm") return "hero_plate_storm.jpg" + V;
     if (wx === "rain") return "hero_plate_day.jpg" + V;
     var map = {
@@ -833,6 +836,22 @@ function __notifyMoon(pct, phaseTxt) {
         ? ("Πρόβλεψη " + previewLabel + " · Score " + sc.score + " · Activity " + ap)
         : ("Live · Score " + sc.score + " · Activity " + ap);
     }
+    var conf = $("fd-conf");
+    if (conf) conf.textContent = "εμπιστοσύνη " + (sc.confidence || "χαμηλή") + " · n=7";
+    var safe = $("fd-safe");
+    if (safe) {
+      safe.textContent = sc.safetyOk === false ? ("ασφάλεια · " + (sc.safetyReason || "προσοχή")) : "ασφάλεια οκ";
+      safe.className = sc.safetyOk === false ? "bad" : "";
+    }
+    var why = $("fd-why");
+    if (why) {
+      var bits = [];
+      if (sc.activity != null) bits.push("activity " + sc.activity + "% τώρα");
+      if (sc.technique != null) bits.push("τεχνική " + sc.technique);
+      if (sc.spot != null) bits.push("τόπος " + sc.spot);
+      if (sc.catchProb != null) bits.push("πιθανότητα " + sc.catchProb);
+      why.textContent = bits.join(" · ");
+    }
   }
   function bindHourPicker(data) {
     var card = document.getElementById("hour-pick-card");
@@ -922,7 +941,15 @@ function __notifyMoon(pct, phaseTxt) {
     if ($("score-lab")) $("score-lab").textContent = scoreLabel(sc.score);
     if ($("score-reasons")) $("score-reasons").innerHTML = "";
     bindScoreTap();
+    bindHourPicker(data);
     animateScoreRod(sc.score);
+    if (!window.__fdScoreTick) {
+      window.__fdScoreTick = setInterval(function () {
+        if (!window.__fdLastData || !FDData.computeScore) return;
+        var scN = FDData.computeScore(window.__fdLastData);
+        applyScoreActivity(scN, null);
+      }, 10 * 60 * 1000);
+    }
     if ($("activity-pct")) $("activity-pct").textContent = sc.activity + "%";
     var bar = $("activity-bar-fill");
     if (bar) {
@@ -975,7 +1002,9 @@ function __notifyMoon(pct, phaseTxt) {
       if ((scZ.score || 0) >= 70) parts.push("βάθος 2–6μ δομές");
       else parts.push("βάθος 2–4μ");
 
-      $("zone-place").textContent = "📍 " + zName + " · " + parts.slice(0, 4).join(" · ");
+      var rec = where || (leeLab ? ("Πήγαινε " + leeLab) : "Δες υπήνεμο + όπου καταλήγει το ρεύμα");
+      if (bfZ >= 5 && cknZ != null && cknZ >= 0.8) rec = "Σήμερα δύσκολο Β και Ν · 5+ bf και δυνατό ρεύμα";
+      $("zone-place").textContent = "📍 " + zName + " · " + rec + " · " + parts.slice(0, 3).join(" · ");
 
     // v148: pin on recommended fishing side (not "my location")
     (function placeZonePin() {
@@ -1231,27 +1260,222 @@ function __notifyMoon(pct, phaseTxt) {
     try { localStorage.setItem("fd-view", name); } catch (e) {}
   }
 
+  var FD_LOG_KEY = "fd-fish-log-v1";
+  var FD_SEED = [
+    {id:"t1", date:"", time:"18:00–20:00", spot:"Αργινώντα", method:"spinning + εγγλέζικο", catch:"5 σκάροι spinning · 4 σαργοί + 1 τσιπούρα + 1 Γερμανός εγγλέζικο", note:"πίεση 1009", score:null, activity:null},
+    {id:"t2", date:"", time:"18:00–20:00", spot:"Αργινώντα", method:"spinning + εγγλέζικο", catch:"1 σκάρος spinning · 5 σαργοί + 1 τσιπούρα εγγλέζικο", note:"app 93/90 · στόχος 55/50", score:93, activity:90, targetScore:55, targetActivity:50},
+    {id:"t3", date:"", time:"18:00–20:00", spot:"Αργινώντα", method:"spinning + εγγλέζικο", catch:"3 σκάροι spinning · 2 Γερμανοί + 1 σαργός εγγλέζικο", note:"φτωχή · gold hour δεν έπιασε · στόχος 48/42", score:73, activity:70, targetScore:48, targetActivity:42},
+    {id:"t4", date:"", time:"18:00–20:00", spot:"Αργινώντα", method:"εγγλέζικο", catch:"2 σαργοί + 2 Γερμανοί", note:"φτωχή · στόχος 48/48", score:71, activity:71, targetScore:48, targetActivity:48},
+    {id:"t5", date:"2026-08-28", time:"18:00–20:00", spot:"Αργινώντα", method:"εγγλέζικο", catch:"5 σαργοί + 1 Γερμανός + 1 μελανούρι", note:"5 bf ΒΒΔ · 0,5 kn · πανσέληνος · πίεση 1011 · app 74/75 · στόχος 58/55", score:74, activity:75, targetScore:58, targetActivity:55},
+    {id:"t6a", date:"2026-08-29", time:"πρωί", spot:"Εμπορείο", method:"", catch:"0 — ούτε τσίμπημα", note:"5 bf · ρεύματα υψηλά · κύμα ~1.4 m · στόχος 30/28", score:null, activity:null, targetScore:30, targetActivity:28},
+    {id:"t6b", date:"2026-08-29", time:"πρωί", spot:"Αργινώντα", method:"", catch:"0 — ούτε τσίμπημα", note:"ίδια σύνοδος με Εμπορείο · 5 bf · υψηλά ρεύματα", score:null, activity:null, targetScore:30, targetActivity:28},
+    {id:"t7", date:"2026-08-30", time:"10:00-13:00", spot:"Αργινώντα", method:"", catch:"0 — ούτε τσίμπημα", note:"Β/ΒΔ ~4 bf · νότιο ρεύμα · στόχος 28/25", score:null, activity:null, targetScore:28, targetActivity:25}
+  ];
+
+  function loadFishLogs() {
+    try {
+      var raw = localStorage.getItem(FD_LOG_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    localStorage.setItem(FD_LOG_KEY, JSON.stringify(FD_SEED));
+    return FD_SEED.slice();
+  }
+  function saveFishLogs(arr) {
+    try { localStorage.setItem(FD_LOG_KEY, JSON.stringify(arr)); } catch (e) {}
+  }
+  function logsOnDate(dateStr) {
+    return loadFishLogs().filter(function (x) { return x.date === dateStr; });
+  }
+
   function renderCalendar() {
     var root = $("cal-grid");
-    if (!root || root.dataset.ready) return;
+    if (!root) return;
     var now = new Date();
     var y = now.getFullYear(), m = now.getMonth();
     var first = new Date(y, m, 1).getDay();
     var days = new Date(y, m + 1, 0).getDate();
+    var logs = loadFishLogs();
+    var marked = {};
+    logs.forEach(function (x) {
+      if (x.date && x.date.indexOf(y + "-" + String(m + 1).padStart(2, "0")) === 0) {
+        var dd = parseInt(x.date.slice(8), 10);
+        marked[dd] = true;
+      }
+    });
     var html = "<div class=\"cal-head\">" + (m + 1) + "/" + y + "</div><div class=\"cal-days\">";
     var labels = ["Κ","Δ","Τ","Τ","Π","Π","Σ"];
     labels.forEach(function (l) { html += "<span class=\"cdim\">" + l + "</span>"; });
     for (var i = 0; i < first; i++) html += "<span></span>";
     for (var d = 1; d <= days; d++) {
-      var cls = d === now.getDate() ? " class=\"today\"" : "";
-      html += "<span" + cls + ">" + d + "</span>";
+      var cls = [];
+      if (d === now.getDate()) cls.push("today");
+      if (marked[d]) cls.push("has-log");
+      html += "<span data-day=\"" + d + "\" class=\"" + cls.join(" ") + "\">" + d + "</span>";
     }
     html += "</div>";
     root.innerHTML = html;
-    root.dataset.ready = "1";
+    root.querySelectorAll("span[data-day]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        var day = el.getAttribute("data-day");
+        var ds = y + "-" + String(m + 1).padStart(2, "0") + "-" + String(day).padStart(2, "0");
+        showDayLogs(ds);
+        var df = $("cf-date");
+        if (df) df.value = ds;
+      });
+    });
+    renderLogList();
+    renderSpotStats();
+  }
+
+  function tripLine(x) {
+    var sc = (x.targetScore != null) ? (" · στόχος " + x.targetScore + "/" + x.targetActivity) : "";
+    var ap = (x.score != null) ? (" · app " + x.score + "/" + x.activity) : "";
+    return "<div class=\"cal-trip\" data-id=\"" + x.id + "\">" +
+      "<div class=\"cal-trip-top\">" + (x.date || "χωρίς ημερομηνία") + " · " + (x.time || "") + "</div>" +
+      "<div>" + (x.spot || "") + " · " + (x.method || "") + "</div>" +
+      "<div>" + (x.catch || "") + ap + sc + "</div>" +
+      (x.note ? ("<div class=\"cal-trip-note\">" + x.note + "</div>") : "") +
+      "<button type=\"button\" class=\"cal-del\" data-del=\"" + x.id + "\">Διαγραφή</button></div>";
+  }
+
+  function showDayLogs(dateStr) {
+    var box = $("cal-day-box");
+    if (!box) return;
+    var items = logsOnDate(dateStr);
+    if (!items.length) {
+      box.hidden = false;
+      box.innerHTML = "<strong>" + dateStr + "</strong><p>Δεν υπάρχει καταγραφή. Πάτα + Καταγραφή ψαρέματος.</p>";
+      return;
+    }
+    box.hidden = false;
+    box.innerHTML = "<strong>" + dateStr + "</strong>" + items.map(tripLine).join("");
+    bindDel(box);
+  }
+
+
+  function parseCatchCounts(text) {
+    var t = String(text || "");
+    var keys = [
+      ["σκάρ", "σκάρος"],
+      ["σαργ", "σαργός"],
+      ["τσιπούρ", "τσιπούρα"],
+      ["γερμαν", "Γερμανός"],
+      ["μελαν", "μελανούρι"]
+    ];
+    var out = {};
+    keys.forEach(function (k) {
+      var re = new RegExp("(\\d+)\\s*[^,·]*" + k[0], "i");
+      var m = t.match(re);
+      if (m) out[k[1]] = (out[k[1]] || 0) + parseInt(m[1], 10);
+    });
+    return out;
+  }
+
+  function renderSpotStats() {
+    var box = $("cal-stats");
+    if (!box) return;
+    var logs = loadFishLogs();
+    var spots = {};
+    logs.forEach(function (x) {
+      var name = (x.spot || "Άγνωστο").trim();
+      if (!spots[name]) spots[name] = { name: name, trips: [], fish: {}, methods: {}, app: [], tgt: [] };
+      var s = spots[name];
+      s.trips.push(x);
+      var counts = parseCatchCounts(x.catch);
+      Object.keys(counts).forEach(function (sp) { s.fish[sp] = (s.fish[sp] || 0) + counts[sp]; });
+      String(x.method || "").split("+").forEach(function (m) {
+        m = m.trim();
+        if (m) s.methods[m] = (s.methods[m] || 0) + 1;
+      });
+      if (x.score != null) s.app.push(x.score);
+      if (x.targetScore != null) s.tgt.push(x.targetScore);
+    });
+    var html = "<div class=\"cal-list-title\">Στατιστικά ανά τόπο</div>";
+    Object.keys(spots).forEach(function (name) {
+      var s = spots[name];
+      var fishBits = Object.keys(s.fish).map(function (k) { return s.fish[k] + " " + k; });
+      var meth = Object.keys(s.methods).join(" · ");
+      var avg = function (a) { return a.length ? Math.round(a.reduce(function (p, n) { return p + n; }, 0) / a.length) : "—"; };
+      html += "<div class=\"cal-spot\">" +
+        "<div class=\"cal-spot-name\">" + name + "</div>" +
+        "<div>" + s.trips.length + " ψαρέματα</div>" +
+        "<div>Ψάρια: " + (fishBits.join(" · ") || "—") + "</div>" +
+        "<div>Τεχνικές: " + (meth || "—") + "</div>" +
+        "<div>Μέσο app score: " + avg(s.app) + " · μέσος στόχος: " + avg(s.tgt) + "</div>" +
+        "</div>";
+    });
+    box.innerHTML = html;
+  }
+
+  function renderLogList() {
+    var list = $("cal-list");
+    if (!list) return;
+    var logs = loadFishLogs();
+    list.innerHTML = "<div class=\"cal-list-title\">Όλα τα ψαρέματα</div>" + logs.map(tripLine).join("");
+    bindDel(list);
+  }
+
+  function bindDel(root) {
+    root.querySelectorAll("[data-del]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-del");
+        var next = loadFishLogs().filter(function (x) { return x.id !== id; });
+        saveFishLogs(next);
+        renderCalendar();
+        var box = $("cal-day-box");
+        if (box) box.hidden = true;
+      });
+    });
+  }
+
+  function bindFishLogForm() {
+    var open = $("cal-add-open");
+    var form = $("cal-form");
+    var cancel = $("cf-cancel");
+    if (!open || !form || form.dataset.bound) return;
+    form.dataset.bound = "1";
+    open.addEventListener("click", function () {
+      form.hidden = false;
+      var df = $("cf-date");
+      if (df && !df.value) {
+        var n = new Date();
+        df.value = n.getFullYear() + "-" + String(n.getMonth()+1).padStart(2,"0") + "-" + String(n.getDate()).padStart(2,"0");
+      }
+      var sp = $("cf-spot");
+      if (sp && !sp.value) sp.value = "Αργινώντα";
+    });
+    if (cancel) cancel.addEventListener("click", function () { form.hidden = true; });
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var logs = loadFishLogs();
+      logs.unshift({
+        id: "u" + Date.now(),
+        date: ($("cf-date") && $("cf-date").value) || "",
+        time: ($("cf-time") && $("cf-time").value) || "",
+        spot: ($("cf-spot") && $("cf-spot").value) || "Αργινώντα",
+        method: ($("cf-method") && $("cf-method").value) || "",
+        catch: ($("cf-catch") && $("cf-catch").value) || "",
+        result: ($("cf-result") && $("cf-result").value) || "",
+        userStars: ($("cf-stars") && $("cf-stars").value) || "",
+        note: ($("cf-note") && $("cf-note").value) || "",
+        target: ($("cf-target") && $("cf-target").value) || "",
+        minutes: ($("cf-minutes") && $("cf-minutes").value) || "",
+        exposure: ($("cf-exposure") && $("cf-exposure").value) || "",
+        blank30: ($("cf-blank30") && $("cf-blank30").value) || "",
+        forecast: ($("cf-forecast") && $("cf-forecast").value) || "",
+        observed: ($("cf-observed") && $("cf-observed").value) || "",
+        score: (window.__fdLastData && window.__fdLastData.score) || null,
+        activity: (window.__fdLastData && window.__fdLastData.activity) || null
+      });
+      saveFishLogs(logs);
+      form.reset();
+      form.hidden = true;
+      renderCalendar();
+    });
   }
 
   function bindTabs() {
+    bindFishLogForm();
     document.querySelectorAll(".nav-item").forEach(function (btn) {
       btn.addEventListener("click", function () {
         showView(btn.getAttribute("data-nav") || "dashboard");

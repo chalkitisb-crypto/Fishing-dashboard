@@ -5719,3 +5719,102 @@ polyline#pressure-line{
 }
 #pressure-area{opacity:1!important;fill:url(#pressureGrad)!important}
 #pressure-glow-line,#pressure-glow-mid{display:none!important}
+
+
+/* === v195.0.0 LAST: canvas halo ABOVE svg (svg was covering it) === */
+.pressure-chart-stack{position:relative!important;display:block!important;width:100%!important}
+#pressure-svg{background:transparent!important;position:relative!important;z-index:1!important}
+#pressure-bloom{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+  pointer-events:none!important;
+  z-index:3!important;
+}
+#pressure-line,
+polyline#pressure-line{
+  opacity:1!important;
+  stroke:#f5c542!important;
+  stroke-width:2.8!important;
+  fill:none!important;
+  filter:drop-shadow(0 0 4px #f5c542) drop-shadow(0 0 10px rgba(245,197,66,.9)) drop-shadow(0 0 18px rgba(245,197,66,.45))!important;
+}
+#pressure-area{opacity:1!important;fill:url(#pressureGrad)!important}
+#pressure-glow-line,#pressure-glow-mid{display:none!important}
+
+
+/* === v196.0.0 LAST: code glow 80%, line stays === */
+#pressure-line,
+polyline#pressure-line{
+  opacity:1!important;
+  stroke:#f5c542!important;
+  stroke-width:2.8!important;
+  fill:none!important;
+  filter:drop-shadow(0 0 8px #f5c542) drop-shadow(0 0 16px rgba(245,197,66,.8)) drop-shadow(0 0 28px rgba(245,197,66,.45))!important;
+}
+#pressure-bloom{display:block!important;z-index:2;pointer-events:none;position:absolute;inset:0;width:100%;height:100%}
+#pressure-svg{position:relative;z-index:1;background:transparent!important}
+#pressure-area{opacity:1!important;fill:url(#pressureGrad)!important}
+#pressure-glow-line,#pressure-glow-mid{display:none!important}
+
+
+/* === v197.0.0 LAST: locked 90% glow, line stays === */
+#pressure-line,
+polyline#pressure-line{
+  opacity:1!important;
+  stroke:#f5c542!important;
+  stroke-width:2.8!important;
+  fill:none!important;
+  filter:drop-shadow(0 0 10px #f5c542) drop-shadow(0 0 20px rgba(245,197,66,.9)) drop-shadow(0 0 34px rgba(245,197,66,.55))!important;
+}
+#pressure-bloom{display:block!important;z-index:2;pointer-events:none;position:absolute;inset:0;width:100%;height:100%}
+#pressure-svg{position:relative;z-index:1;background:transparent!important}
+#pressure-area{opacity:1!important;fill:url(#pressureGrad)!important}
+#pressure-glow-line,#pressure-glow-mid{display:none!important}
+
+
+/* === v199 calendar fishing log === */
+.cal-days span[data-day]{cursor:pointer;padding:6px 0;border-radius:8px}
+.cal-days .has-log{box-shadow:0 0 0 1px rgba(245,197,66,.7);color:#f5c542}
+.cal-add-btn,.cal-save{
+  margin-top:12px;width:100%;border:0;border-radius:12px;
+  background:#f5c542;color:#1a1204;font-weight:700;padding:10px 12px;cursor:pointer
+}
+.cal-cancel,.cal-del{
+  margin-top:8px;border:1px solid rgba(53,200,255,.35);background:transparent;
+  color:#7ad7ff;border-radius:10px;padding:6px 10px;cursor:pointer
+}
+.cal-form{margin-top:10px;display:grid;gap:8px}
+.cal-form label{display:grid;gap:4px;color:#9ec9e0;font-size:12px}
+.cal-form input{
+  background:#071422;border:1px solid rgba(53,200,255,.3);border-radius:10px;
+  color:#e8f6ff;padding:8px 10px
+}
+.cal-form-actions{display:flex;gap:8px}
+.cal-form-actions button{flex:1}
+.cal-list{margin-top:14px}
+.cal-list-title,.cal-day-box strong{color:#35c8ff;font-size:13px}
+.cal-trip{
+  margin-top:8px;padding:8px 10px;border:1px solid rgba(53,200,255,.22);
+  border-radius:12px;color:#d7ecf6;font-size:12px;line-height:1.35
+}
+.cal-trip-top{color:#f5c542}
+.cal-trip-note{color:#8fb4c8}
+.cal-day-box{margin-top:10px;padding:10px;border:1px solid rgba(53,200,255,.25);border-radius:12px}
+
+.cal-stats{margin-top:14px}
+.cal-spot{margin-top:8px;padding:8px 10px;border:1px solid rgba(245,197,66,.28);border-radius:12px;color:#d7ecf6;font-size:12px;line-height:1.4}
+.cal-spot-name{color:#f5c542;font-weight:700}
+
+
+/* v200 hour hits must receive taps */
+.hour-clock{position:relative!important}
+.hour-clock-bg{pointer-events:none!important;z-index:1!important}
+.hour-clock .hc-hit{z-index:20!important;pointer-events:auto!important;min-width:44px!important;min-height:44px!important}
+
+.fd-ind{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;font-size:11px;color:#8fd4ff}
+.fd-ind span{background:rgba(10,24,40,.55);border:1px solid rgba(80,160,220,.25);border-radius:8px;padding:3px 8px}
+.fd-ind .bad{color:#ff8a8a;border-color:rgba(255,80,80,.4)}
+.fd-why{margin-top:6px;font-size:11px;color:#c9e7ff;line-height:1.35}
