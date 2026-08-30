@@ -3271,7 +3271,7 @@ button.best-chip.gold-hour[data-why="gold"] {
 #best-line .best-chip.gold-hour,
 button.best-chip.gold-hour,
 .best-chip.gold-hour[data-why="gold"] {
-  background-image: url("gold_hour_bg.png?v=203.0.0") !important;
+  background-image: url("gold_hour_bg.png?v=204.0.0") !important;
   background-size: 100% 100% !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
@@ -5821,7 +5821,7 @@ polyline#pressure-line{
 
 
 /* ===== v203 visual lock ===== */
-.hero-base-img{object-position:center 72%!important}
+.hero-base-img{object-position:center bottom}
 .hour-clock-css{position:relative;width:min(280px,86vw);height:min(280px,86vw);margin:4px auto 8px;border-radius:50%}
 .hour-clock-css .hc-cloud{
   position:absolute;left:50%;top:50%;width:46px;height:34px;margin:-17px 0 0 -23px;
@@ -5861,3 +5861,12 @@ polyline#pressure-line{
 .tide-row .t-ico + span{font-weight:700}
 .tide-row:first-child span:nth-child(2),
 .tide-row:nth-child(1) span:nth-child(2){color:#ff9a3c}
+
+
+/* ===== v204 hero night crop — baked moon fully inside, no overlay ===== */
+.hero.hero-night-sky .hero-base-img,
+.hero.hero-night-sky #hero-plate-a,
+.hero.hero-night-sky #hero-plate-b {
+  object-fit: cover !important;
+  object-position: 72% 10% !important;
+}

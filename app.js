@@ -411,7 +411,7 @@ function __notifyMoon(pct, phaseTxt) {
   }
 
   function resolveHeroPlate(timeKey, wx) {
-    var V = "?v=203.0.0";
+    var V = "?v=204.0.0";
     if (wx === "storm") return "hero_plate_storm.jpg" + V;
     if (wx === "rain") return "hero_plate_day.jpg" + V;
     var map = {
@@ -426,6 +426,11 @@ function __notifyMoon(pct, phaseTxt) {
   }
 
   function setHeroPlate(src) {
+    var hero = document.querySelector("section.hero");
+    if (hero) {
+      var night = /hero_plate_night/i.test(String(src||""));
+      hero.classList.toggle("hero-night-sky", night);
+    }
     var a = $("hero-plate-a");
     var b = $("hero-plate-b");
     if (!a) return;
@@ -782,7 +787,7 @@ function __notifyMoon(pct, phaseTxt) {
       img.style.setProperty("display", "block", "important");
       img.style.setProperty("visibility", "visible", "important");
       img.style.setProperty("opacity", "1", "important");
-      img.src = "moon_full.png?v=203.0.0";
+      img.src = "moon_full.png?v=204.0.0";
     }
     if (!shade) return;
     // reset any solid background from old CSS
