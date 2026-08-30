@@ -7,10 +7,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <title>Fishing Dashboard — Κάλυμνος</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="manifest" href="manifest.json"/>
-  <link rel="stylesheet" href="style.css?v=202.0.0"/>
+  <link rel="stylesheet" href="style.css?v=203.0.0"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" defer></script>
-  <script src="moon.js?v=202.0.0" defer></script>
+  <script src="moon.js?v=203.0.0" defer></script>
 </head>
 <body>
 <div class="app">
@@ -44,8 +46,8 @@
     <!-- HERO: sun full-bleed background -->
     <section class="card hero">
             <div class="hero-bg">
-        <img src="hero_plate_day.jpg?v=202.0.0" alt="" class="hero-base-img" id="hero-plate-a"/>
-        <img src="hero_plate_day.jpg?v=202.0.0" alt="" class="hero-base-img hero-plate-b" id="hero-plate-b"/>
+        <img src="hero_plate_day.jpg?v=203.0.0" alt="" class="hero-base-img" id="hero-plate-a"/>
+        <img src="hero_plate_day.jpg?v=203.0.0" alt="" class="hero-base-img hero-plate-b" id="hero-plate-b"/>
         <div class="hero-sky-tint" id="hero-sky-tint" hidden></div>
         <div class="hero-stars" id="hero-stars" aria-hidden="true" hidden></div>
         <div class="hero-sun" id="hero-sun" aria-hidden="true" hidden></div>
@@ -127,7 +129,7 @@
         <div class="sec-title"><i class="dot"></i> ΦΑΣΗ ΣΕΛΗΝΗΣ</div>
         <div class="moon-body">
           <div class="moon-disc moon-glow" id="moon-disc">
-            <img id="moon-img" class="moon-img" src="moon_full.png?v=202.0.0" alt="" width="100" height="100"/>
+            <img id="moon-img" class="moon-img" src="moon_full.png?v=203.0.0" alt="" width="100" height="100"/>
             <div class="moon-lit" id="moon-lit"></div>
             <div class="moon-shade" id="moon-shade"></div>
           </div>
@@ -138,12 +140,12 @@
         </div>
         <div class="moon-times">
           <div class="moon-time">
-            <img class="mt-crescent" src="crescent_rise.png?v=202.0.0" alt=""/>
+            <img class="mt-crescent" src="crescent_rise.png?v=203.0.0" alt=""/>
             <span class="mt-lab">↑ Ανατολή</span>
             <strong id="moon-rise" class="mt-hour">—</strong>
           </div>
           <div class="moon-time">
-            <img class="mt-crescent" src="crescent_set.png?v=202.0.0" alt=""/>
+            <img class="mt-crescent" src="crescent_set.png?v=203.0.0" alt=""/>
             <span class="mt-lab">↓ Δύση</span>
             <strong id="moon-set" class="mt-hour">—</strong>
           </div>
@@ -203,21 +205,21 @@
     
     <section class="card hour-pick-card" id="hour-pick-card">
                         <div class="sec-title"><i class="dot"></i> ΠΡΟΒΛΕΨΗ ΩΡΑΣ</div>
-      <div class="hour-clock" id="hour-chips">
-        <img class="hour-clock-bg" src="hour_clock_bg.jpg?v=202.0.0" alt="Πρόβλεψη ώρας" draggable="false"/>
-        <!-- hit areas: transparent, clock positions matching locked image -->
-        <button type="button" class="hc-hit hc-hit-center active" data-hour="now" aria-label="Τώρα"></button>
-        <button type="button" class="hc-hit hc-hit-12" data-hour="12" aria-label="12:00"></button>
-        <button type="button" class="hc-hit hc-hit-14" data-hour="14" aria-label="14:00"></button>
-        <button type="button" class="hc-hit hc-hit-16" data-hour="16" aria-label="16:00"></button>
-        <button type="button" class="hc-hit hc-hit-18" data-hour="18" aria-label="18:00"></button>
-        <button type="button" class="hc-hit hc-hit-20" data-hour="20" aria-label="20:00"></button>
-        <button type="button" class="hc-hit hc-hit-22" data-hour="22" aria-label="22:00"></button>
-        <button type="button" class="hc-hit hc-hit-00" data-hour="0" aria-label="00:00"></button>
-        <button type="button" class="hc-hit hc-hit-10" data-hour="10" aria-label="10:00"></button>
+      <div class="hour-clock hour-clock-css" id="hour-chips">
+        <button type="button" class="hc-cloud hc-center active" data-hour="now" aria-label="Τώρα">Τώρα</button>
+        <button type="button" class="hc-cloud" data-hour="0"  style="--a:0"  aria-label="00:00">00</button>
+        <button type="button" class="hc-cloud" data-hour="2"  style="--a:30" aria-label="02:00">02</button>
+        <button type="button" class="hc-cloud" data-hour="4"  style="--a:60" aria-label="04:00">04</button>
+        <button type="button" class="hc-cloud" data-hour="6"  style="--a:90" aria-label="06:00">06</button>
+        <button type="button" class="hc-cloud" data-hour="8"  style="--a:120" aria-label="08:00">08</button>
+        <button type="button" class="hc-cloud" data-hour="10" style="--a:150" aria-label="10:00">10</button>
+        <button type="button" class="hc-cloud" data-hour="12" style="--a:180" aria-label="12:00">12</button>
+        <button type="button" class="hc-cloud" data-hour="14" style="--a:210" aria-label="14:00">14</button>
+        <button type="button" class="hc-cloud" data-hour="16" style="--a:240" aria-label="16:00">16</button>
+        <button type="button" class="hc-cloud" data-hour="18" style="--a:270" aria-label="18:00">18</button>
+        <button type="button" class="hc-cloud" data-hour="20" style="--a:300" aria-label="20:00">20</button>
+        <button type="button" class="hc-cloud" data-hour="22" style="--a:330" aria-label="22:00">22</button>
       </div>
-      <p class="hour-hint" id="hour-hint">Live συνθήκες</p>
-      <div class="hour-pick-meta" id="hour-pick-meta">Live συνθήκες</div>
     </section>
 
     <div class="row row-score">
@@ -225,20 +227,20 @@
         <div class="sec-title score-title"><i class="dot"></i> FISHING SCORE</div>
         <div class="score-wrap" id="score-wrap">
           <div class="score-dial" id="score-dial">
-            <img class="score-gauge-bg" src="score_gauge_bg.jpg?v=202.0.0" alt=""/>
+            <img class="score-gauge-bg" src="score_gauge_bg.jpg?v=203.0.0" alt=""/>
             <div class="score-pivot" id="score-pivot">
-              <img class="score-rod-live" id="score-rod-arm" src="score_rod_layer.png?v=202.0.0" alt=""/>
+              <img class="score-rod-live" id="score-rod-arm" src="score_rod_layer.png?v=203.0.0" alt=""/>
             </div>
           </div>
           <div class="score-meta" id="score-meta">
             <div class="score-stars" id="score-stars">★★★★☆</div>
             <div class="score-num-line"><span id="score-num">—</span></div>
             <div class="score-lab" id="score-lab">—</div>
-            <div class="fd-ind" id="fd-ind">
+            <div class="fd-ind" id="fd-ind" hidden>
               <span id="fd-conf">εμπιστοσύνη —</span>
               <span id="fd-safe">ασφάλεια —</span>
             </div>
-            <div class="fd-why" id="fd-why"></div>
+            <div class="fd-why" id="fd-why" hidden></div>
             <!-- score-reasons removed v111 -->
           </div>
         </div>
@@ -247,7 +249,7 @@
         <section class="card activity-card">
           <div class="sec-title"><i class="dot"></i> FISH ACTIVITY</div>
           <div class="activity-body">
-            <img class="activity-panel" id="activity-panel" src="activity_body.jpg?v=202.0.0" alt=""/>
+            <img class="activity-panel" id="activity-panel" src="activity_body.jpg?v=203.0.0" alt=""/>
             <div class="activity-bar-slot" id="activity-bar-wrap">
               <svg class="activity-svg" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true">
                 <defs>
@@ -279,7 +281,7 @@
         <section class="card zone-card zone-card-h">
           <div class="sec-title"><i class="dot"></i> ΖΩΝΗ</div>
           <div class="zone-body">
-            <div class="zone-map-wrap"><img class="zone-map zone-map-fill" src="zone_map.png?v=202.0.0" alt="Χάρτης"/><div id="zone-pin" class="zone-pin" aria-hidden="true"></div></div>
+            <div class="zone-map-wrap"><img class="zone-map zone-map-fill" src="zone_map.png?v=203.0.0" alt="Χάρτης"/><div id="zone-pin" class="zone-pin" aria-hidden="true"></div></div>
             <div class="zone-info">
               <div class="zone-label">Βέλτιστη ζώνη</div>
               <div class="zone-place" id="zone-place">📍 Κάλυμνος · Νότια άκρη · 2–4μ</div>
@@ -429,8 +431,8 @@
     <button class="nav-item" data-nav="settings" type="button"><span>⚙</span>ΡΥΘΜΙΣΕΙΣ</button>
   </nav>
 </div>
-<script src="data.js?v=202.0.0"></script>
-<script src="app.js?v=202.0.0"></script>
+<script src="data.js?v=203.0.0"></script>
+<script src="app.js?v=203.0.0"></script>
 
 <div id="widget-modal" class="widget-modal" hidden>
   <div class="widget-modal-backdrop" id="widget-modal-backdrop"></div>

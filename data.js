@@ -656,7 +656,8 @@
       peaks = [{ hour: best.hour, activity: best.activity, score: best.score }];
     }
 
-    var goldPeak = peaks[0];
+    var dayPeaks = peaks.filter(function (p) { return p.hour >= 6 && p.hour <= 21; });
+    var goldPeak = dayPeaks.length ? dayPeaks[0] : peaks[0];
     /* Secondary peaks for morning / evening / night buckets if they exist as real peaks */
     function bestInRange(h0, h1) {
       var best = null;

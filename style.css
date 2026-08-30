@@ -3271,7 +3271,7 @@ button.best-chip.gold-hour[data-why="gold"] {
 #best-line .best-chip.gold-hour,
 button.best-chip.gold-hour,
 .best-chip.gold-hour[data-why="gold"] {
-  background-image: url("gold_hour_bg.png?v=183.0.0") !important;
+  background-image: url("gold_hour_bg.png?v=203.0.0") !important;
   background-size: 100% 100% !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
@@ -5818,3 +5818,46 @@ polyline#pressure-line{
 .fd-ind span{background:rgba(10,24,40,.55);border:1px solid rgba(80,160,220,.25);border-radius:8px;padding:3px 8px}
 .fd-ind .bad{color:#ff8a8a;border-color:rgba(255,80,80,.4)}
 .fd-why{margin-top:6px;font-size:11px;color:#c9e7ff;line-height:1.35}
+
+
+/* ===== v203 visual lock ===== */
+.hero-base-img{object-position:center 72%!important}
+.hour-clock-css{position:relative;width:min(280px,86vw);height:min(280px,86vw);margin:4px auto 8px;border-radius:50%}
+.hour-clock-css .hc-cloud{
+  position:absolute;left:50%;top:50%;width:46px;height:34px;margin:-17px 0 0 -23px;
+  border:0;border-radius:18px 18px 16px 16px;
+  background:radial-gradient(circle at 30% 40%,#7ad7ff,#1a6aa8 70%);
+  color:#fff;font:700 11px/34px system-ui,sans-serif;text-align:center;
+  transform:rotate(calc(var(--a,0)*1deg)) translateY(-108px) rotate(calc(var(--a,0)*-1deg));
+  box-shadow:0 0 10px rgba(53,200,255,.45);z-index:2;cursor:pointer
+}
+.hour-clock-css .hc-center{
+  left:50%;top:50%;width:78px;height:52px;margin:-26px 0 0 -39px;
+  background:radial-gradient(circle at 30% 35%,#ffe38a,#c9a227 70%);
+  color:#3a2208;font:800 14px/52px Cinzel,serif;transform:none;z-index:3
+}
+.hour-clock-css .hc-cloud.active{box-shadow:0 0 16px #35c8ff}
+.hour-hint,.hour-pick-meta,#hour-hint,#hour-pick-meta{display:none!important}
+.hour-clock-bg{display:none!important}
+.hour-pick-card{padding-bottom:8px!important}
+.gold-hour{background:linear-gradient(180deg,#f3d27a,#c9a227)!important;border:0!important;
+  box-shadow:0 0 14px rgba(245,197,66,.45)!important;padding:8px 14px!important;
+  display:inline-flex!important;flex-direction:column!important;align-items:center!important;gap:2px!important}
+.gold-hour .gh-lock-img{display:none!important}
+.gold-hour .gh-title{font:800 12px Cinzel,serif;color:#8b1220;letter-spacing:.4px;line-height:1}
+.gold-hour .gh-time{font:700 13px Cinzel,serif;color:#c81e2a;text-shadow:0 0 1px #3a0a10}
+#score-num,.score-num-line #score-num{
+  font-family:Cinzel,serif!important;font-weight:800!important;font-size:44px!important;
+  color:#c81e2a!important;
+  -webkit-text-stroke:1.2px #e5bf6f;
+  text-shadow:0 0 8px rgba(200,30,42,.45),0 1px 0 #7a1015!important
+}
+#score-lab,.score-lab{
+  font-family:Cinzel,serif!important;font-weight:700!important;font-size:18px!important;
+  color:#c81e2a!important;-webkit-text-stroke:.6px #e5bf6f;
+  text-shadow:0 0 6px rgba(200,30,42,.35)!important
+}
+.fd-ind,.fd-why,#fd-ind,#fd-why{display:none!important}
+.tide-row .t-ico + span{font-weight:700}
+.tide-row:first-child span:nth-child(2),
+.tide-row:nth-child(1) span:nth-child(2){color:#ff9a3c}

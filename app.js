@@ -210,7 +210,7 @@ function __notifyMoon(pct, phaseTxt) {
         else ctx.lineTo(X(i), Y(v));
       });
       ctx.strokeStyle = "rgba(245,197,66,.75)";
-      ctx.lineWidth = 10;
+      ctx.lineWidth = 3.2;
       ctx.shadowColor = "#f5c542";
       ctx.shadowBlur = 28;
       ctx.strokeStyle = "rgba(245,197,66,.65)";
@@ -311,8 +311,17 @@ function __notifyMoon(pct, phaseTxt) {
         if (!isHigh && !isLow) continue;
         if (i - lastExt <= 2) continue; /* no double dots on flat peaks */
         lastExt = i;
+        var col = isHigh ? "#3dde7a" : "#ff9a3c";
+        var sign = isHigh ? "+" : "−";
+        var labT = (times && times[i]) ? times[i] : "";
         html += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(pts[i]).toFixed(1) +
-          '" r="3.5" fill="#fff" stroke="#35c8ff" stroke-width="2"/>';
+          '" r="3.5" fill="#fff" stroke="' + col + '" stroke-width="2"/>';
+        html += '<text x="' + X(i).toFixed(1) + '" y="' + (Y(pts[i]) - 14).toFixed(1) +
+          '" text-anchor="middle" fill="' + col + '" font-size="8" font-weight="700">' +
+          labT + "</text>";
+        html += '<text x="' + X(i).toFixed(1) + '" y="' + (Y(pts[i]) - 4).toFixed(1) +
+          '" text-anchor="middle" fill="' + col + '" font-size="8" font-weight="700">' +
+          sign + pts[i].toFixed(2) + " m</text>";
       }
       /* live red only in #tide-live group (placeLiveDot below) — not here */
       dots.innerHTML = html;
@@ -402,7 +411,7 @@ function __notifyMoon(pct, phaseTxt) {
   }
 
   function resolveHeroPlate(timeKey, wx) {
-    var V = "?v=202.0.0";
+    var V = "?v=203.0.0";
     if (wx === "storm") return "hero_plate_storm.jpg" + V;
     if (wx === "rain") return "hero_plate_day.jpg" + V;
     var map = {
@@ -773,7 +782,7 @@ function __notifyMoon(pct, phaseTxt) {
       img.style.setProperty("display", "block", "important");
       img.style.setProperty("visibility", "visible", "important");
       img.style.setProperty("opacity", "1", "important");
-      img.src = "moon_full.png?v=183.0.0";
+      img.src = "moon_full.png?v=203.0.0";
     }
     if (!shade) return;
     // reset any solid background from old CSS
@@ -831,11 +840,7 @@ function __notifyMoon(pct, phaseTxt) {
     var fill = document.querySelector(".activity-fill, #activity-fill");
     if (fill) fill.style.setProperty("width", ap + "%", "important");
     var meta = $("hour-pick-meta");
-    if (meta) {
-      meta.textContent = previewLabel
-        ? ("Πρόβλεψη " + previewLabel + " · Score " + sc.score + " · Activity " + ap)
-        : ("Live · Score " + sc.score + " · Activity " + ap);
-    }
+    if (meta) meta.textContent = "";
     var conf = $("fd-conf");
     if (conf) conf.textContent = "εμπιστοσύνη " + (sc.confidence || "χαμηλή") + " · n=7";
     var safe = $("fd-safe");
@@ -1002,9 +1007,12 @@ function __notifyMoon(pct, phaseTxt) {
       if ((scZ.score || 0) >= 70) parts.push("βάθος 2–6μ δομές");
       else parts.push("βάθος 2–4μ");
 
-      var rec = where || (leeLab ? ("Πήγαινε " + leeLab) : "Δες υπήνεμο + όπου καταλήγει το ρεύμα");
-      if (bfZ >= 5 && cknZ != null && cknZ >= 0.8) rec = "Σήμερα δύσκολο Β και Ν · 5+ bf και δυνατό ρεύμα";
-      $("zone-place").textContent = "📍 " + zName + " · " + rec + " · " + parts.slice(0, 3).join(" · ");
+      var rec = leeLab ? ("Πήγαινε " + leeLab) : "Πήγαινε υπήνεμα";
+      if (bfZ >= 5 && cknZ != null && cknZ >= 0.8) rec = "Δύσκολο σήμερα · απόφυγε φάτσα";
+      else if (bfZ >= 4 && leeLab) rec = "Πήγαινε " + leeLab;
+      else if (flowTo && cknZ != null && cknZ >= 0.25) rec = "Πήγαινε " + flowTo;
+      else if (leeLab) rec = "Πήγαινε " + leeLab;
+      $("zone-place").textContent = rec + (windFrom ? (" · άνεμος " + windFrom + " " + bfZ + " bf") : "") + (cknZ != null ? (" · ρεύμα " + Number(cknZ).toFixed(2) + " kn") : "");
 
     // v148: pin on recommended fishing side (not "my location")
     (function placeZonePin() {
@@ -1069,9 +1077,9 @@ function __notifyMoon(pct, phaseTxt) {
         '<span class="sep"> · </span>' +
         '<button type="button" class="best-chip" data-why="evening">ΑΠΟΓΕΥΜΑ ' + bh.evening + "</button>" +
         '<span class="sep"> · </span>' +
-        '<button type="button" class="best-chip gold-hour" data-why="gold"><img class="gh-lock-img" src="gold_hour_btn.png?v=183.0.0" alt="GOLD HOUR"/><span class="gh-time">' + (bh.gold || "") + "</span></button>" +
+        '<button type="button" class="best-chip gold-hour" data-why="gold"><span class="gh-title">GOLD HOUR</span><span class="gh-time">' + (bh.gold || "") + "</span></button>" +
         '<span class="sep"> · </span>' +
-        '<button type="button" class="best-chip" data-why="night">ΝΥΧΤΑ ' + bh.night + "</button>";
+        (bh.night && bh.night !== bh.gold ? ('<button type="button" class="best-chip" data-why="night">ΝΥΧΤΑ ' + bh.night + "</button>") : "");
       if (bh.techniques && bh.techniques.length) {
         chips += '<div class="best-tech-row">';
         bh.techniques.forEach(function (t) {
