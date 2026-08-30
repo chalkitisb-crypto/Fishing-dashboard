@@ -1,6 +1,4 @@
-v208 = v110 WebGL που δούλεψε + νέα υφή IMG_0457
-Upload:
+ΜΟΝΟ αυτό το upload για σελήνη:
   moon.js
-  moon_full.png
-  index.html
-ΜΗΝ ανεβάσεις style.css από παλιά moon zips.
+index: moon.js?v=110.0.0
+Hard refresh. 1 screenshot μετά.

@@ -1,10 +1,10 @@
-/* moon.js v210 = v110 method + locked photo
-   Fix: canvas visible (beat style.css hide) + phase redraw when live % arrives. */
+/* moon.js v110 — hybrid: always-lit gold sphere + calibrated phase mask
+   offset = -2*r*alpha → ~2% lit at 2%, full at 100%. One upload. */
 (function () {
   "use strict";
   var CFG = {
     rotationSec: 30,
-    texUrl: "moon_full.png?v=210.0.0",
+    texUrl: "moon_eq.jpg?v=110.0.0",
     cdn: "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"
   };
 
@@ -16,7 +16,7 @@
   }
 
   function readPctPhase() {
-    var pct = 100, waxing = true;
+    var pct = 6, waxing = false;
     var pctEl = $("moon-pct"), phaseEl = $("moon-phase");
     if (pctEl) {
       var n = parseFloat(String(pctEl.textContent).replace(/[^0-9.]/g, ""));
@@ -31,15 +31,13 @@
     var st = document.createElement("style");
     st.id = "moon-hybrid-css";
     st.textContent = [
-      "#moon-disc canvas#moon-canvas,.moon-disc canvas#moon-canvas,canvas#moon-canvas,#moon-canvas{",
-      "display:block!important;visibility:visible!important;opacity:1!important;",
-      "position:absolute!important;inset:0!important;width:100%!important;height:100%!important;",
-      "min-width:80px!important;min-height:80px!important;border-radius:50%!important;",
-      "z-index:5!important;pointer-events:none!important;background:transparent!important;}",
+      "#moon-disc{position:relative!important;overflow:hidden!important;}",
+      "#moon-canvas{display:block!important;position:absolute!important;inset:0!important;",
+      "width:100%!important;height:100%!important;border-radius:50%!important;",
+      "opacity:1!important;z-index:5!important;pointer-events:none!important;}",
       "#moon-phase-mask{position:absolute!important;inset:0!important;width:100%!important;",
       "height:100%!important;border-radius:50%!important;z-index:6!important;pointer-events:none!important;}",
-      "#moon-img,img#moon-img,.moon-img,.moon-disc img.moon-img{display:none!important;opacity:0!important;animation:none!important;}",
-      "#moon-shade,.moon-shade,#moon-lit,.moon-lit{display:none!important;opacity:0!important;background:transparent!important;}"
+      "#moon-shade,.moon-shade,#moon-img,.moon-img{display:none!important;opacity:0!important;}"
     ].join("");
     document.head.appendChild(st);
   }
@@ -223,27 +221,6 @@
         window.__moonSetPhase(e.detail.pct, e.detail.phase);
       }
     });
-
-    function applyLive() {
-      var st2 = readPctPhase();
-      if (window.__moonSetPhase) window.__moonSetPhase(st2.pct, $("moon-phase") ? $("moon-phase").textContent : "");
-    }
-    var prevShade = window.setMoonShade;
-    window.setMoonShade = function (p, k) {
-      if (typeof prevShade === "function") {
-        try { prevShade(p, k); } catch (err) {}
-      }
-      if (window.__moonSetPhase) window.__moonSetPhase(p, k);
-    };
-    try {
-      var pctEl = $("moon-pct"), phaseEl = $("moon-phase");
-      if (pctEl) new MutationObserver(applyLive).observe(pctEl, { childList: true, characterData: true, subtree: true });
-      if (phaseEl) new MutationObserver(applyLive).observe(phaseEl, { childList: true, characterData: true, subtree: true });
-    } catch (err) {}
-    var n = 0, iv = setInterval(function () {
-      applyLive();
-      if (++n >= 20) clearInterval(iv);
-    }, 500);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
