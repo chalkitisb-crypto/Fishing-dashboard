@@ -1,0 +1,9 @@
+v206.0.0 — pressure: integer align + thinner 2.0 + tide red-dot
+Upload to GitHub root (overwrite):
+  index.html
+  app.js
+Check Netlify after cache clear:
+  - ακέραιο 1013 κάθεται στην κυανή γραμμή 1013
+  - γραμμή πιο λεπτή (2.0)
+  - red dot ίδιο με παλίρροια (πυρήνας 2.7 + λευκό δαχτυλίδι)
+  - χρυσά dots και σκιά live ίδια

@@ -1,3 +1,4 @@
+/* v206.0.0 PRESSURE integer align + thinner 2.0 + tide live-dot */
 /* v205.0.0 PRESSURE line glow only · same 2.8 width · tide live-dot */
 /* v197.0.0 PRESSURE glow 90% locked */
 /* v184.0.0 HERO locked plates — no fake sun overlay */
@@ -160,9 +161,9 @@ function __notifyMoon(pct, phaseTxt) {
     }
     var w = 320, h = 150;
     var padL = 30, padR = 10, padT = 20, padB = 26;
-    var min = Math.min.apply(null, pts) - 0.5;
-    var max = Math.max.apply(null, pts) + 0.5;
-    if (max <= min) max = min + 2;
+    var min = Math.floor(Math.min.apply(null, pts));
+    var max = Math.ceil(Math.max.apply(null, pts));
+    if (max <= min) max = min + 1;
     function X(i) { return padL + (i * (w - padL - padR)) / Math.max(1, pts.length - 1); }
     function Y(v) { return padT + (1 - (v - min) / (max - min)) * (h - padT - padB); }
     var pairs = pts.map(function (v, i) { return X(i).toFixed(1) + "," + Y(v).toFixed(1); });
@@ -170,7 +171,7 @@ function __notifyMoon(pct, phaseTxt) {
     if (line) {
       line.setAttribute("points", ptsStr);
       line.setAttribute("stroke", "#f5c542");
-      line.setAttribute("stroke-width", "2.8");
+      line.setAttribute("stroke-width", "2.0");
       line.setAttribute("fill", "none");
       line.setAttribute("stroke-linecap", "round");
       line.setAttribute("stroke-linejoin", "round");
@@ -210,35 +211,40 @@ function __notifyMoon(pct, phaseTxt) {
         if (i === 0) ctx.moveTo(X(i), Y(v));
         else ctx.lineTo(X(i), Y(v));
       });
-      ctx.strokeStyle = "rgba(245,197,66,.55)";
-      ctx.lineWidth = 2.8;
+      ctx.strokeStyle = "rgba(245,197,66,.45)";
+      ctx.lineWidth = 2.0;
       ctx.shadowColor = "#f5c542";
-      ctx.shadowBlur = 48;
+      ctx.shadowBlur = 28;
       ctx.stroke();
-      ctx.shadowBlur = 22;
-      ctx.strokeStyle = "rgba(255,210,74,.9)";
-      ctx.lineWidth = 2.8;
+      ctx.shadowBlur = 12;
+      ctx.strokeStyle = "rgba(255,210,74,.85)";
+      ctx.lineWidth = 2.0;
       ctx.stroke();
       ctx.restore();
     })();
-    /* sparse value labels — every ~4 points + first/last */
+    /* gold dots + integer labels only when value sits on that integer */
     if (dots) {
       var step = Math.max(1, Math.floor(pts.length / 6));
       var htmlD = "";
+      var usedInt = {};
       for (var i = 0; i < pts.length; i++) {
         if (i !== 0 && i !== pts.length - 1 && (i % step) !== 0) continue;
         htmlD += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(pts[i]).toFixed(1) +
-          '" r="2.8" fill="#f5c542" stroke="#1a1000" stroke-width="1"/>';
-        htmlD += '<text x="' + X(i).toFixed(1) + '" y="' + (Y(pts[i]) - 7).toFixed(1) +
+          '" r="2.4" fill="#f5c542" stroke="#1a1000" stroke-width="1"/>';
+        var iv = Math.round(pts[i]);
+        if (Math.abs(pts[i] - iv) > 0.12) continue;
+        if (usedInt[iv]) continue;
+        usedInt[iv] = 1;
+        htmlD += '<text x="' + X(i).toFixed(1) + '" y="' + (Y(iv) - 6).toFixed(1) +
           '" text-anchor="middle" fill="#f5c542" font-size="8" font-weight="600">' +
-          Math.round(pts[i]) + "</text>";
+          iv + "</text>";
       }
       dots.innerHTML = htmlD;
     }
     if (grid) {
       var ticks = [];
-      var stepV = Math.max(1, Math.round((max - min) / 3));
-      for (var v = Math.ceil(min); v <= max; v += stepV) {
+      var stepV = 1;
+      for (var v = min; v <= max; v += stepV) {
         var y = Y(v);
         ticks.push('<line x1="' + padL + '" y1="' + y + '" x2="' + (w - padR) +
           '" y2="' + y + '" stroke="rgba(53,200,255,.12)" stroke-dasharray="3 4"/>');
@@ -1795,6 +1801,7 @@ function __notifyMoon(pct, phaseTxt) {
     if (!card) return;
     openWidgetModal(card);
   });
+  window.drawPressure = drawPressure;
 })();
 
 /* ===== v174 MOON — v55 method: CSS shade + img spin ===== */
@@ -1883,7 +1890,6 @@ function __notifyMoon(pct, phaseTxt) {
   setTimeout(run,2500);
 })();
 
-  window.drawPressure = drawPressure;
   /* v183: keep red dots rolling with time */
   setInterval(function () {
     try {
