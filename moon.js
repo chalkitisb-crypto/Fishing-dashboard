@@ -1,10 +1,10 @@
-/* moon.js v208 = v110 method + locked photo texture — hybrid: always-lit gold sphere + calibrated phase mask
+/* moon.js v209 = v110 + locked photo, no moon_eq — hybrid: always-lit gold sphere + calibrated phase mask
    offset = -2*r*alpha → ~2% lit at 2%, full at 100%. One upload. */
 (function () {
   "use strict";
   var CFG = {
     rotationSec: 30,
-    texUrl: "moon_full.png?v=208.0.0",
+    texUrl: "moon_full.png?v=209.0.0",
     cdn: "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"
   };
 
