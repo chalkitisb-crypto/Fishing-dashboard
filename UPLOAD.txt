@@ -1,16 +1,6 @@
-SCORE v114 — μετρημένο pivot (όχι δοκιμές)
-
-Μετρήσεις:
-  βίδα gauge:  48.91% × 82.19%
-  δακτυλίδι rod PNG: 34.41% × 86.64%  (όχι κέντρο εικόνας!)
-
-Χρώμα από ΣΥΝΘΗΚΕΣ:
-  #e3b072 αστέρια/νούμερο · #b8814c label
-
-Animate:
-  load → 0 → %
-  tap στο κοντέρ → 0 → %
-  άνοιγμα modal → 0 → %
-
-Ανέβασε: app.js style.css index.html score_rod_layer.png
-?v=114.0.0 hard refresh
+v208 = v110 WebGL που δούλεψε + νέα υφή IMG_0457
+Upload:
+  moon.js
+  moon_full.png
+  index.html
+ΜΗΝ ανεβάσεις style.css από παλιά moon zips.
