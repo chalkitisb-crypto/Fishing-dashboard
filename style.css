@@ -5894,3 +5894,51 @@ canvas#moon-canvas,
   display: none !important;
   animation: none !important;
 }
+
+/* ===== v216 moon card compact vertical — disc fills, texture from photo ===== */
+.moon-card, section.moon-card, [data-widget="moon"] {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: auto !important;
+  max-width: 210px !important;
+  padding: 10px 12px 12px !important;
+}
+.moon-card .moon-body {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+#moon-disc.moon-disc, .moon-disc, #moon-disc {
+  width: 148px !important;
+  height: 148px !important;
+  min-width: 148px !important;
+  min-height: 148px !important;
+  max-width: 148px !important;
+  max-height: 148px !important;
+  flex: 0 0 148px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+.moon-card .moon-info {
+  text-align: center !important;
+  flex: 0 0 auto !important;
+}
+.moon-card .moon-times {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  width: 100% !important;
+  margin-top: 4px !important;
+}
+.moon-card .moon-time {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 2px !important;
+}
