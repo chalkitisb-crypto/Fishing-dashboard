@@ -1,2 +1,14 @@
-v220 Gold Hour: σωστό χρυσό κουμπί · GOLD HOUR + ώρες μέσα · Cinzel ρουμπίνι
-Ανέβασε: style.css app.js gold_hour_plate.png
+FD_v223_GOLD_LOCKED
+Ανέβασε στη ρίζα GitHub:
+  style.css
+  app.js
+  gold_hour_plate.png
+
+Κράτα τα υπόλοιπα αρχεία όπως είναι.
+Netlify → Clear cache and deploy site.
+
+Τσεκάρισμα:
+1. GOLD HOUR = χρυσό 3D κουμπί με ruby γράμματα
+2. ώρες live μέσα στο κουμπί
+3. ένα tap στο GOLD HOUR → ανοίγει κόκκινο bubble με την εξήγηση
+4. δεύτερο tap στο ίδιο → κλείνει

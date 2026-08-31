@@ -1,3 +1,4 @@
+/* v223.0.0 GOLD HOUR locked plate + live hours + red tap bubble */
 /* v206.0.0 PRESSURE integer align + thinner 2.0 + tide live-dot */
 /* v205.0.0 PRESSURE line glow only · same 2.8 width · tide live-dot */
 /* v197.0.0 PRESSURE glow 90% locked */

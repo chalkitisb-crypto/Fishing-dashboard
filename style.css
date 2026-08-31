@@ -2355,7 +2355,7 @@ img.score-rod-live,
 }
 .score-lab, #score-lab {
   color: #c44818 !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
 }
 .score-reasons, #score-reasons {
   display: none !important;
@@ -5993,4 +5993,209 @@ button.gold-hour,
   border: 0 !important;
   padding: 0 !important;
   margin: 0 !important;
+}
+
+
+/* ============================================================
+   v221 GOLD HOUR — locked D2 metallic plate
+   ruby Cinzel GOLD HOUR baked in plate + live hours inside
+   nuclear specificity kills v148–v220 competing rules
+   ============================================================ */
+html body #best-line button.best-chip.gold-hour,
+html body #best-line button.best-chip.gold-hour[data-why="gold"],
+html body #best-hours button.best-chip.gold-hour,
+html body button.best-chip.gold-hour[data-why="gold"],
+html body button.best-chip.gold-hour,
+html body .best-chip.gold-hour {
+  background-color: #d4a017 !important;
+  background-image: url("gold_hour_plate.png?v=221.0.0") !important;
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: 0 0 14px rgba(232,185,35,.55), 0 2px 0 rgba(80,50,0,.25) !important;
+  border-radius: 999px !important;
+  width: 176px !important;
+  min-width: 176px !important;
+  max-width: 176px !important;
+  height: 66px !important;
+  min-height: 66px !important;
+  padding: 0 14px 10px !important;
+  margin: 0 2px !important;
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 0 !important;
+  line-height: 1 !important;
+  overflow: hidden !important;
+  vertical-align: middle !important;
+  filter: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  color: #b71c1c !important;
+  -webkit-text-fill-color: #b71c1c !important;
+}
+
+html body #best-line button.best-chip.gold-hour .gh-lock-img,
+html body button.best-chip.gold-hour .gh-lock-img,
+html body .best-chip.gold-hour .gh-lock-img,
+html body .gold-hour .gh-lock-img {
+  display: none !important;
+}
+
+/* GOLD HOUR letters are baked into the D2 plate — hide HTML title */
+html body #best-line button.best-chip.gold-hour .gh-title,
+html body button.best-chip.gold-hour .gh-title,
+html body .best-chip.gold-hour .gh-title,
+html body .gold-hour .gh-title,
+html body .best-chip.gold-hour .gh-txt {
+  display: block !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  -webkit-text-stroke: 0 !important;
+  text-shadow: none !important;
+  opacity: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* live hours sit in the empty gold band under GOLD HOUR */
+html body #best-line button.best-chip.gold-hour .gh-time,
+html body button.best-chip.gold-hour .gh-time,
+html body .best-chip.gold-hour .gh-time,
+html body .gold-hour .gh-time {
+  display: block !important;
+  position: static !important;
+  font-family: Cinzel, "Cinzel", Times, serif !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  letter-spacing: .6px !important;
+  color: #8b1020 !important;
+  -webkit-text-fill-color: #8b1020 !important;
+  -webkit-text-stroke: .7px #e8c547 !important;
+  text-shadow:
+    -1px -1px 0 #d4af37,
+     1px -1px 0 #d4af37,
+    -1px  1px 0 #d4af37,
+     1px  1px 0 #d4af37,
+     0 0 6px rgba(155,18,32,.35) !important;
+  background: none !important;
+  background-image: none !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* ============================================================
+   v222 GOLD HOUR — locked user plate (UEKQD / CF9F8BBF)
+   GOLD HOUR ruby gems baked in plate
+   live hours from code in lower gold band
+   nuclear specificity kills v148–v221 competing rules
+   ============================================================ */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&display=swap");
+
+html body #best-line button.best-chip.gold-hour,
+html body #best-line button.best-chip.gold-hour[data-why="gold"],
+html body #best-hours button.best-chip.gold-hour,
+html body button.best-chip.gold-hour[data-why="gold"],
+html body button.best-chip.gold-hour,
+html body .best-chip.gold-hour,
+html body .best-chip[data-why="gold"] {
+  background-color: #d4a017 !important;
+  background-image: url("gold_hour_plate.png?v=223.0.0") !important;
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: 0 0 16px rgba(232,185,35,.55) !important;
+  border-radius: 999px !important;
+  width: 168px !important;
+  min-width: 168px !important;
+  max-width: 168px !important;
+  height: 58px !important;
+  min-height: 58px !important;
+  padding: 0 10px 7px !important;
+  margin: 0 4px !important;
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 0 !important;
+  line-height: 1 !important;
+  overflow: hidden !important;
+  vertical-align: middle !important;
+  filter: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+html body #best-line button.best-chip.gold-hour .gh-title,
+html body button.best-chip.gold-hour .gh-title,
+html body .best-chip.gold-hour .gh-title,
+html body .gold-hour .gh-title,
+html body .best-chip.gold-hour .gh-lock-img {
+  display: none !important;
+}
+
+html body #best-line button.best-chip.gold-hour .gh-time,
+html body button.best-chip.gold-hour .gh-time,
+html body .best-chip.gold-hour .gh-time,
+html body .gold-hour .gh-time {
+  display: block !important;
+  font-family: Cinzel, "Times New Roman", serif !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  letter-spacing: .4px !important;
+  color: #b71c1c !important;
+  -webkit-text-fill-color: #b71c1c !important;
+  -webkit-text-stroke: .7px #e8c36a !important;
+  text-shadow: 0 1px 0 #7a4e10, 0 0 6px rgba(183,28,28,.45) !important;
+  background: none !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 0 1px 0 !important;
+  line-height: 1 !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* v222b — GOLD HOUR tap opens RED bubble (same family as other why chips) */
+html body #best-line button.best-chip.gold-hour,
+html body button.best-chip.gold-hour,
+html body .best-chip.gold-hour {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+html body #best-why.best-why--gold,
+html body .best-why.best-why--gold,
+html body .best-why--gold {
+  display: block !important;
+  background: rgba(140, 12, 18, .92) !important;
+  border: 1px solid rgba(255, 70, 70, .75) !important;
+  box-shadow: 0 0 16px rgba(200, 20, 30, .35), inset 0 1px 0 rgba(255,180,180,.12) !important;
+  color: #ffd0d0 !important;
+  border-radius: 14px !important;
+  padding: 10px 12px !important;
+  margin-top: 8px !important;
+}
+html body #best-why.best-why--gold b,
+html body .best-why--gold b {
+  color: #ff4d4d !important;
+  text-shadow: 0 0 8px rgba(255,60,60,.35) !important;
+}
+html body #best-why.best-why--gold li,
+html body .best-why--gold li,
+html body .best-why--gold {
+  color: #ffd6d6 !important;
 }
