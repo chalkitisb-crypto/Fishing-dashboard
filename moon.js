@@ -1,10 +1,10 @@
-/* moon.js v216 = v110 method
+/* moon.js v217 = v110 method
    fill disc, live % shade, visible rotate. */
 (function () {
   "use strict";
   var CFG = {
     rotationSec: 30,
-    texUrl: "moon_full.png?v=216.0.0",
+    texUrl: "moon_eq.jpg?v=217.0.0",
     cdn: "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"
   };
 

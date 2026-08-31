@@ -1,2 +1,2 @@
-v216: ίδια περιστροφή/σκιά · υφή φωτογραφία · μικρή κάθετη κάρτα
-Ανέβασε: moon.js moon_full.png style.css index.html
+v217: ίδια WebGL περιστροφή πλανήτη · υφή = η σελήνη σου χωρίς μαύρο
+Ανέβασε: moon.js moon_eq.jpg style.css index.html
