@@ -689,7 +689,7 @@ function __notifyMoon(pct, phaseTxt) {
       $("pressure-trend").textContent = data.pressureTrend;
     }
     if (data.moon) {
-      if ($("moon-pct")) $("moon-pct").textContent = data.moon.pct + "%"; if (typeof setMoonShade==="function") setMoonShade(data.moon.pct, data.moon.phaseKey || data.moon.phaseHtml || "");
+      if ($("moon-pct")) $("moon-pct").textContent = data.moon.pct + "%"; if (typeof setMoonShade==="function") setMoonShade(data.moon.pct, data.moon.phaseKey || data.moon.phaseHtml || ""); if (typeof window.__notifyMoon==="function") window.__notifyMoon(data.moon.pct, data.moon.phaseHtml || data.moon.phaseKey || "");
       if ($("moon-phase")) $("moon-phase").innerHTML = data.moon.phaseHtml;
       if ($("moon-rise") && data.moon.rise) $("moon-rise").textContent = data.moon.rise;
       if ($("moon-set") && data.moon.set) $("moon-set").textContent = data.moon.set;

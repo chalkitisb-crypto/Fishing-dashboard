@@ -1,5 +1,5 @@
-/* moon.js v110 — hybrid: always-lit gold sphere + calibrated phase mask
-   offset = -2*r*alpha → ~2% lit at 2%, full at 100%. One upload. */
+/* moon.js v215 = v110 method
+   fill disc, live % shade, visible rotate. */
 (function () {
   "use strict";
   var CFG = {
@@ -16,7 +16,7 @@
   }
 
   function readPctPhase() {
-    var pct = 6, waxing = false;
+    var pct = 100, waxing = true;
     var pctEl = $("moon-pct"), phaseEl = $("moon-phase");
     if (pctEl) {
       var n = parseFloat(String(pctEl.textContent).replace(/[^0-9.]/g, ""));
@@ -31,10 +31,12 @@
     var st = document.createElement("style");
     st.id = "moon-hybrid-css";
     st.textContent = [
-      "#moon-disc{position:relative!important;overflow:hidden!important;}",
-      "#moon-canvas{display:block!important;position:absolute!important;inset:0!important;",
-      "width:100%!important;height:100%!important;border-radius:50%!important;",
-      "opacity:1!important;z-index:5!important;pointer-events:none!important;}",
+      "#moon-disc{position:relative!important;overflow:hidden!important;border-radius:50%!important;}",
+      "#moon-disc canvas#moon-canvas,.moon-disc canvas#moon-canvas,canvas#moon-canvas,#moon-canvas{",
+      "display:block!important;visibility:visible!important;opacity:1!important;",
+      "position:absolute!important;inset:0!important;width:100%!important;height:100%!important;",
+      "min-width:100%!important;min-height:100%!important;border-radius:50%!important;",
+      "z-index:5!important;pointer-events:none!important;background:transparent!important;}",
       "#moon-phase-mask{position:absolute!important;inset:0!important;width:100%!important;",
       "height:100%!important;border-radius:50%!important;z-index:6!important;pointer-events:none!important;}",
       "#moon-shade,.moon-shade,#moon-img,.moon-img{display:none!important;opacity:0!important;}"
@@ -103,7 +105,7 @@
 
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(35, w / h, 0.1, 20);
-    camera.position.set(0, 0, 2.65);
+    camera.position.set(0, 0, 2.18);
 
     var mat = new THREE.MeshBasicMaterial({ color: 0xf5c542 });
     var moon = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), mat);
@@ -221,6 +223,22 @@
         window.__moonSetPhase(e.detail.pct, e.detail.phase);
       }
     });
+    function applyLive() {
+      var st2 = readPctPhase();
+      var phaseTxt = $("moon-phase") ? $("moon-phase").textContent : "";
+      if (window.__moonSetPhase) window.__moonSetPhase(st2.pct, phaseTxt);
+    }
+    var prev = window.setMoonShade;
+    window.setMoonShade = function (p, k) {
+      if (typeof prev === "function") { try { prev(p, k); } catch (e) {} }
+      if (window.__moonSetPhase) window.__moonSetPhase(p, k);
+    };
+    try {
+      var pe = $("moon-pct"), ph = $("moon-phase");
+      if (pe) new MutationObserver(applyLive).observe(pe, {childList:true,characterData:true,subtree:true});
+      if (ph) new MutationObserver(applyLive).observe(ph, {childList:true,characterData:true,subtree:true});
+    } catch (e) {}
+    var n = 0, iv = setInterval(function () { applyLive(); if (++n >= 30) clearInterval(iv); }, 400);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

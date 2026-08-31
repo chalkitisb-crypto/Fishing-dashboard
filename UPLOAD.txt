@@ -1,7 +1,2 @@
-v213 RESTORE widgets + moon v110
-Ανέβασε ΟΛΑ:
-  index.html
-  style.css
-  app.js
-  moon.js
-ΜΗΝ σβήσεις png από το repo (score_rod_layer, zone_map, arrow_*).
+v215: v110 + γεμίζει δίσκο + σκιά από live % + ορατή περιστροφή
+Ανέβασε: moon.js style.css app.js

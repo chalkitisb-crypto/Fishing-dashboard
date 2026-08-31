@@ -5870,3 +5870,27 @@ polyline#pressure-line{
   object-fit: cover !important;
   object-position: 72% 10% !important;
 }
+
+/* ===== v214 KEEP moon.js v110 visible — do not hide canvas ===== */
+#moon-disc canvas#moon-canvas,
+.moon-disc canvas#moon-canvas,
+canvas#moon-canvas,
+#moon-canvas {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 80px !important;
+  min-height: 80px !important;
+  border-radius: 50% !important;
+  z-index: 5 !important;
+  pointer-events: none !important;
+  background: transparent !important;
+}
+#moon-img, img#moon-img, .moon-disc img.moon-img, .moon-img {
+  display: none !important;
+  animation: none !important;
+}
