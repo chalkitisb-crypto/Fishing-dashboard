@@ -7,6 +7,7 @@
 /* v152.0.0 FULL package */
 /* v151.1.0 chips 10-00 every 2h */
 /* v151.0.0 logic: objective score · peak hours · hour picker · current tips */
+/* v220 GOLD HOUR plate+ruby
 /* v150.0.0 ROOTFIX — rod pivot restore · GOLD HOUR PNG bg · zone horizontal 2D */
 /* v149.0.0 — arrows wind TO / current TOWARD · rod calibrated · GOLD HOUR ruby · zone */
 /* v148.0.0 GOLD HOUR ruby + zone horizontal + pin */

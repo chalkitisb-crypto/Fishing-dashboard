@@ -1,2 +1,2 @@
-v219: σφαίρα από την ΠΡΩΤΗ σελήνη · WebGL rotateY 360 · χωρίς τις τυρί όψεις
-Ανέβασε: moon.js moon_eq.jpg style.css index.html
+v220 Gold Hour: σωστό χρυσό κουμπί · GOLD HOUR + ώρες μέσα · Cinzel ρουμπίνι
+Ανέβασε: style.css app.js gold_hour_plate.png
