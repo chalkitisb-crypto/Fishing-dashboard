@@ -156,7 +156,14 @@
       }
     }
 
-    for (i = startIdx; i < Math.min(startIdx + 12, (h.time || []).length); i++) {
+    for (i = 0; i < (h.time || []).length; i++) {
+      /* v228: όλη η σήμερα + επόμενες 6 ώρες, όχι μόνο 12 από τώρα */
+      var isoW = String(h.time[i] || "");
+      var dW = new Date(h.time[i]);
+      if (isFinite(dW.getTime())) {
+        var ageH = (dW.getTime() - new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()) / 36e5;
+        if (ageH < 0 || ageH >= 30) continue;
+      }
       t = hhmm(h.time[i]);
       code = h.weather_code[i];
       var wm = wmo(code);
@@ -174,6 +181,7 @@
         deg: dir,
         dir: degToCompass(dir),
         bf: bf,
+        kmh: spd,
         cls: bfClass(bf)
       });
     }
@@ -231,7 +239,12 @@
     var currentHours = [];
     if (mh.ocean_current_velocity && mh.ocean_current_direction && mh.time) {
       var cStart = mi;
-      for (i = cStart; i < Math.min(cStart + 12, mh.time.length); i++) {
+      for (i = 0; i < mh.time.length; i++) {
+        var dC = new Date(mh.time[i]);
+        if (isFinite(dC.getTime())) {
+          var ageC = (dC.getTime() - new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()) / 36e5;
+          if (ageC < 0 || ageC >= 30) continue;
+        }
         var cvelKmh = mh.ocean_current_velocity[i] || 0;
         var ckn = cvelKmh / 1.852;
         var cdeg = mh.ocean_current_direction[i] || 0;
@@ -457,16 +470,28 @@
       C = 14; factors.currentLabel = "Ακραίο"; reasons.push("Ακραίο ρεύμα");
     }
 
-    /* --- HOURLY overlays so best-hours move with the day --- */
-    var hIdx = Math.max(0, Math.min(23, Math.floor(hour)));
-    var wh = (data.windHours && data.windHours[hIdx]) ? data.windHours[hIdx] : null;
-    var ch = (data.currentHours && data.currentHours[hIdx]) ? data.currentHours[hIdx] : null;
-    if (wh && wh.bf != null) {
-      /* keep using this hour's wind below */
+    /* --- HOURLY overlays: match clock hour, not array index --- */
+    function pickHourly(arr, hr) {
+      if (!arr || !arr.length) return null;
+      var h = ((Math.floor(hr) % 24) + 24) % 24;
+      var best = null, bestD = 99;
+      for (var i = 0; i < arr.length; i++) {
+        var raw = arr[i] && arr[i].t != null ? String(arr[i].t) : "";
+        var hh = parseInt(raw.split(":")[0], 10);
+        if (!isFinite(hh)) continue;
+        var d = Math.min(Math.abs(hh - h), 24 - Math.abs(hh - h));
+        if (d < bestD) { bestD = d; best = arr[i]; }
+      }
+      return best || null;
     }
-    if (ch && ch.kn != null && (ckn == null || ch.proxy)) {
+    var wh = pickHourly(data.windHours, hour);
+    var ch = pickHourly(data.currentHours, hour);
+    if (ch && ch.kn != null) {
       var knH = Number(ch.kn);
-      if (isFinite(knH)) ckn = knH;
+      if (isFinite(knH)) {
+        ckn = knH;
+        factors.currentKn = ckn;
+      }
     }
 
     /* --- WIND (0-100) --- */
@@ -591,12 +616,12 @@
     /* (natural outcome of formula; no forced override) */
 
     var label, stars;
-    if (score >= 82) { label = "Εξαιρετικές"; stars = 5; }
-    else if (score >= 68) { label = "Πολύ καλές"; stars = 4; }
-    else if (score >= 55) { label = "Καλές"; stars = 3; }
-    else if (score >= 42) { label = "Μέτριες"; stars = 2; }
-    else if (score >= 28) { label = "Φτωχές"; stars = 1; }
-    else { label = "Πολύ φτωχές"; stars = 1; }
+    if (score >= 82) { label = "Εξαιρετική"; stars = 5; }
+    else if (score >= 68) { label = "Πολύ καλή"; stars = 4; }
+    else if (score >= 55) { label = "Καλή"; stars = 3; }
+    else if (score >= 42) { label = "Μέτρια"; stars = 2; }
+    else if (score >= 28) { label = "Φτωχή"; stars = 1; }
+    else { label = "Κακή"; stars = 1; }
 
     factors.C = Math.round(C); factors.W = Math.round(W); factors.P = Math.round(P);
     factors.T = Math.round(T); factors.Sea = Math.round(Sea); factors.M = Math.round(M);
@@ -656,8 +681,7 @@
       peaks = [{ hour: best.hour, activity: best.activity, score: best.score }];
     }
 
-    var dayPeaks = peaks.filter(function (p) { return p.hour >= 6 && p.hour <= 21; });
-    var goldPeak = dayPeaks.length ? dayPeaks[0] : peaks[0];
+    var goldPeak = peaks[0];
     /* Secondary peaks for morning / evening / night buckets if they exist as real peaks */
     function bestInRange(h0, h1) {
       var best = null;
@@ -691,11 +715,48 @@
     var nightW = night ? windowAround(night.hour, 1) : windowAround(23, 1);
 
     /* If a "morning" peak is weak, still show but why explains low activity */
+    function techFit(id, hour) {
+      var sc = computeScore(data, hour);
+      var f = sc.factors || {};
+      var kn = f.currentKn;
+      var bf = f.bf;
+      var fit = sc.activity / 100;
+      if (id === "lrf") {
+        /* LRF: χαμηλός άνεμος */
+        if (bf != null && bf <= 2) fit += 0.18;
+        else if (bf != null && bf >= 5) fit -= 0.25;
+        else if (bf != null && bf === 4) fit -= 0.08;
+      }
+      if (id === "english") {
+        if (kn != null && kn >= 0.25 && kn <= 0.55) fit += 0.22;
+        else if (kn != null && kn < 0.15) fit -= 0.12;
+        else if (kn != null && kn > 0.85) fit -= 0.18;
+        if (bf != null && bf >= 5) fit -= 0.15;
+      }
+      if (id === "spinning" || id === "shore") {
+        if (kn != null && kn >= 0.20 && kn <= 0.55) fit += 0.16;
+        if (bf != null && bf >= 2 && bf <= 4) fit += 0.08;
+        if (bf != null && bf >= 5) fit -= 0.12;
+      }
+      return fit;
+    }
+    function bestHourFor(id) {
+      var bestH = goldPeak.hour, bestV = -1;
+      for (var i = 0; i < 24; i++) {
+        var v = techFit(id, i + 0.5);
+        if (v > bestV) { bestV = v; bestH = i; }
+      }
+      return { hour: bestH, fit: bestV };
+    }
+    var lrfB = bestHourFor("lrf");
+    var engB = bestHourFor("english");
+    var spinB = bestHourFor("spinning");
+    var shoreB = bestHourFor("shore");
     var techs = [
-      { id: "spinning", name: "SPINNING", window: evening, reasons: whyAt(eve ? eve.hour : 18).slice(0, 3) },
-      { id: "english", name: "ΕΓΓΛΕΖΙΚΟ", window: gold, reasons: whyAt(goldPeak.hour).slice(0, 3) },
-      { id: "lrf", name: "LRF", window: morning, reasons: whyAt(morn ? morn.hour : 9).slice(0, 3) },
-      { id: "shore", name: "SHORE JIG", window: evening, reasons: whyAt(eve ? eve.hour : 18).slice(0, 3) }
+      { id: "spinning", name: "SPINNING", window: windowAround(spinB.hour, 1), reasons: whyAt(spinB.hour).slice(0, 3) },
+      { id: "english", name: "ΕΓΓΛΕΖΙΚΟ", window: windowAround(engB.hour, 1), reasons: whyAt(engB.hour).slice(0, 3) },
+      { id: "lrf", name: "LRF", window: windowAround(lrfB.hour, 1), reasons: whyAt(lrfB.hour).slice(0, 3) },
+      { id: "shore", name: "SHORE JIG", window: windowAround(shoreB.hour, 1), reasons: whyAt(shoreB.hour).slice(0, 3) }
     ];
 
     return {
@@ -822,13 +883,23 @@
       pack("shore", "SHORE JIG", shoreScore, shoreTips)
     ];
 
-    /* attach best windows from best hours if available */
+    /* attach best windows + restar from that hour (not only "now") */
     try {
       var bh = computeBestHours(data);
+      var byId = {};
+      (bh.techniques || []).forEach(function (x) { byId[x.id] = x; });
       list.forEach(function (t) {
-        if (t.id === "lrf") t.window = bh.morning;
-        else if (t.id === "english") t.window = bh.gold;
-        else t.window = bh.evening;
+        var tw = byId[t.id];
+        if (tw && tw.window) t.window = tw.window;
+        var w = t.window || "";
+        var hh = parseInt(String(w).split(":")[0], 10);
+        if (!isFinite(hh)) return;
+        var scH = computeScore(data, hh + 0.5);
+        var peak = (scH.activity / 100) * 0.6 + (t.score / 100) * 0.4;
+        if (t.id === "lrf" && scH.factors && scH.factors.bf != null && scH.factors.bf <= 2) peak += 0.12;
+        t.stars = starsFrom(peak);
+        t.label = (typeof STAR_LABEL !== "undefined" && STAR_LABEL[t.stars]) ? STAR_LABEL[t.stars] : t.label;
+        t.tips = ["Καλύτερο παράθυρο " + t.window].concat(t.tips || []).slice(0, 5);
       });
     } catch (e) {}
 
@@ -947,6 +1018,20 @@ return alerts.slice(0, 6);
   }
 
 
+
+  var FISH_SEASON = [
+    { id:"skaros", name:"Σκάρος", easy:[6,7,8,9], spawn:[7,8,9], note:"Πληθώρα Δωδεκάνησα · ρηχά φύκια" },
+    { id:"germanos", name:"Γερμανός", easy:[6,7,8,9,10], spawn:[6,7,8], note:"Εισβολέας · βοσκή στα βράχια" },
+    { id:"sargos", name:"Σαργός", easy:[3,4,5,9,10,11], spawn:[1,2,3,4,5], note:"Γέννα χειμώνα–άνοιξη · Αύγ. πρωί/σούρουπο" },
+    { id:"tsipoura", name:"Τσιπούρα", easy:[9,10,11,1,2], spawn:[12,1,2,3,4], note:"Γέννα Δεκ–Απρ · στις ακτές ξανά από Σεπ" },
+    { id:"melanouri", name:"Μελανούρι", easy:[5,6,7,8,9], spawn:[4,5,6], note:"Καλοκαίρι κοντά σε βράχο / κυματισμό" },
+    { id:"skathari", name:"Σκαθάρι", easy:[10,11,12,1,2], spawn:[2,3,4,5], note:"Γέννα Φεβ–Μάι" },
+    { id:"synagrida", name:"Συναγρίδα", easy:[10,11,12,1,2,3], spawn:[4,5,6], note:"Καλοκαίρι φτωχή · θέλει χαμηλό ρεύμα" },
+    { id:"loutsos", name:"Λούτσος", easy:[6,7,8,9], spawn:[6,7], note:"Καλοκαίρι · χαμηλά ρεύματα · κόντρα στη ροή" },
+    { id:"salpa", name:"Σάλπα", easy:[6,7,8,9], spawn:[3,4,5], note:"Ρηχά φυκιάδες όλο το καλοκαίρι" },
+    { id:"gopa", name:"Γόπα", easy:[1,2,3,4,5,6,7,8,9,10,11,12], spawn:[3,4,5,6], note:"Όλο τον χρόνο στα ρηχά" }
+  ];
+
   /** Public API */
   global.FDData = {
     DEFAULT: DEFAULT,
@@ -963,6 +1048,7 @@ return alerts.slice(0, 6);
     computeAlerts: computeAlerts,
     computeBestHours: computeBestHours,
     computeHourlySeries: computeHourlySeries,
+    FISH_SEASON: FISH_SEASON,
     STAR_LABEL: STAR_LABEL
   };
 

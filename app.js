@@ -1,4 +1,4 @@
-/* v223.0.0 GOLD HOUR locked plate + live hours + red tap bubble */
+/* v224.0.0 GOLD HOUR compact + ruby hours + red tap bubble */
 /* v206.0.0 PRESSURE integer align + thinner 2.0 + tide live-dot */
 /* v205.0.0 PRESSURE line glow only · same 2.8 width · tide live-dot */
 /* v197.0.0 PRESSURE glow 90% locked */
@@ -1312,6 +1312,35 @@ function __notifyMoon(pct, phaseTxt) {
     return loadFishLogs().filter(function (x) { return x.date === dateStr; });
   }
 
+
+  function renderFishSeasons() {
+    var box = $("cal-seasons");
+    if (!box || !window.FDData || !FDData.FISH_SEASON) return;
+    var mon = (new Date()).getMonth() + 1;
+    var names = ["","ΙΑΝ","ΦΕΒ","ΜΑΡ","ΑΠΡ","ΜΑΙ","ΙΟΥΝ","ΙΟΥΛ","ΑΥΓ","ΣΕΠ","ΟΚΤ","ΝΟΕ","ΔΕΚ"];
+    var html = "<div class=\"sec-title\" style=\"margin-top:12px\"><i class=\"dot\"></i> ΜΗΝΕΣ ΑΝΑ ΕΙΔΟΣ · " + names[mon] + "</div>";
+    html += "<p class=\"view-text\">Πράσινο = πιο εύκολο τώρα. Χρυσό = γέννα. Δεν αλλάζει το score.</p>";
+    FDData.FISH_SEASON.forEach(function (sp) {
+      var easyNow = sp.easy.indexOf(mon) >= 0;
+      var spawnNow = sp.spawn.indexOf(mon) >= 0;
+      var tag = easyNow ? "easy" : (spawnNow ? "spawn" : "off");
+      html += "<div class=\"season-row " + tag + "\">";
+      html += "<div class=\"season-name\">" + sp.name + "</div>";
+      html += "<div class=\"season-months\">";
+      for (var m = 1; m <= 12; m++) {
+        var cls = "sm";
+        if (sp.spawn.indexOf(m) >= 0) cls += " spawn";
+        if (sp.easy.indexOf(m) >= 0) cls += " easy";
+        if (m === mon) cls += " now";
+        html += "<span class=\"" + cls + "\">" + names[m] + "</span>";
+      }
+      html += "</div>";
+      html += "<div class=\"season-note\">" + (sp.note || "") + "</div>";
+      html += "</div>";
+    });
+    box.innerHTML = html;
+  }
+
   function renderCalendar() {
     var root = $("cal-grid");
     if (!root) return;
@@ -1350,6 +1379,7 @@ function __notifyMoon(pct, phaseTxt) {
     });
     renderLogList();
     renderSpotStats();
+    renderFishSeasons();
   }
 
   function tripLine(x) {

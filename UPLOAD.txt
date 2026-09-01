@@ -1,14 +1,10 @@
-FD_v223_GOLD_LOCKED
-Ανέβασε στη ρίζα GitHub:
-  style.css
-  app.js
-  gold_hour_plate.png
+FD_v228_CLOCK — διόρθωση δεσίματος ώρας ρολογιού
 
-Κράτα τα υπόλοιπα αρχεία όπως είναι.
-Netlify → Clear cache and deploy site.
+Ρίζα GitHub:
+  index.html  app.js  data.js  style.css  gold_hour_plate.png
 
-Τσεκάρισμα:
-1. GOLD HOUR = χρυσό 3D κουμπί με ruby γράμματα
-2. ώρες live μέσα στο κουμπί
-3. ένα tap στο GOLD HOUR → ανοίγει κόκκινο bubble με την εξήγηση
-4. δεύτερο tap στο ίδιο → κλείνει
+Μετά: Netlify → Clear cache and deploy
+
+Τι φτιάχνει
+- Άνεμος + ρεύμα πλέον 00:00–05:00 επόμενης (όχι μόνο 12 ώρες από τώρα)
+- Κάθε ώρα στο GOLD / ΠΡΩΙ / LRF παίρνει τη δική της τιμή, όχι το «τώρα»

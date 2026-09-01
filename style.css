@@ -6199,3 +6199,142 @@ html body .best-why--gold li,
 html body .best-why--gold {
   color: #ffd6d6 !important;
 }
+
+/* ============================================================
+   v224 — smaller gold chip · RUBY hours (same gem red as title)
+   ============================================================ */
+html body #best-line button.best-chip.gold-hour,
+html body #best-hours button.best-chip.gold-hour,
+html body button.best-chip.gold-hour,
+html body .best-chip.gold-hour,
+html body .best-chip[data-why="gold"] {
+  width: 132px !important;
+  min-width: 132px !important;
+  max-width: 132px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  padding: 0 8px 5px !important;
+  margin: 0 3px !important;
+  background-image: url("gold_hour_plate.png?v=224.0.0") !important;
+  background-size: 100% 100% !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+html body #best-line button.best-chip.gold-hour .gh-time,
+html body button.best-chip.gold-hour .gh-time,
+html body .best-chip.gold-hour .gh-time,
+html body .gold-hour .gh-time {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-family: Cinzel, "Times New Roman", serif !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  letter-spacing: .4px !important;
+  line-height: 1 !important;
+  color: #b01420 !important;
+  -webkit-text-fill-color: #b01420 !important;
+  -webkit-text-stroke: .55px #e6c36a !important;
+  text-shadow: 0 1px 0 #6a3208, 0 0 5px rgba(176,20,32,.45) !important;
+  background: none !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+
+/* v225 species season calendar */
+.cal-seasons { margin-top: 10px; }
+.season-row {
+  margin: 8px 0 12px;
+  padding: 8px 8px 6px;
+  border: 1px solid rgba(0,220,255,.18);
+  border-radius: 10px;
+  background: rgba(0,20,40,.35);
+}
+.season-row.easy { border-color: rgba(0,255,180,.35); }
+.season-row.spawn { border-color: rgba(245,197,66,.4); }
+.season-name {
+  color: #7ee8ff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .4px;
+}
+.season-months { display: flex; flex-wrap: wrap; gap: 3px; margin: 6px 0 4px; }
+.season-months .sm {
+  font-size: 9px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: #6a8899;
+  background: rgba(255,255,255,.04);
+}
+.season-months .sm.easy { color: #b8ffe8; background: rgba(0,180,120,.22); }
+.season-months .sm.spawn { color: #f5c542; background: rgba(245,197,66,.14); }
+.season-months .sm.easy.spawn { color: #fff3c0; background: rgba(0,180,120,.28); }
+.season-months .sm.now { outline: 1px solid #f5c542; }
+.season-note { color: #9ab; font-size: 11px; line-height: 1.35; }
+
+/* v227 GOLD plate IMG_0632 · title+hours ruby · fits chip row */
+html body #best-line button.best-chip.gold-hour,
+html body #best-hours button.best-chip.gold-hour,
+html body button.best-chip.gold-hour,
+html body .best-chip.gold-hour,
+html body .best-chip[data-why="gold"] {
+  width: 148px !important;
+  min-width: 148px !important;
+  max-width: 160px !important;
+  height: 52px !important;
+  min-height: 52px !important;
+  padding: 4px 10px 6px !important;
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 1px !important;
+  background-image: url("gold_hour_plate.png?v=228.0.0") !important;
+  background-size: 100% 100% !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+html body #best-line button.best-chip.gold-hour .gh-title,
+html body button.best-chip.gold-hour .gh-title,
+html body .best-chip.gold-hour .gh-title {
+  display: block !important;
+  height: auto !important;
+  overflow: visible !important;
+  font-family: Cinzel, "Times New Roman", serif !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  letter-spacing: .8px !important;
+  line-height: 1.05 !important;
+  color: #b01420 !important;
+  -webkit-text-fill-color: #b01420 !important;
+  -webkit-text-stroke: .55px #e8c36a !important;
+  text-shadow: 0 1px 0 #6a3208 !important;
+}
+html body #best-line button.best-chip.gold-hour .gh-time,
+html body button.best-chip.gold-hour .gh-time,
+html body .best-chip.gold-hour .gh-time {
+  display: block !important;
+  visibility: visible !important;
+  font-family: Cinzel, "Times New Roman", serif !important;
+  font-weight: 800 !important;
+  font-size: 12px !important;
+  letter-spacing: .3px !important;
+  line-height: 1.05 !important;
+  color: #b01420 !important;
+  -webkit-text-fill-color: #b01420 !important;
+  -webkit-text-stroke: .55px #e8c36a !important;
+  text-shadow: 0 1px 0 #6a3208 !important;
+}
+
+/* v227.1 plate = IMG_0632 · live hours cover baked 19:00 */
+html body #best-line button.best-chip.gold-hour .gh-time,
+html body button.best-chip.gold-hour .gh-time {
+  margin-top: 1px !important;
+  padding: 0 8px !important;
+  background: linear-gradient(#d4a017, #c48a12) !important;
+  border-radius: 4px !important;
+}
