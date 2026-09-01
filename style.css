@@ -6448,3 +6448,48 @@ button.best-chip.gold-hour,
   color: #ffd9de !important;
   border-color: #e8c36a !important;
 }
+
+
+/* ===== v235 GOLD HOUR locked plate + tiny hours · SCORE gems ===== */
+html body #best-line button.best-chip.gold-hour,
+html body button.best-chip.gold-hour {
+  position: relative !important;
+  background-color: transparent !important;
+  background-image: url("gold_hour_plate.png?v=235") !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: contain !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 0 10px rgba(232,185,35,.35));
+  width: min(260px, 92%) !important;
+  height: 78px !important;
+  min-height: 78px !important;
+  max-height: 78px !important;
+  padding: 0 22px 12px !important;
+  display: inline-flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+}
+html body #best-line button.best-chip.gold-hour .gh-title { display: none !important; }
+html body #best-line button.best-chip.gold-hour .gh-time {
+  display: flex !important; flex-wrap: nowrap !important;
+  align-items: center !important; justify-content: center !important;
+  height: 16px !important; max-height: 16px !important; overflow: hidden !important;
+  margin: 0 !important; padding: 0 !important; font-size: 0 !important; line-height: 0 !important;
+  background: none !important; color: transparent !important;
+}
+html body #best-line button.best-chip.gold-hour img.gh-d {
+  height: 15px !important; width: auto !important; max-height: 15px !important; max-width: 12px !important;
+  flex: 0 0 auto !important; display: inline-block !important; object-fit: contain !important;
+  margin: 0 !important; padding: 0 !important; border: 0 !important;
+}
+#score-stars { display:flex !important; justify-content:space-evenly !important; align-items:center !important; width:100% !important; height:28px !important; margin:4px 0 2px !important; font-size:0 !important; color:transparent !important; }
+#score-stars img.sc-star { height:26px !important; width:26px !important; object-fit:contain !important; }
+#score-num { display:flex !important; justify-content:center !important; align-items:flex-end !important; gap:2px !important; min-height:54px !important; font-size:0 !important; color:transparent !important; -webkit-text-stroke:0 !important; text-shadow:none !important; }
+#score-num img.sc-d { height:52px !important; width:auto !important; max-height:52px !important; object-fit:contain !important; }
+#score-lab { display:flex !important; justify-content:center !important; min-height:28px !important; font-size:0 !important; color:transparent !important; -webkit-text-stroke:0 !important; text-shadow:none !important; }
+#score-lab img.sc-labimg { height:26px !important; width:auto !important; max-width:100% !important; object-fit:contain !important; }

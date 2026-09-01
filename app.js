@@ -44,15 +44,31 @@ function __notifyMoon(pct, phaseTxt) {
   function $(id) { return document.getElementById(id); }
 
   function rubyHours(str) {
-    str = String(str || "").replace(/[–—]/g, "-").replace(/\s/g, "");
-    var map = { "0":"0","1":"1","2":"2","3":"3","4":"4","5":"5","6":"6","7":"7","8":"8","9":"9",":":"colon","-":"dash" };
+    str = String(str || "").replace(/[\u2013\u2014]/g, "-").replace(/\s/g, "");
+    var map = { "0":"sc-0","1":"sc-1","2":"sc-2","3":"sc-3","4":"sc-4","5":"sc-5","6":"sc-6","7":"sc-7","8":"sc-8","9":"sc-9",":":"ruby-colon","-":"ruby-dash" };
     return str.split("").map(function (ch) {
       var f = map[ch];
       if (!f) return "";
-      return '<img class="gh-d" alt="'+ch+'" src="ruby-'+f+'.png">';
+      return '<img class="gh-d" alt="'+ch+'" src="'+f+'.png?v=235" style="height:15px;width:auto;max-height:15px;max-width:12px">';
     }).join("");
   }
-
+  function gemNum(n) {
+    var s = String(Math.max(0, Math.min(99, n|0)));
+    return s.split("").map(function (ch) {
+      return '<img class="sc-d" alt="'+ch+'" src="sc-'+ch+'.png?v=235" style="height:52px;width:auto;max-height:52px">';
+    }).join("");
+  }
+  function gemStars(st) {
+    st = Math.max(1, Math.min(5, st|0));
+    var h = "";
+    for (var i = 1; i <= 5; i++) h += '<img class="sc-star" alt="" src="'+(i<=st?"star_on":"star_off")+'.png?v=235">';
+    return h;
+  }
+  function gemLab(lab) {
+    var map = {"Κακή":"1","Μέτρια":"2","Καλή":"3","Πολύ καλή":"4","Ιδανική":"5"};
+    var k = map[String(lab||"")] || "3";
+    return '<img class="sc-labimg" alt="'+lab+'" src="sc-lab-'+k+'.png?v=235">';
+  }
 
   function setStatus(msg, isErr) {
     var el = $("data-status");
@@ -856,12 +872,9 @@ function __notifyMoon(pct, phaseTxt) {
   var __previewHour = null; /* null = live now */
   function applyScoreActivity(sc, previewLabel) {
     if (!sc) return;
-    if ($("score-num")) $("score-num").textContent = sc.score;
-    if ($("score-lab")) $("score-lab").textContent = sc.label || "";
-    if ($("score-stars")) {
-      var st = sc.stars || 1;
-      $("score-stars").textContent = "★★★★★".slice(0, st) + "☆☆☆☆☆".slice(st);
-    }
+    if ($("score-num")) $("score-num").innerHTML = gemNum(sc.score);
+    if ($("score-lab")) $("score-lab").innerHTML = gemLab(sc.label || "Καλή");
+    if ($("score-stars")) $("score-stars").innerHTML = gemStars(sc.stars || 1);
     if (typeof animateScoreRod === "function") animateScoreRod(sc.score);
     else if (typeof setRodAngle === "function") setRodAngle(sc.score, false);
     var ap = sc.activity;
