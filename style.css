@@ -6493,3 +6493,50 @@ html body #best-line button.best-chip.gold-hour img.gh-d {
 #score-num img.sc-d { height:52px !important; width:auto !important; max-height:52px !important; object-fit:contain !important; }
 #score-lab { display:flex !important; justify-content:center !important; min-height:28px !important; font-size:0 !important; color:transparent !important; -webkit-text-stroke:0 !important; text-shadow:none !important; }
 #score-lab img.sc-labimg { height:26px !important; width:auto !important; max-width:100% !important; object-fit:contain !important; }
+
+/* v236: no black frame · gems from embedded data */
+html body #best-line button.best-chip.gold-hour,
+html body button.best-chip.gold-hour {
+  background-color: transparent !important;
+  background-image: url("gold_hour_plate.png?v=237") !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: contain !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  outline: 0 !important;
+  width: min(250px, 90%) !important;
+  height: 70px !important;
+  min-height: 70px !important;
+  max-height: 70px !important;
+  padding: 0 20px 10px !important;
+  overflow: hidden !important;
+}
+html body #best-line button.best-chip.gold-hour .gh-title { display:none !important; }
+html body #score-stars { display:flex !important; justify-content:space-evenly !important; width:100% !important; font-size:0 !important; }
+html body #score-stars img.sc-star { height:26px !important; width:26px !important; }
+html body #score-num { display:flex !important; justify-content:center !important; font-size:0 !important; color:transparent !important; }
+html body #score-num img.sc-d { height:52px !important; width:auto !important; }
+html body #score-lab { display:flex !important; justify-content:center !important; font-size:0 !important; color:transparent !important; min-height:28px !important; }
+html body #score-lab img.sc-labimg { height:26px !important; width:auto !important; }
+
+
+/* v237 split: gold hours = ruby TEXT no diamonds · score = diamond gems */
+html body #best-line button.best-chip.gold-hour .gh-time,
+html body button.best-chip.gold-hour .gh-time {
+  display: block !important;
+  font-family: Cinzel, "Times New Roman", serif !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  letter-spacing: 0.6px !important;
+  color: #c81e2a !important;
+  -webkit-text-fill-color: #c81e2a !important;
+  -webkit-text-stroke: 0 !important;
+  text-shadow: 0 1px 0 #5a1a08 !important;
+  background: none !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+  margin: 0 0 8px !important;
+  padding: 0 !important;
+}
+html body #best-line button.best-chip.gold-hour img.gh-d { display:none !important; }
