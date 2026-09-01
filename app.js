@@ -1,3 +1,4 @@
+/* v232.0.0 GOLD HOUR locked plate + live ruby digit hours */
 /* v224.0.0 GOLD HOUR compact + ruby hours + red tap bubble */
 /* v206.0.0 PRESSURE integer align + thinner 2.0 + tide live-dot */
 /* v205.0.0 PRESSURE line glow only · same 2.8 width · tide live-dot */
@@ -41,6 +42,17 @@ function __notifyMoon(pct, phaseTxt) {
   }
 
   function $(id) { return document.getElementById(id); }
+
+  function rubyHours(str) {
+    str = String(str || "").replace(/[–—]/g, "-").replace(/\s/g, "");
+    var map = { "0":"0","1":"1","2":"2","3":"3","4":"4","5":"5","6":"6","7":"7","8":"8","9":"9",":":"colon","-":"dash" };
+    return str.split("").map(function (ch) {
+      var f = map[ch];
+      if (!f) return "";
+      return '<img class="gh-d" alt="'+ch+'" src="ruby-'+f+'.png">';
+    }).join("");
+  }
+
 
   function setStatus(msg, isErr) {
     var el = $("data-status");
@@ -1094,9 +1106,9 @@ function __notifyMoon(pct, phaseTxt) {
         '<span class="sep"> · </span>' +
         '<button type="button" class="best-chip" data-why="evening">ΑΠΟΓΕΥΜΑ ' + bh.evening + "</button>" +
         '<span class="sep"> · </span>' +
-        '<button type="button" class="best-chip gold-hour" data-why="gold"><span class="gh-title">GOLD HOUR</span><span class="gh-time">' + (bh.gold || "") + "</span></button>" +
+        '<button type="button" class="best-chip gold-hour" data-why="gold"><span class="gh-title">GOLD HOUR</span><span class="gh-time">' + rubyHours(bh.gold || "") + "</span></button>" +
         '<span class="sep"> · </span>' +
-        (bh.night && bh.night !== bh.gold ? ('<button type="button" class="best-chip" data-why="night">ΝΥΧΤΑ ' + bh.night + "</button>") : "");
+        '<button type="button" class="best-chip" data-why="night">ΝΥΧΤΑ ' + (bh.night || "") + "</button>";
       if (bh.techniques && bh.techniques.length) {
         chips += '<div class="best-tech-row">';
         bh.techniques.forEach(function (t) {

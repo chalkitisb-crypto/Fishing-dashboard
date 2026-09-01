@@ -6292,7 +6292,7 @@ html body .best-chip[data-why="gold"] {
   align-items: center !important;
   justify-content: center !important;
   gap: 1px !important;
-  background-image: url("gold_hour_plate.png?v=228.0.0") !important;
+  background-image: url("gold_hour_plate.png?v=231.0.0") !important;
   background-size: 100% 100% !important;
   background-color: transparent !important;
   border: 0 !important;
@@ -6337,4 +6337,114 @@ html body button.best-chip.gold-hour .gh-time {
   padding: 0 8px !important;
   background: linear-gradient(#d4a017, #c48a12) !important;
   border-radius: 4px !important;
+}
+
+
+/* v229: GOLD HOUR title is ON the plate — hide CSS title. Hours from code only. */
+html body #best-line button.best-chip.gold-hour .gh-title,
+html body button.best-chip.gold-hour .gh-title {
+  display: none !important;
+}
+html body #best-line button.best-chip.gold-hour .gh-time,
+html body button.best-chip.gold-hour .gh-time {
+  background: transparent !important;
+  margin-top: 16px !important;
+}
+
+
+/* v230: GOLD HOUR + hours FROM CODE. Plate is empty metal. */
+html body #best-line button.best-chip.gold-hour,
+html body button.best-chip.gold-hour {
+  background-image: url("gold_hour_plate.png?v=231.0.0") !important;
+  height: 52px !important;
+  min-height: 52px !important;
+  width: 150px !important;
+  min-width: 150px !important;
+}
+html body #best-line button.best-chip.gold-hour .gh-title,
+html body button.best-chip.gold-hour .gh-title {
+  display: block !important;
+  visibility: visible !important;
+  height: auto !important;
+  font-family: Cinzel, "Times New Roman", serif !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  letter-spacing: 1px !important;
+  color: #b01420 !important;
+  -webkit-text-fill-color: #b01420 !important;
+  -webkit-text-stroke: 0.55px #e8c36a !important;
+  text-shadow: 0 1px 0 #6a3208 !important;
+}
+html body #best-line button.best-chip.gold-hour .gh-time,
+html body button.best-chip.gold-hour .gh-time {
+  display: block !important;
+  visibility: visible !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  font-family: Cinzel, "Times New Roman", serif !important;
+  font-weight: 800 !important;
+  font-size: 12px !important;
+  color: #b01420 !important;
+  -webkit-text-fill-color: #b01420 !important;
+  -webkit-text-stroke: 0.55px #e8c36a !important;
+}
+
+/* v231 B: empty photo plate + GOLD HOUR/hours from code */
+html body #best-line button.best-chip.gold-hour .gh-title,
+html body button.best-chip.gold-hour .gh-title { display:block !important; visibility:visible !important; }
+html body #best-line button.best-chip.gold-hour .gh-time,
+html body button.best-chip.gold-hour .gh-time { display:block !important; visibility:visible !important; background:transparent !important; }
+
+/* ===== v232 GOLD HOUR locked plate IMG_0594 + live ruby digits ===== */
+#best-line button.best-chip.gold-hour,
+button.best-chip.gold-hour,
+.best-chip.gold-hour {
+  background-color: transparent !important;
+  background-image: url("gold_hour_plate.png") !important;
+  background-repeat: no-repeat !important;
+  background-position: center 18% !important;
+  background-size: 118% auto !important;
+  border: 0 !important;
+  box-shadow: 0 0 16px rgba(245,197,66,.4) !important;
+  width: min(280px, 92%) !important;
+  height: 86px !important;
+  min-height: 86px !important;
+  padding: 0 16px 8px !important;
+  display: inline-flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 0 !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+}
+.best-chip.gold-hour .gh-title,
+.gold-hour .gh-title { display: none !important; }
+.best-chip.gold-hour .gh-time,
+.gold-hour .gh-time {
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+  gap: 1px !important;
+  height: 22px !important;
+  margin: 0 0 10px !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  background: none !important;
+  -webkit-text-stroke: 0 !important;
+  text-shadow: none !important;
+}
+.best-chip.gold-hour .gh-d,
+.gold-hour img.gh-d {
+  height: 20px !important;
+  width: auto !important;
+  display: block !important;
+  object-fit: contain !important;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.35));
+}
+.best-why--gold {
+  background: #6e1020 !important;
+  color: #ffd9de !important;
+  border-color: #e8c36a !important;
 }
